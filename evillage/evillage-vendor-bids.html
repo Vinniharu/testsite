@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bids & Contracts | eVillage Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css?v=2.0">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary, #f3f4f6);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Sidebar - Standardized Sync */
+        .sidebar { width: 260px; background: #0d3d44; color: white; padding: 24px; display: flex; flex-direction: column; position: fixed; height: 100vh; left: 0; top: 0; z-index: 100; transition: transform 0.3s ease; }
+        .sidebar-brand { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 600; margin-bottom: 40px; text-decoration: none; color: white; padding: 0 12px; }
+        .sidebar-brand i { font-size: 24px; color: #10b981; }
+
+        .nav-menu { list-style: none; padding: 0; margin: 0; flex: 1; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px; color: rgba(255, 255, 255, 0.7); text-decoration: none; border-radius: 8px; transition: all 0.2s; font-size: 14px; font-weight: 500; }
+        .nav-link:hover, .nav-link.active { background: rgba(255, 255, 255, 0.1); color: white; }
+        .nav-link i { width: 20px; text-align: center; }
+
+        .user-profile { padding: 16px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-top: auto; }
+        .user-avatar { width: 40px; height: 40px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #0d3d44; }
+        .user-info { flex: 1; overflow: hidden; }
+        .user-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 32px 40px;
+            max-width: 1400px;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .welcome-text h1 { font-size: 28px; font-weight: 600; color: var(--text-primary, #111827); margin-bottom: 4px; }
+        .welcome-text p { color: var(--text-secondary, #6b7280); font-size: 15px; }
+
+        .header-actions { display: flex; gap: 16px; align-items: center; }
+        .btn-primary { 
+            background: #0d3d44; color: white; border: none; padding: 12px 24px; 
+            border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; transition: transform 0.2s, background 0.2s;
+        }
+        .btn-primary:hover { background: #0a2e33; transform: translateY(-2px); }
+
+        /* Bids Data Table */
+        .card-container {
+            background: white; border-radius: 16px; padding: 24px; margin-bottom: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { 
+            text-align: left; padding: 12px 16px; font-size: 13px; 
+            color: var(--text-secondary, #6b7280); font-weight: 500; 
+            border-bottom: 1px solid var(--border-color, #e5e7eb);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .data-table td { padding: 18px 16px; border-bottom: 1px solid var(--border-color, #e5e7eb); vertical-align: middle; }
+        .data-table tr:hover { background: #fdfdfd; }
+        .data-table tr:last-child td { border-bottom: none; }
+
+        .bid-info { display: flex; flex-direction: column; gap: 4px; }
+        .bid-rfp { font-size: 12px; font-family: monospace; color: #10b981; font-weight: 600; }
+        .bid-title { font-size: 15px; font-weight: 600; color: var(--text-primary, #111827); }
+
+        .client-info { display: flex; flex-direction: column; }
+        .client-name { font-size: 14px; font-weight: 500; color: #111827; }
+        .client-sub { font-size: 12px; color: #6b7280; }
+
+        .amount-text { font-weight: 600; color: var(--text-primary, #111827); font-size: 15px; }
+
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; white-space: nowrap; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
+        .badge-draft { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+        .btn-outline { 
+            background: transparent; border: 1px solid var(--border-color, #e5e7eb); 
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600;
+            color: var(--text-primary, #111827); cursor: pointer; transition: 0.2s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-outline:hover { border-color: #0d3d44; color: #0d3d44; background: #f9fafb; }
+
+        /* Slide-over panels (Shared) */
+        .slide-over-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; backdrop-filter: blur(4px); }
+        .slide-over-backdrop.open { opacity: 1; pointer-events: auto; }
+
+        .slide-over-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 500px; background: white; z-index: 201; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1); }
+        .slide-over-panel.open { transform: translateX(0); }
+
+        .panel-header { padding: 24px; border-bottom: 1px solid var(--border-color, #e5e7eb); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .panel-title { font-size: 20px; font-weight: 600; color: var(--text-primary, #111827); }
+        .close-panel-btn { background: none; border: none; color: var(--text-secondary, #6b7280); cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.2s; font-size: 16px; }
+        .close-panel-btn:hover { background: #f3f4f6; color: var(--text-primary, #111827); }
+        .panel-content { padding: 24px; overflow-y: auto; flex: 1; }
+
+        /* Forms inside Panels */
+        .form-group { margin-bottom: 24px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        
+        .form-group label { display: block; font-size: 13px; color: var(--text-secondary, #6b7280); margin-bottom: 8px; font-weight: 500; }
+        .form-input {
+            width: 100%; padding: 12px 14px; border: 1px solid #e5e7eb; border-radius: 8px;
+            font-size: 14px; outline: none; box-sizing: border-box; background: #f9fafb;
+            color: #111827; transition: border-color 0.2s, background 0.2s; font-family: 'Inter', sans-serif;
+        }
+        .form-input:focus { border-color: #0d3d44; background: #ffffff; box-shadow: 0 0 0 3px rgba(13, 61, 68, 0.05); }
+        textarea.form-input { resize: vertical; min-height: 80px; }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1; border-radius: 12px; padding: 32px 24px; text-align: center;
+            cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #f8fafc;
+        }
+        .upload-area:hover { border-color: #0d3d44; background: #f1f5f9; }
+        .upload-icon { font-size: 32px; color: #94a3b8; margin-bottom: 12px; }
+
+        .submit-btn { width: 100%; background: #0d3d44; color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: background 0.2s; }
+        .submit-btn:hover { background: #0a2e33; }
+
+        /* Dynamic Detail Panel Styling */
+        .detail-block { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 24px; }
+        .detail-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 6px; font-weight: 600; }
+        .detail-value { font-size: 15px; color: #1e293b; font-weight: 500; }
+        .detail-value.highlight { font-size: 20px; color: #0d3d44; font-weight: 700; }
+        
+        .file-attachment { 
+            display: flex; align-items: center; gap: 12px; padding: 12px; 
+            border: 1px solid #e2e8f0; border-radius: 8px; background: white; margin-top: 8px;
+        }
+        .file-icon { color: #ef4444; font-size: 24px; }
+        .file-meta { display: flex; flex-direction: column; flex: 1; }
+        .file-name { font-size: 13px; font-weight: 600; color: #1e293b; }
+        .file-size { font-size: 11px; color: #64748b; }
+        .file-download { color: #3b82f6; cursor: pointer; }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="evillage.html" class="sidebar-brand">
+            <i class="fas fa-leaf"></i>
+            <span>eVillage Portal</span>
+        </a>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="evillage-vendor-dashboard.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Vendor Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="evillage-vendor-products.html" class="nav-link">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="evillage-vendor-installations.html" class="nav-link">
+                    <i class="fas fa-tools"></i>
+                    <span>Installations</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="evillage-vendor-bids.html" class="nav-link active">
+                    <i class="fas fa-file-signature"></i>
+                    <span>Bids & Contracts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="evillage-vendor-settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings / KYC</span>
+                </a>
+            </li>
+            <li class="nav-item" style="margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="user-profile">
+            <div class="user-avatar">ZE</div>
+            <div class="user-info">
+                <div class="user-name">Zuma Energy</div>
+                <div class="user-role">Certified Vendor</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="welcome-text">
+                <h1>Active Bids & Proposals</h1>
+                <p>Track your submitted RFPs, review contract status, and apply for new projects.</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary" onclick="openPanel('addBidPanel')">
+                    <i class="fas fa-plus"></i> Submit New Bid
+                </button>
+            </div>
+        </div>
+
+        <!-- Bids Listing Table -->
+        <div class="card-container" style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Proposal Detials</th>
+                        <th>Client / Project Scope</th>
+                        <th>Bid Amount (NGN)</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="bid-info">
+                                <span class="bid-rfp">RFP-2026-004</span>
+                                <div class="bid-title">Federal Secretariat Solar Lighting</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-info">
+                                <span class="client-name">Fed. Min. of Power</span>
+                                <span class="client-sub">Public Infrastructure</span>
+                            </div>
+                        </td>
+                        <td class="amount-text">₦5,200,000</td>
+                        <td style="font-size: 13px; color: #4b5563;">Feb 25, 2026</td>
+                        <td><span class="badge badge-warning">Under Review</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-outline" onclick="openDetails('RFP-2026-004', 'Federal Secretariat Solar Lighting', '₦5,200,000', 'Fed. Min. of Power', 'Under Review', 'Your bid is currently being evaluated by the technical board. Expect a response by March 15.')">
+                                <i class="far fa-eye"></i> View Details
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="bid-info">
+                                <span class="bid-rfp">OPN-2026-088</span>
+                                <div class="bid-title">Community Mini-Grid Extension</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-info">
+                                <span class="client-name">Rural Electrification Agency</span>
+                                <span class="client-sub">Rural Development</span>
+                            </div>
+                        </td>
+                        <td class="amount-text">₦12,000,000</td>
+                        <td style="font-size: 13px; color: #4b5563;">Feb 20, 2026</td>
+                        <td><span class="badge badge-danger">Rejected</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-outline" onclick="openDetails('OPN-2026-088', 'Community Mini-Grid Extension', '₦12,000,000', 'Rural Electrification Agency', 'Rejected', 'Your proposed timeline of 16 weeks exceeded the maximum permitted threshold of 10 weeks set by the client.')">
+                                <i class="far fa-eye"></i> View Details
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="bid-info">
+                                <span class="bid-rfp">PRI-2026-012</span>
+                                <div class="bid-title">Commercial Solar Backup (HQ)</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-info">
+                                <span class="client-name">Zenith Bank Plc</span>
+                                <span class="client-sub">Corporate Sector</span>
+                            </div>
+                        </td>
+                        <td class="amount-text">₦8,500,000</td>
+                        <td style="font-size: 13px; color: #4b5563;">Jan 10, 2026</td>
+                        <td><span class="badge badge-success">Accepted / Won</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-outline" onclick="openDetails('PRI-2026-012', 'Commercial Solar Backup (HQ)', '₦8,500,000', 'Zenith Bank Plc', 'Accepted / Won', 'Congratulations! Contracts have been signed. Please proceed to the Installations Tracker to manage this active project.')">
+                                <i class="far fa-eye"></i> View Details
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="bid-info">
+                                <span class="bid-rfp">DRAFT-992</span>
+                                <div class="bid-title">School District Hybrid Conversion</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-info">
+                                <span class="client-name">Lagos State Gov</span>
+                                <span class="client-sub">Education Board</span>
+                            </div>
+                        </td>
+                        <td class="amount-text" style="color: #64748b;">Pending...</td>
+                        <td style="font-size: 13px; color: #4b5563;">--</td>
+                        <td><span class="badge badge-draft">Draft</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-outline" onclick="openDetails('DRAFT-992', 'School District Hybrid Conversion', 'Not set', 'Lagos State Gov', 'Draft', 'You have not submitted this proposal yet. Please complete the BOQ and submit before the portal closes on March 18.')">
+                                <i class="far fa-eye"></i> View Details
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- GLOBAL BACKDROP -->
+    <div class="slide-over-backdrop" id="backdrop" onclick="closeAllPanels()"></div>
+
+    <!-- PANEL 1: Add New Bid Form Modal -->
+    <div class="slide-over-panel" id="addBidPanel">
+        <div class="panel-header">
+            <h3 class="panel-title">Submit New Proposal</h3>
+            <button class="close-panel-btn" onclick="closeAllPanels()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-content">
+            <p style="color: #6b7280; font-size: 14px; margin-bottom: 24px;">Please provide the RFP number and upload corresponding Bill of Quantities (BOQ) and cover letters for this bid application.</p>
+            
+            <form onsubmit="event.preventDefault(); simulateSave(this, 'add');">
+                
+                <div class="form-row">
+                    <div>
+                        <label>RFP / Project ID</label>
+                        <input type="text" class="form-input" placeholder="e.g. RFP-2026-xxx" required>
+                    </div>
+                    <div>
+                        <label>Expected Duration</label>
+                        <input type="text" class="form-input" placeholder="e.g. 6 Weeks" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Proposal Title</label>
+                    <input type="text" class="form-input" placeholder="Name of the project you are bidding for" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Quoted Amount (NGN)</label>
+                    <input type="number" class="form-input" placeholder="₦0.00" style="font-weight: 600; font-size: 16px;" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Documents (BOQ, Cover Letter, Tech Specs)</label>
+                    <div class="upload-area">
+                        <i class="fas fa-file-pdf upload-icon" style="color: #ef4444;"></i>
+                        <p style="margin: 0 0 4px; font-weight: 600; color: #1e293b;">Drag & drop proposal PDFs here</p>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;">Max file size: 10MB per document</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Notes / Direct Message to Evaluator</label>
+                    <textarea class="form-input" placeholder="Explain your unique value proposition or any assumptions made in the quote..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" style="margin-top: 16px;">
+                    Submit Application <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- PANEL 2: View Bid Details Modal -->
+    <div class="slide-over-panel" id="viewDetailsPanel">
+        <div class="panel-header" style="align-items: flex-start; background: #f8fafc; border-bottom-color: #e2e8f0;">
+            <div>
+                <div style="font-family: monospace; font-size: 11px; color: #10b981; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;" id="d_rfp">RFP-XXX</div>
+                <h3 class="panel-title" id="d_title" style="font-size: 18px; margin-bottom: 6px;">Loading...</h3>
+                <span id="d_status" class="badge">Loading...</span>
+            </div>
+            <button class="close-panel-btn" onclick="closeAllPanels()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-content">
+            
+            <div class="detail-block">
+                <div class="detail-label">Client Organization</div>
+                <div class="detail-value" id="d_client">--</div>
+                
+                <div style="margin-top: 16px;">
+                    <div class="detail-label">Total Quoted Amount</div>
+                    <div class="detail-value highlight" id="d_amount">₦0.00</div>
+                </div>
+            </div>
+
+            <!-- Admin Feedback block dynamically loaded -->
+            <div class="form-group">
+                <label>Admin Feedback / Evaluation Status</label>
+                <div style="background: white; border-left: 3px solid #0d3d44; padding: 16px; border-radius: 4px; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; font-size: 14px; color: #374151; line-height: 1.5;" id="d_feedback">
+                    Feedback will appear here.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Attached Proposal Documents</label>
+                <div class="file-attachment">
+                    <i class="fas fa-file-pdf file-icon"></i>
+                    <div class="file-meta">
+                        <span class="file-name" id="d_file_name">Financial_BOQ_Quote.pdf</span>
+                        <span class="file-size">1.2 MB</span>
+                    </div>
+                    <i class="fas fa-download file-download"></i>
+                </div>
+                <div class="file-attachment">
+                    <i class="fas fa-file-pdf file-icon" style="color: #3b82f6;"></i>
+                    <div class="file-meta">
+                        <span class="file-name">Technical_Architecture.pdf</span>
+                        <span class="file-size">3.5 MB</span>
+                    </div>
+                    <i class="fas fa-download file-download"></i>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 40px;" id="d_actions">
+                <button type="button" class="btn-outline" style="flex: 1; justify-content: center; color: #ef4444; border-color: #fca5a5; background: #fef2f2;" onclick="simulateSave(this, 'withdraw')">
+                    <i class="fas fa-times-circle"></i> Withdraw Bid
+                </button>
+                <button type="button" class="submit-btn" style="flex: 1;" onclick="closeAllPanels()">
+                    Close Panel
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JS Logics -->
+    <script>
+        function openPanel(panelId) {
+            document.getElementById('backdrop').classList.add('open');
+            document.getElementById(panelId).classList.add('open');
+        }
+
+        function closeAllPanels() {
+            document.getElementById('backdrop').classList.remove('open');
+            document.querySelectorAll('.slide-over-panel').forEach(panel => {
+                panel.classList.remove('open');
+            });
+        }
+
+        // Logic to push JSON dummy data into the View Details modal securely
+        function openDetails(rfp, title, amount, client, statusString, feedback) {
+            document.getElementById('d_rfp').textContent = rfp;
+            document.getElementById('d_title').textContent = title;
+            document.getElementById('d_amount').textContent = amount;
+            document.getElementById('d_client').textContent = client;
+            document.getElementById('d_feedback').textContent = feedback;
+            document.getElementById('d_file_name').textContent = `Quote_${rfp}.pdf`;
+
+            // Adjust the badge depending on status text manually handled purely for visual mockup
+            const badge = document.getElementById('d_status');
+            badge.textContent = statusString;
+            badge.className = 'badge'; // reset class
+            if(statusString.includes('Review')) badge.classList.add('badge-warning');
+            else if(statusString.includes('Rejected')) badge.classList.add('badge-danger');
+            else if(statusString.includes('Draft')) badge.classList.add('badge-draft');
+            else badge.classList.add('badge-success');
+
+            // Optionally hide withdraw button if accepted
+            if(statusString.includes('Accepted')) {
+                document.getElementById('d_actions').querySelector('.btn-outline').style.display = 'none';
+            } else {
+                document.getElementById('d_actions').querySelector('.btn-outline').style.display = 'flex';
+            }
+
+            openPanel('viewDetailsPanel');
+        }
+
+        // Simulate save process logic shared with products page
+        function simulateSave(btnOrForm, type) {
+            let btn;
+            if(type === 'add') {
+                btn = btnOrForm.querySelector('.submit-btn');
+            } else {
+                btn = btnOrForm; // direct button pass
+            }
+            const originalHTML = btn.innerHTML;
+            
+            if(type === 'withdraw') {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            } else {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            }
+            btn.style.opacity = '0.8';
+
+            setTimeout(() => {
+                if(type === 'withdraw') {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Withdrawn';
+                    btn.style.background = '#ef4444';
+                    btn.style.color = '#fff';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Submitted Successfully!';
+                    btn.style.background = '#10b981';
+                }
+
+                setTimeout(() => {
+                    closeAllPanels();
+                    // Reset
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.style.opacity = '1';
+                        if(type === 'add') btn.style.background = '#0d3d44';
+                        if(type === 'add' && btnOrForm.reset) btnOrForm.reset(); 
+                    }, 500);
+                }, 1000);
+            }, 1200);
+        }
+
+    </script>
+</body>
+</html>
