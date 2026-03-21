@@ -1,120 +1,64 @@
-# NEMIC / NEMP Panoramic Dashboard Demo
+# National Energy Investment & Intelligence Administration (NEIIA)
 
 ## Project Overview
 
-This is a demonstration project for the Nigeria Energy Management Panoramic Dashboard, implementing core KPI displays and data visualization based on the requirements document.
+NEIIA serves as Nigeria’s centralized platform for energy investment intelligence, asset visibility, and strategic coordination. By aggregating data across funds, projects, SPVs, and energy assets, the platform enables government bodies, investors, and stakeholders to make informed decisions, identify investment gaps, manage risk, and accelerate the implementation of national energy priorities.
 
-## File Description
+## Core Modules & Architecture
 
-- `dashboard.html` - Panoramic dashboard main page
-- `index.html` - Original index page
-- `styles.css` - Unified stylesheet (including Dashboard-specific styles)
-- `dashboard.js` - Dashboard interaction logic and chart implementation
-- `requirement.md` - Project requirements document
+The NEIIA platform is composed of several specialized portals and tools:
 
-## Features
+### 1. The Energy Ecosystem (Public & Investor Portals)
+- **NEFUND / Fund Administration:** Interfaces for Sub Funds, Venture Funds, Rolling Funds, Scout Funds, SPVs, and Roll Up Vehicles.
+- **Investor Management:** Digital Subscriptions and access to the National Energy Data Bank.
+- **Energy Assets & Finance:** Overviews and analytics on capital placement across the Nigerian energy ecosystem.
 
-### 1. Core KPI Display
-- Energy Self-Sufficiency Rate: 68.5%
-- Total Carbon Emissions: 124.5Mt
-- Total Energy Project Investment: $2.8B
-- NEAP Project Progress: 72.3%
+### 2. Intelligence Platform (Dashboard)
+A secured operational dashboard located in `/intelligence-platform/` for administrative and executive oversight.
+- **Spatial Tracking:** Geospatial mapping of grid assets and field deployments.
+- **Risk Models:** Simulation environments and ESG risk scoring across portfolios.
+- **Regulatory Reports:** Automated compliance tracking and document generation.
+- **Carbon Credits:** Live metrics on VCU prices, carbon offset trading, and project registration.
+- **Power Plants:** Generation metrics and capacity statistics for registered infrastructure.
+- **Audit Logs:** Immutable tracking of user actions and systemic changes.
 
-### 2. Energy Strategy & Project Monitoring (Left Panel)
-- National Energy Supply-Demand Balance Chart (Area Chart)
-- NEAP Project Progress Barometer (Horizontal Bar Chart)
-- Project Tracking System Entry
-
-### 3. Investment & Market Dynamics (Center Panel)
-- Energy Fund Investment Flow Chart (Stacked Bar Chart)
-- Key Project Investment Efficiency Bubble Chart
-- Energy Trading Platform Daily Volume (Line Chart)
-- Financial Details Entry
-
-### 4. Livelihood & Service Coverage (Right Panel)
-- eVillage Service Coverage Map (Heat Map)
-- Rural Energy Service Type Distribution (Donut Chart)
-
-### 5. Bottom Panel
-- System Alert List (Critical/Warning/Info levels)
-- Project News Feed
-
-### 6. Financial Management Modal
-- Annual Budget Execution Rate
-- Total Mobilized Funds
-- Return on Investment
-- Pending Disbursement
-- Budget vs Actual Expenditure Comparison
-- Funding Source Composition
-- Project List
+### 3. Education & Intelligence Programs
+- **Fin BETA:** Access to upcoming financial intelligence tools.
+- **NEIIA Edu Center:** Educational tracks on fund assessment, portfolio management, TVPI metrics, and venture capital economics.
+- **eVillage:** Digital cooperative tracking.
 
 ## Technology Stack
 
-- **HTML5** - Page structure
-- **CSS3** - Styling and layout (Responsive design)
-- **JavaScript (ES6+)** - Interaction logic
-- **Chart.js 4.4.0** - Data visualization charts
+- **Frontend Structure:** HTML5
+- **Styling:** CSS3 variables with modular design (Custom NEIIA Font ecosystem).
+- **Interactivity:** Vanilla JavaScript (ES6+).
+- **Data Visualization:** Chart.js 4.4.0 implementations for KPIs, trend analysis, and regional breakdowns.
+- **Icons:** FontAwesome 6.4.0 vector graphics.
 
-## Usage
+## Running the Application Locally
 
-1. Open `dashboard.html` directly in a browser
-2. Or run with a local server:
-   ```bash
-   # Using Python
-   python -m http.server 8000
-   
-   # Using Node.js
-   npx http-server
-   ```
-3. Visit `http://localhost:8000/dashboard.html`
+The platform runs purely on static frontend technologies. No build steps are required.
 
-## Browser Compatibility
+Open a terminal in the root directory and start a local web server:
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+```bash
+# Using Python 3
+python -m http.server 8000
 
-## Feature Demonstration
+# Using Node.js
+npx http-server
+```
 
-### Interactive Features
-- ✅ Time and region filters
-- ✅ Data refresh button
-- ✅ Export report function
-- ✅ Chart hover tooltips
-- ✅ Click "View Financial Details" to open modal
-- ✅ Click outside modal to close
+Navigate to `http://localhost:8000` to view the landing page.
+Access the Intelligence Dashboard directly via `http://localhost:8000/intelligence-platform/index.html`.
 
-### Responsive Design
-- ✅ Desktop (>1400px): Three-column layout
-- ✅ Tablet (1024-1400px): Two-column layout
-- ✅ Mobile (<1024px): Single-column layout
+## Security Features & Authentication
+- Demonstrative Secure Frameworks are active on the Intelligence Platform, including simulated exponential lockout mechanisms and modal-based user confirmation checks. 
 
-## Data Notes
+## Maintenance Notes
+- **Responsive Design:** Core metric cards and modal dialogs are engineered to gracefully scale across mobile (1-column), tablet (2-column), and desktop (3+-column) breakpoints.
+- **Component Styling:** Global styles for the Intelligence Platform are maintained centrally in `intelligence-platform/styles.css`.
+- **Global Injections:** Shared logic (like side-navigation outside-click dismissal) is distributed uniformly across all dashboard HTML entities. 
 
-Currently using simulated data for demonstration. For actual application:
-1. Connect to backend API for real-time data
-2. Implement automatic data refresh mechanism
-3. Add user authentication and permission control
-4. Implement data persistence storage
-
-## Future Development Recommendations
-
-1. **Data Integration**
-   - Connect to NEMIC energy database
-   - Integrate real-time monitoring system
-   - Integrate SEPI ERP financial data
-
-2. **Feature Enhancement**
-   - Add data export functionality (PDF/Excel)
-   - Implement user-customizable dashboard
-   - Add data analysis and prediction features
-
-3. **Performance Optimization**
-   - Implement data caching mechanism
-   - Optimize chart rendering performance
-   - Add lazy loading
-
-## Contact
-
-For questions or suggestions, please contact the project team.
+## License & Contact
+Demonstration Build for the Federal Republic of Nigeria. For integration support, issues, or further expansion of the data feeds, please refer to the project technical administrators.
