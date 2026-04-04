@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="educenter.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <link rel="stylesheet" href="../assets/databank/css/b53286a31ae9facb.css" data-precedence="next">
     <link rel="stylesheet" href="../assets/databank/css/87922e4a53ade201.css" data-precedence="next">
     <link rel="stylesheet" href="../assets/databank/css/ec400057014c6521.css" data-precedence="next">
@@ -46,7 +46,8 @@
 <body>
 
     <!-- Logo (Separate from Pill Navbar) -->
-    <a href="../index.html" class="logo-fixed" style="position: absolute !important; top: 32px; left: 40px; z-index: 1200;">
+    <a href="../index.html" class="logo-fixed"
+        style="position: absolute !important; top: 32px; left: 40px; z-index: 1200;">
         <div class="logo-wrapper">
             <!-- Ensure green logo is shown and white logo is hidden -->
             <img src="../assets/images/neiis-logo-green.png" alt="NEIIA Logo" class="brand-logo light-mode-logo"
@@ -70,12 +71,12 @@
                         <div class="mm-column">
                             <h4>Fund Administration</h4>
                             <ul class="mm-list">
-                                <li><a href="../construction.html">Sub Funds</a></li>
+                                <li><a href="../sub-funds/subfunds.html">Sub Funds</a></li>
                                 <li><a href="../venture-funds/venturefunds.html">Venture Funds</a></li>
                                 <li><a href="../rolling-funds/rollingfunds.html">Rolling Funds</a></li>
-                                <li><a href="../construction.html">Scout Funds</a></li>
+                                <li><a href="../scout-funds/scout.html">Scout Funds</a></li>
                                 <li><a href="../SPVs/SPVs.html">SPVs</a></li>
-                                <li><a href="../construction.html">Roll Up Vehicles</a></li>
+                                <li><a href="../roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
                             </ul>
                         </div>
                         <div class="mm-column">
@@ -190,9 +191,9 @@
                     <ul class="submenu-list">
                         <li><a href="../venture-funds/venturefunds.html">Venture Funds</a></li>
                         <li><a href="../rolling-funds/rollingfunds.html">Rolling Funds</a></li>
-                        <li><a href="../construction.html">Scout Funds</a></li>
+                        <li><a href="../scout-funds/scout.html">Scout Funds</a></li>
                         <li><a href="../SPVs/SPVs.html">SPVs</a></li>
-                        <li><a href="../construction.html">Roll Up Vehicles</a></li>
+                        <li><a href="../roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
                     </ul>
                 </div>
 
@@ -252,50 +253,66 @@
 
     <!-- Main Content -->
     <main id="maincontent">
-    <article class="edu-article-page">
-        <div class="edu-container">
-            <header class="edu-article-header">
-                <span class="edu-article-category">Economics & Reporting</span>
-                <h1 class="edu-article-title">What to Know About TVPI</h1>
-                <p class="edu-article-subtitle">Investors use TVPI to analyze the return on their investment in a venture fund.</p>
-                <div class="edu-article-hero-image">
-                    <img src="../assets/images/edu-center/learn_img_1.jpg" alt="TVPI Concept">
+        <article class="edu-article-page">
+            <div class="edu-container">
+                <header class="edu-article-header">
+                    <span class="edu-article-category">Economics & Reporting</span>
+                    <h1 class="edu-article-title">What to Know About TVPI</h1>
+                    <p class="edu-article-subtitle">Investors use TVPI to analyze the return on their investment in a
+                        venture fund.</p>
+                    <div class="edu-article-hero-image">
+                        <img src="../assets/images/edu-center/learn_img_1.jpg" alt="TVPI Concept">
+                    </div>
+                </header>
+
+                <div class="edu-article-body">
+                    <h2>What Does TVPI Mean?</h2>
+                    <p>TVPI means “total value to paid-in” capital.</p>
+                    <p>It’s a simple formula that attempts to calculate the total value—both realized profits and
+                        unrealized future profits—that a fund has produced for investors relative to the amount of money
+                        contributed.</p>
+                    <p>TVPI attempts to answer for the investor: "Based on the fund's current value, how much profit
+                        have I made relative to my initial investment?"</p>
+                    <p>Since an investor (also known as a limited partner or "LP") of a venture fund can’t just cash out
+                        whenever they choose, there’s some element of future perceived value baked into TVPI until the
+                        fund is fully realized. Once the fund is fully realized, investors switch to using DPI, which
+                        we’ll cover later in this article.</p>
+
+                    <h2>How to Calculate TVPI</h2>
+                    <p>The formula to calculate TVPI is:</p>
+                    <blockquote>Total Value = Cumulative Distributions + Residual Value</blockquote>
+                    <blockquote>TVPI = Total Value / Paid-in Capital</blockquote>
+                    <p>Anything above 1.00x means an investment grew in value. Anything below 1.00 means the investment
+                        shrunk in value. The higher the TVPI, the better for investors.</p>
+                    <p>Say you want to assess the performance of two funds on NEIIA. Fund A reports a TVPI of 1.25x.
+                        Fund B reports a TVPI of 0.75x.</p>
+                    <p>Fund A grew in value: For every dollar LPs invested, based on current investment values they’re
+                        projected to get $1.25 in value (in the form of future realized distributions).</p>
+                    <p>On the other hand, Fund B has lost value based on the current value of its investments. For every
+                        dollar LPs invested, they’re only projected to get $.75 in value—a 25% loss.</p>
+
+                    <h2>An Example of a TVPI Calculation</h2>
+                    <p>Let’s look at an example TVPI calculation at two different points in a fund’s lifecycle.</p>
+                    <p><strong>At the three-year mark:</strong></p>
+                    <ul>
+                        <li>LPs have contributed a total of $5M into the fund,</li>
+                        <li>The fund has distributed $250k back to LPs, and,</li>
+                        <li>The GP estimates a residual value, or NAV (net asset value), of $4.5M.</li>
+                    </ul>
+                    <p>First, add the residual value ($4.5M) and distributions ($250k) to get a total value of $4.75M.
+                        Next, divide that number by total paid-in capital ($5M) to get a TVPI of .95x.</p>
+                    <p>This number is reported as “0.95x” because it’s a multiple of capital invested in the fund. So
+                        far, based on the current value of assets, LPs have lost 5% of their investment.</p>
+
+                    <h2>The Typical TVPI Trajectory</h2>
+                    <p>The trajectory for TVPI in the examples above is typical for many funds and is often referred to
+                        as the “J-curve”. Often, TVPI dips below 1.00x in the fund’s first few years and then climbs.
+                        For funds that produce positive returns, the rate of increase typically levels off in the last
+                        few years of the fund’s lifecycle.</p>
                 </div>
-            </header>
-
-            <div class="edu-article-body">
-                <h2>What Does TVPI Mean?</h2>
-                <p>TVPI means “total value to paid-in” capital.</p>
-                <p>It’s a simple formula that attempts to calculate the total value—both realized profits and unrealized future profits—that a fund has produced for investors relative to the amount of money contributed.</p>
-                <p>TVPI attempts to answer for the investor: "Based on the fund's current value, how much profit have I made relative to my initial investment?"</p>
-                <p>Since an investor (also known as a limited partner or "LP") of a venture fund can’t just cash out whenever they choose, there’s some element of future perceived value baked into TVPI until the fund is fully realized. Once the fund is fully realized, investors switch to using DPI, which we’ll cover later in this article.</p>
-
-                <h2>How to Calculate TVPI</h2>
-                <p>The formula to calculate TVPI is:</p>
-                <blockquote>Total Value = Cumulative Distributions + Residual Value</blockquote>
-                <blockquote>TVPI = Total Value / Paid-in Capital</blockquote>
-                <p>Anything above 1.00x means an investment grew in value. Anything below 1.00 means the investment shrunk in value. The higher the TVPI, the better for investors.</p>
-                <p>Say you want to assess the performance of two funds on NEIIA. Fund A reports a TVPI of 1.25x. Fund B reports a TVPI of 0.75x.</p>
-                <p>Fund A grew in value: For every dollar LPs invested, based on current investment values they’re projected to get $1.25 in value (in the form of future realized distributions).</p>
-                <p>On the other hand, Fund B has lost value based on the current value of its investments. For every dollar LPs invested, they’re only projected to get $.75 in value—a 25% loss.</p>
-                
-                <h2>An Example of a TVPI Calculation</h2>
-                <p>Let’s look at an example TVPI calculation at two different points in a fund’s lifecycle.</p>
-                <p><strong>At the three-year mark:</strong></p>
-                <ul>
-                    <li>LPs have contributed a total of $5M into the fund,</li>
-                    <li>The fund has distributed $250k back to LPs, and,</li>
-                    <li>The GP estimates a residual value, or NAV (net asset value), of $4.5M.</li>
-                </ul>
-                <p>First, add the residual value ($4.5M) and distributions ($250k) to get a total value of $4.75M. Next, divide that number by total paid-in capital ($5M) to get a TVPI of .95x.</p>
-                <p>This number is reported as “0.95x” because it’s a multiple of capital invested in the fund. So far, based on the current value of assets, LPs have lost 5% of their investment.</p>
-                
-                <h2>The Typical TVPI Trajectory</h2>
-                <p>The trajectory for TVPI in the examples above is typical for many funds and is often referred to as the “J-curve”. Often, TVPI dips below 1.00x in the fund’s first few years and then climbs. For funds that produce positive returns, the rate of increase typically levels off in the last few years of the fund’s lifecycle.</p>
             </div>
-        </div>
-    </article>
-</main>
+        </article>
+    </main>
 
     <!-- Footer -->
     <footer class="footer container"
@@ -311,14 +328,14 @@
                             style="color: var(--text-secondary); text-decoration: none;">Rolling Funds</a></li>
                     <li style="margin-bottom: 12px;"><a href="../SPVs/SPVs.html"
                             style="color: var(--text-secondary); text-decoration: none;">SPVs</a></li>
-                    <li style="margin-bottom: 12px;"><a href="../construction.html"
+                    <li style="margin-bottom: 12px;"><a href="../scout-funds/scout.html"
                             style="color: var(--text-secondary); text-decoration: none;">Scout Funds</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4 style="margin-bottom: 20px; font-weight: 600; color: var(--text-primary);">Administration</h4>
                 <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li style="margin-bottom: 12px;"><a href="../construction.html"
+                    <li style="margin-bottom: 12px;"><a href="../about.html"
                             style="color: var(--text-secondary); text-decoration: none;">About NEIIA</a></li>
                     <li style="margin-bottom: 12px;"><a href="../construction.html"
                             style="color: var(--text-secondary); text-decoration: none;">Mandate & Governance</a></li>
@@ -331,7 +348,7 @@
             <div class="footer-col">
                 <h4 style="margin-bottom: 20px; font-weight: 600; color: var(--text-primary);">Engagement</h4>
                 <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li style="margin-bottom: 12px;"><a href="../construction.html"
+                    <li style="margin-bottom: 12px;"><a href="../help-center.html"
                             style="color: var(--text-secondary); text-decoration: none;">Support & Enquiries</a></li>
                     <li style="margin-bottom: 12px;"><a href="../contact.html"
                             style="color: var(--text-secondary); text-decoration: none;">Contact NEIIA</a></li>
