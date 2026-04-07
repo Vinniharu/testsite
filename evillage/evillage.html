@@ -126,9 +126,9 @@
 
     <nav class="fixed top-0 w-full z-40 bg-white/80 dark:bg-dark-bg/80 backdrop-blur-md border-b border-gray-200 dark:border-dark-border transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group">
+            <a href="evillage.html" class="flex items-center gap-3 group">
                 <div class="font-extrabold text-sm tracking-widest text-gray-900 dark:text-white">
-                    EVILLAGE <span class="text-ev-green">PORTAL</span>
+                    <i class="fas fa-leaf" style="color: #10b981; font-size: 24px;"></i> EVILLAGE <span class="text-ev-green">PORTAL</span>
                 </div>
             </a>
 
@@ -140,8 +140,8 @@
             </div>
 
             <div class="hidden md:flex items-center gap-4">
-                <a href="../signin.html" class="font-semibold text-sm hover:text-ev-green dark:hover:text-[#A3E635] transition-colors">Sign In</a>
-                <a href="../newsletter.html" class="bg-[#0B1F24] dark:bg-white text-white dark:text-[#0B1F24] px-5 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">Join Now</a>
+                <a href="evillage-signin.html" class="font-semibold text-sm hover:text-ev-green dark:hover:text-[#A3E635] transition-colors">Sign In</a>
+                <a href="evillage-signup.html" class="bg-[#0B1F24] dark:bg-white text-white dark:text-[#0B1F24] px-5 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">Join Now</a>
             </div>
 
             <button id="mobile-menu-btn" class="md:hidden text-gray-900 dark:text-white focus:outline-none p-2 ml-auto">
@@ -158,49 +158,54 @@
                 
                 <hr class="border-gray-200 dark:border-dark-border">
                 
-                <a href="../signin.html" class="mobile-link text-lg font-semibold text-gray-800 dark:text-gray-200 hover:text-ev-green dark:hover:text-[#A3E635]"><i class="fas fa-sign-in-alt w-6 text-center mr-2"></i> Sign In</a>
-                <a href="../newsletter.html" class="bg-[#0B1F24] dark:bg-white text-white dark:text-[#0B1F24] px-5 py-3.5 rounded-xl font-bold text-center mt-2">Join Now</a>
+                <a href="evillage-signin.html" class="mobile-link text-lg font-semibold text-gray-800 dark:text-gray-200 hover:text-ev-green dark:hover:text-[#A3E635]"><i class="fas fa-sign-in-alt w-6 text-center mr-2"></i> Sign In</a>
+                <a href="evillage-signup.html" class="bg-[#0B1F24] dark:bg-white text-white dark:text-[#0B1F24] px-5 py-3.5 rounded-xl font-bold text-center mt-2">Join Now</a>
             </div>
         </div>
     </nav>
 
-    <header class="pt-40 pb-24 px-6 text-center max-w-5xl mx-auto">
-        <div class="inline-flex items-center gap-2 bg-ev-light text-ev-green dark:bg-green-900/30 dark:text-[#A3E635] px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wide mb-8">
-            <i class="fas fa-check-circle"></i> Federal Republic of Nigeria Official
-        </div>
+    <div class="relative bg-[url('../assets/images/news-1.png')] bg-cover bg-center overflow-hidden">
+        <div class="absolute inset-0 bg-[#008751]/85 mix-blend-multiply"></div>
+        <!-- <div class="absolute inset-0 bg-gradient-to-b from-[#008751]/50 to-[#008751]/90"></div> -->
         
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
-            Powering <span class="text-ev-green dark:text-[#A3E635]">5 Million+</span><br>Nigerian Households
-        </h1>
-        
-        <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-10">
-            Your central hub for solar financing, mini-grid connections, utility payments, and transparent subsidy management.
-        </p>
-        
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="#" class="w-full sm:w-auto bg-ev-green hover:bg-ev-hover text-white px-8 py-4 rounded-xl font-bold transition-all shadow-[0_8px_20px_rgba(0,135,81,0.2)] hover:-translate-y-1 flex items-center justify-center gap-2">
-                Get Started <i class="fas fa-arrow-right"></i>
-            </a>
-            <a href="#" class="w-full sm:w-auto bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border hover:border-ev-green dark:hover:border-ev-green text-gray-900 dark:text-white px-8 py-4 rounded-xl font-bold transition-all hover:-translate-y-1 text-center">
-                Explore Services
-            </a>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 text-center">
-            <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-8 rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                <div class="text-4xl md:text-5xl font-extrabold text-ev-green dark:text-[#A3E635] mb-2 stat-number" data-target="248" data-suffix="K+">0</div>
-                <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Solar Systems Deployed</div>
+        <header class="relative z-10 pt-40 pb-24 px-6 text-center max-w-5xl mx-auto h-screen">
+            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wide mb-8 border border-white/30">
+                <i class="fas fa-check-circle"></i> Federal Republic of Nigeria Official
             </div>
-            <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-8 rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                <div class="text-4xl md:text-5xl font-extrabold text-ev-green dark:text-[#A3E635] mb-2 stat-number" data-target="36" data-suffix="">0</div>
-                <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">States Fully Covered</div>
+            
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight text-white">
+                Powering <span class="text-[#A3E635]">5 Million+</span><br>Nigerian Households
+            </h1>
+            
+            <p class="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-10">
+                Your central hub for solar financing, mini-grid connections, utility payments, and transparent subsidy management.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="evillage-signup.html" class="w-full sm:w-auto bg-white text-ev-green hover:bg-gray-100 px-8 py-4 rounded-xl font-bold transition-all shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2">
+                    Get Started <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#" class="w-full sm:w-auto bg-transparent border-2 border-white/50 hover:border-white text-white px-8 py-4 rounded-xl font-bold transition-all hover:-translate-y-1 text-center backdrop-blur-sm">
+                    Explore Services
+                </a>
             </div>
-            <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-8 rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                <div class="text-4xl md:text-5xl font-extrabold text-ev-green dark:text-[#A3E635] mb-2 stat-number" data-target="92" data-suffix="MW">0</div>
-                <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Total MW Installed</div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 text-center">
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-3xl shadow-2xl hover:bg-white/20 transition-all duration-300">
+                    <div class="text-4xl md:text-5xl font-extrabold text-[#A3E635] mb-2 stat-number" data-target="248" data-suffix="K+">0</div>
+                    <div class="text-xs font-bold text-white/70 uppercase tracking-widest">Solar Systems Deployed</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-3xl shadow-2xl hover:bg-white/20 transition-all duration-300">
+                    <div class="text-4xl md:text-5xl font-extrabold text-[#A3E635] mb-2 stat-number" data-target="36" data-suffix="">0</div>
+                    <div class="text-xs font-bold text-white/70 uppercase tracking-widest">States Fully Covered</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-3xl shadow-2xl hover:bg-white/20 transition-all duration-300">
+                    <div class="text-4xl md:text-5xl font-extrabold text-[#A3E635] mb-2 stat-number" data-target="92" data-suffix="MW">0</div>
+                    <div class="text-xs font-bold text-white/70 uppercase tracking-widest">Total MW Installed</div>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
+    </div>
 
     <section id="marketplace" class="py-24 px-6 bg-gray-100 dark:bg-dark-surface transition-colors duration-300">
         <div class="max-w-7xl mx-auto">
