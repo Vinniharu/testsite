@@ -41,7 +41,10 @@
 
         /* Listings grid */
         .listings-area h2 { font-size: 20px; font-weight: 600; color: var(--text-white); margin-bottom: 20px; }
-        .listings-grid { display: flex; flex-direction: column; gap: 16px; }
+        .listings-grid { display: flex; flex-direction: column; gap: 16px; max-height: 600px; overflow-y: auto; padding-right: 8px; }
+        .listings-grid::-webkit-scrollbar { width: 6px; }
+        .listings-grid::-webkit-scrollbar-track { background: var(--bg-dark); border-radius: 4px; }
+        .listings-grid::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
         .listing-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 24px; transition: var(--transition); display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; }
         .listing-card:hover { border-color: var(--border-hover); }
         .listing-info h3 { font-size: 16px; font-weight: 600; color: var(--text-white); margin-bottom: 6px; }
@@ -94,7 +97,7 @@
         <div class="logo-wrapper">
             <img src="../assets/images/neiis-logo-green.png" alt="NEIIA Logo" class="brand-logo light-mode-logo" style="max-width: 120px;">
             <img src="../assets/images/neiih_logo_white.png" alt="NEIIA Logo" class="brand-logo dark-mode-logo" style="max-width: 120px;">
-            <div class="brand-text">NATIONAL ENERGY INVESTMENT & INTELLIGENCE ADMINISTRATION</div>
+            <!-- <div class="brand-text">NATIONAL ENERGY INVESTMENT & INTELLIGENCE ADMINISTRATION</div> -->
         </div>
     </a>
 
