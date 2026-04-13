@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporting & LP Portal | NEIIA</title>
+    <meta name="description"
+        content="Automated fund reporting, LP dashboards, and real-time portfolio transparency — built for modern fund managers and institutional investors.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../auth-check.js"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <style>
+        /* ============================================
+           CUSTOM FONTS
+           ============================================ */
+        @font-face {
+            font-family: 'NEIIA';
+            src: url('../assets/font/NEIIA_VF-s.p.3bb41c0a.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'NEIIA';
+            src: url('../assets/font/NEIIA_Italic_VF-s.p.31e87b9d.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: italic;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'NEIIA Display';
+            src: url('../assets/font/NEIIADisplay_Regular-s.p.9a576876.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f9fa;
+            --text-primary: #050c26;
+            --text-secondary: #5e6d8a;
+            --accent-color: #000000;
+            --border-color: #e6e9ed;
+            --font-family: 'NEIIA', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --font-display: 'NEIIA Display', 'NEIIA', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-size-base: 16px;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --pill-bg: #fff;
+            --pill-text: #050c26;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 32px;
+            --spacing-xl: 64px;
+            --container-max-width: 1200px;
+            --teal-dark: #011d21;
+            --teal-mid: #0d3d44;
+            --lavender: #BDBBFF;
+            --lavender-muted: rgba(189, 187, 255, 0.3);
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            height: 100vh;
+            overflow-y: scroll;
+        }
+
+        body {
+            font-family: var(--font-family);
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 500;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.2s;
+        }
+
+        a:hover { opacity: 0.8; }
+
+        ul { list-style: none; }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .container {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: 1px solid var(--accent-color);
+        }
+
+        .btn-black {
+            background-color: black;
+            color: white;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: black;
+            color: white;
+            border-color: black;
+        }
+
+        /* ============================================
+           LOGO
+           ============================================ */
+        .logo-fixed {
+            position: absolute !important;
+            top: 32px !important;
+            left: 40px !important;
+            z-index: 1200 !important;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-block;
+            pointer-events: auto !important;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .dark-mode-logo { display: none !important; }
+
+        .brand-text {
+            font-size: 0.35rem;
+            font-weight: 800;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+            color: #006341;
+            max-width: 140px;
+            line-height: 1.2;
+        }
+
+        /* ============================================
+           AUTH LINKS (FIXED)
+           ============================================ */
+        .auth-fixed {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .auth-fixed .nav-link {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            height: 80px;
+        }
+
+        .nav-link { font-weight: 500; }
+
+        .nav-links {
+            display: none;
+            gap: 24px;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            position: relative;
+            color: #000000;
+        }
+
+        .nav-links a:hover {
+            color: #333333;
+            opacity: 1;
+        }
+
+        /* ============================================
+           PILL NAVBAR
+           ============================================ */
+        .navbar.pill-nav {
+            position: fixed !important;
+            top: 24px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 1000;
+            width: auto;
+            min-width: auto;
+            max-width: 90%;
+            height: 50px;
+            background-color: #0d3d44;
+            border-radius: 100px;
+            color: white;
+            padding: 0 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            pointer-events: auto;
+        }
+
+        .navbar.pill-nav::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(150px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                    rgba(185, 182, 255, 0.35),
+                    transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+            border-radius: 100px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .navbar.pill-nav:hover::before { opacity: 1; }
+
+        .navbar.pill-nav>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .navbar.pill-nav .nav-links {
+            display: flex;
+            gap: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .navbar.pill-nav .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+
+        .navbar.pill-nav .nav-links a:hover { color: #fff; }
+
+        /* ============================================
+           MEGA MENU
+           ============================================ */
+        .nav-item.dropdown { position: static; }
+
+        .mega-menu {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            width: 90vw;
+            max-width: 980px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            padding: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 1200;
+            color: #050c26;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.6fr;
+            gap: 0;
+            text-align: left;
+            cursor: default;
+            overflow: hidden;
+        }
+
+        .mm-left-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-column: 1 / 3;
+            gap: 40px;
+            padding: 40px 0 40px 40px;
+        }
+
+        .mm-right-panel {
+            background: #fcfcfc;
+            padding: 40px;
+            grid-column: 3;
+        }
+
+        .nav-item.dropdown:hover .mega-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .mm-column h4 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #8890a0;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .mm-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mm-list li { margin-bottom: 12px; }
+
+        .mm-list a {
+            display: block;
+            color: #050c26 !important;
+            font-size: 15px;
+            font-weight: 400;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .mm-list a:hover {
+            color: #4f46e5 !important;
+            background: none !important;
+        }
+
+        .nav-link.dropdown-toggle {
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+        }
+
+        .nav-link.dropdown-toggle:hover { color: #fff; }
+
+        .nav-item.dropdown:hover .dropdown-toggle i { transform: rotate(180deg); }
+
+        .mm-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            transition: background 0.1s;
+            cursor: pointer;
+            text-decoration: none !important;
+            margin-bottom: 24px;
+        }
+
+        .mm-card:hover { background: transparent; }
+
+        .mm-icon {
+            width: 80px;
+            height: 80px;
+            background: #051b22;
+            border-radius: 4px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .mm-icon img {
+            width: 60px !important;
+            height: 60px !important;
+            object-fit: contain;
+        }
+
+        .mm-content h5 {
+            margin: 0 0 8px 0;
+            font-size: 17px;
+            font-weight: 500;
+            color: #050c26;
+            letter-spacing: -0.3px;
+        }
+
+        .mm-content p {
+            margin: 0;
+            font-size: 15px;
+            color: #5e6d8a;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        .mm-footer {
+            grid-column: 1 / -1;
+            border-top: 1px solid #e6e9ed;
+            padding-top: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #5e6d8a;
+        }
+
+        .mm-footer a {
+            color: #4f46e5 !important;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        /* ============================================
+           MOBILE MENU BUTTON
+           ============================================ */
+        .mobile-menu-btn {
+            display: block;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mobile-nav-overlay { display: none; }
+
+        @media (min-width: 769px) {
+            .nav-links { display: flex; }
+            .mobile-menu-btn { display: none; }
+        }
+
+        /* ============================================
+           MOBILE STYLES
+           ============================================ */
+        @media (max-width: 768px) {
+            .logo-fixed {
+                position: absolute !important;
+                top: 20px !important;
+                left: 20px !important;
+                pointer-events: auto !important;
+            }
+
+            .auth-fixed {
+                display: none;
+                position: absolute;
+            }
+
+            .navbar.pill-nav { display: none; }
+
+            .mobile-menu-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: var(--text-primary);
+            }
+
+            .mobile-nav-overlay {
+                position: fixed;
+                top: 0 !important;
+                left: 0;
+                width: 100vw !important;
+                height: 100vh !important;
+                background: #fff;
+                z-index: 2000;
+                padding: 0;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .mobile-nav-overlay.open {
+                transform: translateX(0);
+                display: flex;
+            }
+
+            .mobile-nav-overlay ul { list-style: none; }
+            .mobile-nav-overlay ul li { margin-bottom: 0; }
+
+            .mobile-nav-overlay ul li a {
+                font-size: 1.1rem;
+                font-weight: 500;
+                color: #333;
+            }
+
+            .mobile-nav-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 24px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .mobile-close-btn {
+                position: static;
+                font-size: 1.5rem;
+                color: #666;
+                padding: 8px;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+
+            .mobile-nav-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                overflow-y: auto;
+            }
+
+            .mobile-nav-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+
+            .mobile-nav-list li {
+                margin: 0;
+                border-bottom: 1px solid #f5f5f5;
+            }
+
+            .mobile-nav-list li a {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 24px;
+                font-size: 1.1rem;
+                font-weight: 500;
+                color: #333;
+                text-decoration: none;
+            }
+
+            .mobile-nav-list li a i {
+                color: #ccc;
+                font-size: 0.9rem;
+            }
+
+            .mobile-nav-footer {
+                padding: 24px;
+                margin-top: auto;
+                border-top: 1px solid #eee;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .mobile-nav-footer .btn {
+                width: 100%;
+                text-align: center;
+                padding: 14px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 1rem;
+            }
+
+            .mobile-nav-footer .btn-primary {
+                background: #000;
+                color: #fff;
+                border: 1px solid #000;
+            }
+
+            .mobile-nav-footer .btn-secondary {
+                background: #f5f5f5;
+                color: #333;
+                border: none;
+            }
+        }
+
+        /* ============================================
+           HEADER LAYOUT
+           ============================================ */
+        .header-brand {
+            height: 80px;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .nav-sticky-zone {
+            position: sticky;
+            top: 0;
+            z-index: 1100;
+            margin-top: -80px;
+            height: 80px;
+            width: 100%;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-sticky {
+            position: fixed;
+            right: 40px;
+            top: 36px;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            pointer-events: auto;
+        }
+
+        .auth-sticky .nav-link {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .navbar.pill-nav { pointer-events: auto; }
+
+        .mobile-btn-sticky-container {
+            position: fixed;
+            top: 28px;
+            right: 20px;
+            z-index: 1100;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 768px) {
+            .header-brand { padding: 0 20px; }
+            .nav-sticky-zone { background: transparent; }
+            .auth-sticky { display: none; }
+        }
+
+        /* ============================================
+           MOBILE SUBMENU
+           ============================================ */
+        .mobile-submenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 2005;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .mobile-submenu.active { transform: translateX(0); }
+
+        .submenu-header {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .submenu-back-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            font-weight: 500;
+            color: #050c26;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .mobile-close-btn-sub {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #050c26;
+            cursor: pointer;
+        }
+
+        .submenu-content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        .submenu-section { margin-bottom: 40px; }
+
+        .submenu-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: rgba(0, 29, 33, 0.5);
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .submenu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .submenu-list li a {
+            font-size: 18px;
+            font-weight: 400;
+            color: #050c26;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .beta-badge {
+            font-size: 10px;
+            background: #F3F4F6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #6B7280;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .product-suites-box {
+            background: #F9FAFB;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 0 -12px 40px;
+        }
+
+        .suite-card {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .suite-card:last-child { margin-bottom: 0; }
+
+        .suite-icon {
+            width: 48px;
+            height: 48px;
+            background: #0C1618;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .suite-info h4 {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0 0 4px;
+            color: #111827;
+        }
+
+        .suite-info p {
+            font-size: 14px;
+            color: #6B7280;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .submenu-footer-link {
+            font-size: 14px;
+            color: #4B5563;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+
+        .submenu-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-lavender {
+            background: #BBBBEE;
+            color: #000;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-gray-light {
+            background: #E5E7EB;
+            color: #1F2937;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* ============================================
+           HERO SECTION — REPORTING & LP PORTAL
+           ============================================ */
+        .hero {
+            position: relative;
+            min-height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            background: #ffffff;
+            color: #000000;
+            padding-bottom: 0;
+        }
+
+        .hero-glow-fixed {
+            position: absolute;
+            top: -10vw;
+            right: -5vw;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(160, 140, 255, 0.4) 0%, rgba(160, 140, 255, 0) 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-glow-left {
+            position: absolute;
+            bottom: -10vw;
+            left: -8vw;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(0, 99, 65, 0.15) 0%, rgba(0, 99, 65, 0) 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 140px 24px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #01000e;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 100px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .hero-pill svg {
+            width: 14px;
+            height: 14px;
+            color: #0d3d44;
+        }
+
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 500;
+            line-height: 1.1;
+            color: #000000;
+            letter-spacing: -1.5px;
+            max-width: 880px;
+            margin-bottom: 24px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 660px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #001d21;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .hero-cta:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .hero-cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-family: inherit;
+            margin-left: 12px;
+        }
+
+        .hero-cta-secondary:hover {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        .hero-btns {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 38px; letter-spacing: -0.5px; }
+            .hero-subtitle { font-size: 16px; }
+            .hero-inner { padding: 120px 20px 60px; }
+            .hero-cta-secondary { margin-left: 0; }
+        }
+
+        /* ============================================
+           DASHBOARD PREVIEW MOCKUP
+           ============================================ */
+        .dashboard-preview {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .dashboard-frame {
+            background: #0d1117;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .dash-top-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .dash-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dash-dot.red { background: #ff5f57; }
+        .dash-dot.yellow { background: #febc2e; }
+        .dash-dot.green { background: #28c840; }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .dash-card {
+            background: #161b22;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .dash-card-label {
+            font-size: 11px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .dash-card-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #e6edf3;
+            font-family: var(--font-display);
+            letter-spacing: -0.5px;
+        }
+
+        .dash-card-change {
+            font-size: 12px;
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dash-card-change.positive { color: #3fb950; }
+        .dash-card-change.negative { color: #f85149; }
+
+        .dash-wide {
+            grid-column: 1 / -1;
+            background: #161b22;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .dash-wide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dash-wide-title {
+            font-size: 14px;
+            color: #e6edf3;
+            font-weight: 500;
+        }
+
+        .dash-wide-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dash-tab {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: transparent;
+            color: #8b949e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .dash-tab.active {
+            background: rgba(189, 187, 255, 0.15);
+            color: #BDBBFF;
+            border-color: rgba(189, 187, 255, 0.3);
+        }
+
+        /* Chart bars */
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 120px;
+            padding-top: 10px;
+        }
+
+        .chart-bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            background: linear-gradient(180deg, rgba(189, 187, 255, 0.6) 0%, rgba(189, 187, 255, 0.15) 100%);
+            min-height: 8px;
+            transition: height 0.3s ease;
+        }
+
+        .chart-bar-label {
+            font-size: 10px;
+            color: #8b949e;
+        }
+
+        @media (max-width: 768px) {
+            .dash-grid { grid-template-columns: 1fr; }
+            .dashboard-frame { padding: 16px; border-radius: 12px; }
+        }
+
+        /* ============================================
+           STATS STRIP
+           ============================================ */
+        .stats-strip {
+            background: var(--teal-dark);
+            padding: 60px 24px;
+        }
+
+        .stats-strip-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 500;
+            color: #ffffff;
+            font-family: var(--font-display);
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        @media (max-width: 768px) {
+            .stats-strip-inner {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px 24px;
+            }
+            .stat-number { font-size: 36px; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-strip-inner { grid-template-columns: 1fr; }
+        }
+
+        /* ============================================
+           FEATURE SECTION (DARK)
+           ============================================ */
+        .feature-section {
+            background-color: var(--teal-dark);
+            padding: 120px 0;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .feature-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 80px;
+        }
+
+        .feature-content {
+            flex: 1;
+            max-width: 480px;
+        }
+
+        .feature-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(189, 187, 255, 0.8);
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 42px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            line-height: 1.15;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .feature-desc {
+            font-size: 17px;
+            color: #94a3b8;
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .feature-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .feature-card-stack {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .f-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(8px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .f-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(189, 187, 255, 0.25);
+        }
+
+        .f-card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .f-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: rgba(189, 187, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .f-card-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: #BDBBFF;
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .f-card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #e6edf3;
+        }
+
+        .f-card-desc {
+            font-size: 14px;
+            color: #8b949e;
+            line-height: 1.6;
+            padding-left: 60px;
+        }
+
+        @media (max-width: 1024px) {
+            .feature-container {
+                flex-direction: column;
+                gap: 48px;
+            }
+            .feature-content { max-width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .feature-title { font-size: 32px; }
+            .feature-section { padding: 80px 0; }
+            .f-card-desc { padding-left: 0; }
+        }
+
+        /* ============================================
+           KEY FEATURES — BENTO GRID
+           ============================================ */
+        .key-features-section {
+            background-color: #f8fafb;
+            color: #0b161a;
+            position: relative;
+            padding: 100px 0 120px;
+        }
+
+        .kf-header {
+            max-width: 1200px;
+            margin: 0 auto 56px;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .kf-header-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--teal-mid);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .kf-header-label span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--teal-mid);
+        }
+
+        .kf-header h2 {
+            font-size: 48px;
+            font-weight: 500;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .kf-header p {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .bento-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: auto;
+            gap: 20px;
+        }
+
+        .bento-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .bento-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Wide cards span 2 columns */
+        .bento-wide { grid-column: span 2; }
+
+        /* Dark themed card */
+        .bento-dark {
+            background: var(--teal-dark);
+            color: #ffffff;
+            border-color: transparent;
+        }
+
+        .bento-dark .bento-desc { color: rgba(255, 255, 255, 0.6); }
+
+        .bento-dark .bento-check-item { color: rgba(255, 255, 255, 0.7); }
+
+        .bento-dark .bento-check-item svg { stroke: #BDBBFF; }
+
+        /* Accent gradient card */
+        .bento-accent {
+            background: linear-gradient(135deg, #0d3d44 0%, #1a5c66 50%, #0d3d44 100%);
+            color: #ffffff;
+            border-color: transparent;
+        }
+
+        .bento-accent .bento-desc { color: rgba(255, 255, 255, 0.65); }
+
+        .bento-accent .bento-check-item { color: rgba(255, 255, 255, 0.7); }
+
+        .bento-accent .bento-check-item svg { stroke: rgba(189, 187, 255, 0.9); }
+
+        /* Lavender card */
+        .bento-lavender {
+            background: linear-gradient(135deg, #e8e7ff 0%, #f0efff 100%);
+            border-color: rgba(189, 187, 255, 0.2);
+        }
+
+        .bento-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(13, 61, 68, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .bento-card:hover .bento-icon { transform: scale(1.08); }
+
+        .bento-dark .bento-icon,
+        .bento-accent .bento-icon {
+            background: rgba(189, 187, 255, 0.15);
+        }
+
+        .bento-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: var(--teal-mid);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .bento-dark .bento-icon svg,
+        .bento-accent .bento-icon svg {
+            stroke: #BDBBFF;
+        }
+
+        .bento-title {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .bento-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 20px;
+        }
+
+        .bento-checklist {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .bento-wide .bento-checklist { grid-template-columns: repeat(3, 1fr); }
+
+        .bento-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .bento-check-item svg {
+            width: 16px;
+            height: 16px;
+            stroke: #006341;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        /* Decorative glow on accent cards */
+        .bento-accent::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(189, 187, 255, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .bento-dark::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: -40px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(0, 99, 65, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        @media (max-width: 1024px) {
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+            .bento-wide .bento-checklist { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .bento-wide { grid-column: span 1; }
+            .bento-card { padding: 32px 24px; }
+            .bento-title { font-size: 20px; }
+            .bento-checklist { grid-template-columns: 1fr; }
+            .bento-wide .bento-checklist { grid-template-columns: 1fr; }
+            .key-features-section { padding: 64px 0 80px; }
+            .kf-header h2 { font-size: 32px; }
+        }
+
+        /* ============================================
+           HOW IT WORKS
+           ============================================ */
+        .how-it-works {
+            background: var(--bg-secondary);
+            padding: 100px 24px;
+        }
+
+        .hiw-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hiw-header {
+            text-align: center;
+            margin-bottom: 72px;
+        }
+
+        .hiw-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            color: var(--teal-mid);
+            margin-bottom: 16px;
+        }
+
+        .hiw-title {
+            font-size: 48px;
+            font-weight: 500;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .hiw-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .hiw-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+
+        .hiw-step {
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .hiw-step-num {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--teal-dark);
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-family: var(--font-display);
+        }
+
+        .hiw-step h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .hiw-step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .hiw-steps { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+            .hiw-title { font-size: 34px; }
+            .how-it-works { padding: 64px 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .hiw-steps { grid-template-columns: 1fr; }
+        }
+
+        /* ============================================
+           FAQ SECTION
+           ============================================ */
+        .faq-section {
+            padding: 100px 24px;
+            background: #ffffff;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-heading {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 500;
+            margin-bottom: 56px;
+            letter-spacing: -0.5px;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .faq-trigger {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 24px 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-align: left;
+            font-family: var(--font-family);
+        }
+
+        .faq-trigger svg {
+            width: 20px;
+            height: 20px;
+            stroke: #94a3b8;
+            fill: none;
+            stroke-width: 2;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+
+        .faq-item.active .faq-trigger svg { transform: rotate(45deg); }
+
+        .faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-item.active .faq-content { max-height: 300px; }
+
+        .faq-answer {
+            padding-bottom: 24px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        @media (max-width: 768px) {
+            .faq-heading { font-size: 30px; }
+            .faq-section { padding: 64px 20px; }
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta-section {
+            background: var(--teal-dark);
+            padding: 120px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(189, 187, 255, 0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cta-inner {
+            position: relative;
+            z-index: 2;
+            max-width: 660px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 48px;
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .cta-desc {
+            font-size: 17px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            background: #BDBBFF;
+            color: #1e1b4b;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .cta-btn:hover {
+            background: #a5a1f5;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .cta-title { font-size: 32px; }
+            .cta-section { padding: 80px 20px; }
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .site-footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            padding: 60px 24px 40px;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .footer-col-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .footer-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-nav li { margin-bottom: 12px; }
+
+        .footer-link {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .footer-link:hover { color: var(--text-primary); }
+
+        .footer-bottom {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            animation: fadeInUp 0.7s ease forwards;
+        }
+
+        .fade-delay-1 { animation-delay: 0.1s; }
+        .fade-delay-2 { animation-delay: 0.2s; }
+        .fade-delay-3 { animation-delay: 0.3s; }
+        .fade-delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Logo -->
+    <a href="../index.html" class="logo-fixed">
+        <div class="logo-wrapper">
+            <img src="../assets/images/neiis-logo-green.png" alt="NEIIA Logo" class="brand-logo light-mode-logo"
+                style="max-width: 120px;">
+            <img src="../assets/images/neiih_logo_white.png" alt="NEIIA Logo" class="brand-logo dark-mode-logo"
+                style="max-width: 120px; display: none;">
+            <div class="brand-text">NATIONAL ENERGY INVESTMENT & INTELLIGENCE ADMINISTRATION</div>
+        </div>
+    </a>
+
+    <!-- Navigation (Pill Style) -->
+    <nav class="navbar pill-nav">
+        <div class="nav-links">
+            <div class="nav-item dropdown">
+                <span class="nav-link dropdown-toggle">NEFUND <i class="fas fa-chevron-down"
+                        style="font-size: 12px; margin-left: 6px; transition: transform 0.2s;"></i></span>
+                <div class="mega-menu">
+                    <div class="mm-left-columns">
+                        <div class="mm-column">
+                            <h4>Fund Administration</h4>
+                            <ul class="mm-list">
+                                <li><a href="../sub-funds/subfunds.html">Sub Funds</a></li>
+                                <li><a href="../venture-funds/venturefunds.html">Venture Funds</a></li>
+                                <li><a href="../rolling-funds/rollingfunds.html">Rolling Funds</a></li>
+                                <li><a href="../scout-funds/scout.html">Scout Funds</a></li>
+                                <li><a href="../SPVs/SPVs.html">SPVs</a></li>
+                                <li><a href="../roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
+                            </ul>
+                        </div>
+                        <div class="mm-column">
+                            <h4>Investor Management</h4>
+                            <ul class="mm-list">
+                                <li><a href="../government-site/digital.html">Digital Subscriptions</a></li>
+                                <li><a href="../databank.html">Data Bank</a></li>
+                            </ul>
+                            <div style="margin-top: 24px;">
+                                <h4>Intelligence</h4>
+                                <ul class="mm-list">
+                                    <li><a href="../fin/fin.html">Fin <span
+                                                style="font-size: 10px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">BETA</span></a>
+                                    </li>
+                                    <li><a href="../edu-center/educenter.html">Edu Center</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mm-footer"
+                            style="border-top: none; padding-top: 10px; margin-top: auto; color: #6b7280; font-size: 15px;">
+                            Looking for tools for startups? Explore <a href="../construction.html"
+                                style="color: #6b7280 !important; text-decoration: underline; margin-left: 2px;">Rollups.</a>
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"
+                                style="margin-left: 4px; display: inline-block;">
+                                <path d="M1 11L11 1M11 1H3M11 1V9" stroke="#6b7280" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mm-right-panel">
+                        <div class="mm-column">
+                            <h4>Product Suites</h4>
+                            <a href="../fund-administration/fund-administration.html" class="mm-card">
+                                <div class="mm-icon"><img src="../assets/images/fund_administration.png"
+                                        alt="Fund Administration"></div>
+                                <div class="mm-content">
+                                    <h5>Fund Administration</h5>
+                                    <p>All-in-one partner to launch an investment vehicle</p>
+                                </div>
+                            </a>
+                            <a href="../investor-management.html" class="mm-card">
+                                <div class="mm-icon"><img src="../assets/images/investor_management.png"
+                                        alt="Investor Management"></div>
+                                <div class="mm-content">
+                                    <h5>Investor Management</h5>
+                                    <p>Explore all offerings to streamline the investor experience.</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="../finance.html">Energy Finance & Capital</a>
+            <a href="../dashboard.html">Energy Ecosystem</a>
+            <a href="../citibim.html">NEIIA</a>
+        </div>
+    </nav>
+
+    <!-- Auth Links -->
+    <div class="auth-sticky">
+        <a href="../signin.html" class="nav-link">Sign In</a>
+        <a href="../newsletter.html" class="btn btn-black">Join</a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="mobile-btn-sticky-container">
+        <button class="mobile-menu-btn" aria-label="Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay">
+        <div class="mobile-nav-header">
+            <a href="../index.html">
+                <img src="../assets/images/neiis-logo-green.png" alt="NEIIA" style="max-height: 40px;">
+            </a>
+            <button class="mobile-close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-nav-content">
+            <ul class="mobile-nav-list">
+                <li><a href="../finance.html">Energy Finance & Capital <i class="fas fa-arrow-right"></i></a></li>
+                <li><a href="../dashboard.html">Energy Ecosystem <i class="fas fa-arrow-right"></i></a></li>
+                <li><a href="../citibim.html">NEIIA <i class="fas fa-arrow-right"></i></a></li>
+                <li><a href="../nefund.html" id="mobile-resources-link">NEFUND <i
+                            class="fas fa-chevron-right"></i></a>
+                </li>
+            </ul>
+            <div class="mobile-nav-footer">
+                <a href="../contact.html" class="btn btn-primary full-width">Contact Support</a>
+                <a href="../signin.html" class="btn btn-secondary full-width">Sign in</a>
+            </div>
+        </div>
+        <!-- Resources Submenu -->
+        <div class="mobile-submenu" id="resources-submenu">
+            <div class="submenu-header">
+                <button class="submenu-back-btn" id="submenu-back-btn">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button class="mobile-close-btn-sub">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="submenu-content">
+                <div class="submenu-section">
+                    <span class="submenu-label">Fund Administration</span>
+                    <ul class="submenu-list">
+                        <li><a href="../sub-funds/subfunds.html">Sub Funds</a></li>
+                        <li><a href="../venture-funds/venturefunds.html">Venture Funds</a></li>
+                        <li><a href="../rolling-funds/rollingfunds.html">Rolling Funds</a></li>
+                        <li><a href="../scout-funds/scout.html">Scout Funds</a></li>
+                        <li><a href="../SPVs/SPVs.html">SPVs</a></li>
+                        <li><a href="../roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
+                    </ul>
+                </div>
+                <div class="submenu-section">
+                    <span class="submenu-label">Investor Management</span>
+                    <ul class="submenu-list">
+                        <li><a href="../government-site/digital.html">Digital Subscriptions</a></li>
+                        <li><a href="../databank.html">Data Bank</a></li>
+                    </ul>
+                </div>
+                <div class="submenu-section">
+                    <span class="submenu-label">Intelligence</span>
+                    <ul class="submenu-list">
+                        <li><a href="../fin/fin.html">Fin <span class="beta-badge">Beta</span></a></li>
+                        <li><a href="../edu-center/educenter.html">Edu Center</a></li>
+                    </ul>
+                </div>
+                <div class="product-suites-box">
+                    <span class="submenu-label" style="margin-bottom: 24px; display: block;">Product Suites</span>
+                    <a href="../fund-administration/fund-administration.html" class="suite-card">
+                        <div class="suite-icon">
+                            <i class="fas fa-circle-notch" style="color: #A3E635; font-size: 24px;"></i>
+                        </div>
+                        <div class="suite-info">
+                            <h4>Fund Administration</h4>
+                            <p>All-in-one partner to launch an investment vehicle</p>
+                        </div>
+                    </a>
+                    <a href="../investor-management.html" class="suite-card">
+                        <div class="suite-icon">
+                            <i class="fas fa-layer-group" style="color: #A3E635; font-size: 24px;"></i>
+                        </div>
+                        <div class="suite-info">
+                            <h4>Investor Management</h4>
+                            <p>Explore all offerings to streamline the investor experience.</p>
+                        </div>
+                    </a>
+                </div>
+                <a href="../construction.html" class="submenu-footer-link">
+                    Looking for tools for startups? Explore Rollups. <i class="fas fa-arrow-right"
+                        style="font-size: 12px;"></i>
+                </a>
+                <div class="submenu-btn-group">
+                    <a href="../contact.html" class="btn-lavender">Contact sales</a>
+                    <a href="../signin.html" class="btn-gray-light">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         HERO SECTION
+         ========================================== -->
+    <section class="hero" id="hero-section">
+        <div class="hero-glow-fixed"></div>
+        <div class="hero-glow-left"></div>
+        <div class="hero-inner">
+            <div class="hero-pill fade-in-up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                </svg>
+                Reporting & LP Portal
+            </div>
+            <h1 class="fade-in-up fade-delay-1">Transparent reporting your LPs will actually read</h1>
+            <p class="hero-subtitle fade-in-up fade-delay-2">Automated fund reports, branded LP dashboards, and
+                real-time portfolio transparency — purpose-built for modern fund managers and institutional
+                investors.</p>
+            <div class="hero-btns fade-in-up fade-delay-3">
+                <a href="mailto:info@neiia.gov.ng?subject=Reporting%20%26%20LP%20Portal%20-%20Schedule%20Demo"
+                    class="hero-cta">
+                    Schedule a demo
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <a href="../contact.html" class="hero-cta-secondary">Talk to an expert</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         DASHBOARD PREVIEW
+         ========================================== -->
+    <section style="background: #fff; padding: 0 24px 80px;">
+        <div class="dashboard-preview fade-in-up fade-delay-4">
+            <div class="dashboard-frame">
+                <div class="dash-top-bar">
+                    <div class="dash-dot red"></div>
+                    <div class="dash-dot yellow"></div>
+                    <div class="dash-dot green"></div>
+                    <span style="color: #8b949e; font-size: 12px; margin-left: 12px;">LP Dashboard — Fund Overview</span>
+                </div>
+                <div class="dash-grid">
+                    <div class="dash-card">
+                        <div class="dash-card-label">Total AUM</div>
+                        <div class="dash-card-value">$2.4B</div>
+                        <div class="dash-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3M6 3L3 6M6 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            +12.4% YTD
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-label">Active LPs</div>
+                        <div class="dash-card-value">847</div>
+                        <div class="dash-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3M6 3L3 6M6 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            +38 this quarter
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-label">Net IRR</div>
+                        <div class="dash-card-value">24.7%</div>
+                        <div class="dash-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3M6 3L3 6M6 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            +3.2% vs benchmark
+                        </div>
+                    </div>
+                    <div class="dash-wide">
+                        <div class="dash-wide-header">
+                            <div class="dash-wide-title">Capital Deployment by Quarter</div>
+                            <div class="dash-wide-tabs">
+                                <span class="dash-tab">1Y</span>
+                                <span class="dash-tab active">3Y</span>
+                                <span class="dash-tab">All</span>
+                            </div>
+                        </div>
+                        <div class="chart-bars">
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 40px;"></div>
+                                <span class="chart-bar-label">Q1 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 60px;"></div>
+                                <span class="chart-bar-label">Q2 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 45px;"></div>
+                                <span class="chart-bar-label">Q3 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 85px;"></div>
+                                <span class="chart-bar-label">Q4 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 70px;"></div>
+                                <span class="chart-bar-label">Q1 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 95px;"></div>
+                                <span class="chart-bar-label">Q2 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 80px;"></div>
+                                <span class="chart-bar-label">Q3 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 110px;"></div>
+                                <span class="chart-bar-label">Q4 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 75px;"></div>
+                                <span class="chart-bar-label">Q1 '26</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 100px;"></div>
+                                <span class="chart-bar-label">Q2 '26</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         STATS STRIP
+         ========================================== -->
+    <section class="stats-strip">
+        <div class="stats-strip-inner">
+            <div class="stat-box">
+                <div class="stat-number" data-target="99" data-suffix="%">0%</div>
+                <div class="stat-label">Report delivery on time</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-target="80" data-suffix="%">0%</div>
+                <div class="stat-label">Reduction in manual reporting</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-target="15" data-suffix="k+">0k+</div>
+                <div class="stat-label">LP reports generated</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-target="24" data-suffix="/7">0/7</div>
+                <div class="stat-label">Real-time portfolio access</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FEATURE SECTION (DARK)
+         ========================================== -->
+    <section class="feature-section">
+        <div class="feature-container">
+            <div class="feature-content">
+                <div class="feature-label">LP Experience</div>
+                <h2 class="feature-title">Give your LPs the transparency they deserve</h2>
+                <p class="feature-desc">Every LP gets a personalized, branded dashboard showing their capital
+                    account, distributions, documents, and performance metrics — updated in real time.</p>
+                <a href="mailto:info@neiia.gov.ng?subject=Reporting%20LP%20Portal%20Demo" class="cta-btn"
+                    style="margin-top: 8px;">
+                    Request access
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+            </div>
+            <div class="feature-visual">
+                <div class="feature-card-stack">
+                    <div class="f-card">
+                        <div class="f-card-header">
+                            <div class="f-card-icon">
+                                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </div>
+                            <div class="f-card-title">Automated Report Distribution</div>
+                        </div>
+                        <div class="f-card-desc">Quarterly statements, K-1s, and capital account summaries delivered automatically to each LP's portal.</div>
+                    </div>
+                    <div class="f-card">
+                        <div class="f-card-header">
+                            <div class="f-card-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                            </div>
+                            <div class="f-card-title">Custom-Branded Portals</div>
+                        </div>
+                        <div class="f-card-desc">White-label your LP portal with your fund's logo, colors, and domain for a fully branded investor experience.</div>
+                    </div>
+                    <div class="f-card">
+                        <div class="f-card-header">
+                            <div class="f-card-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <div class="f-card-title">Real-Time Performance Tracking</div>
+                        </div>
+                        <div class="f-card-desc">IRR, TVPI, DPI, and MOIC calculated continuously so LPs always see the latest portfolio performance.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         KEY FEATURES — BENTO GRID
+         ========================================== -->
+    <section class="key-features-section" id="key-features">
+        <div class="kf-header">
+            <div class="kf-header-label"><span></span> Capabilities</div>
+            <h2>Everything you need for LP transparency</h2>
+            <p>A complete suite of reporting, portal, analytics, and compliance tools designed for institutional-grade fund operations.</p>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Card 1: Automated Reporting — WIDE + DARK -->
+            <div class="bento-card bento-wide bento-dark">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                </div>
+                <h3 class="bento-title">Automated Fund Reporting</h3>
+                <p class="bento-desc">Generate quarterly and annual reports with a single click. Pre-built templates for capital account statements, performance summaries, and portfolio reviews — all customizable to your fund's standards.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Quarterly statements</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Annual reviews</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> K-1 distribution</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Custom templates</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Batch generation</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Multi-fund support</div>
+                </div>
+            </div>
+
+            <!-- Card 2: LP Portal — SINGLE -->
+            <div class="bento-card bento-lavender">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3 class="bento-title">Branded LP Portal</h3>
+                <p class="bento-desc">Secure, personalized portals with capital account details, distribution history, and documents — white-labeled to your brand.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> White-label</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Capital accounts</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> SSO auth</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Distributions</div>
+                </div>
+            </div>
+
+            <!-- Card 3: Analytics — SINGLE -->
+            <div class="bento-card">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                </div>
+                <h3 class="bento-title">Portfolio Analytics</h3>
+                <p class="bento-desc">Interactive performance dashboards with IRR, TVPI, DPI, MOIC and custom KPIs — with configurable benchmarking.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Performance metrics</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Benchmarks</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Vintage analysis</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Sector breakdown</div>
+                </div>
+            </div>
+
+            <!-- Card 4: Compliance — ACCENT GRADIENT -->
+            <div class="bento-card bento-accent">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3 class="bento-title">Compliance & Audit Trail</h3>
+                <p class="bento-desc">Every action logged with full audit trails. Meet regulatory requirements with automated compliance checks and controlled access.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full audit logs</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Access controls</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Regulatory reports</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Data encryption</div>
+                </div>
+            </div>
+
+            <!-- Card 5: Documents — WIDE -->
+            <div class="bento-card bento-wide">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                </div>
+                <h3 class="bento-title">Secure Document Management</h3>
+                <p class="bento-desc">Centralize all fund documents — LPAs, side letters, tax forms, and investor correspondence — in a secure, searchable document vault with granular sharing permissions.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Document vault</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Version control</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> E-signatures</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Granular permissions</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full-text search</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Activity tracking</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         HOW IT WORKS
+         ========================================== -->
+    <section class="how-it-works">
+        <div class="hiw-container">
+            <div class="hiw-header">
+                <div class="hiw-label">How it works</div>
+                <h2 class="hiw-title">Up and running in days, not months</h2>
+                <p class="hiw-subtitle">Our team handles the setup while you focus on running your fund. No
+                    engineering resources required.</p>
+            </div>
+            <div class="hiw-steps">
+                <div class="hiw-step">
+                    <div class="hiw-step-num">1</div>
+                    <h3>Connect</h3>
+                    <p>Link your fund administration data, portfolio systems, and accounting platforms through secure
+                        integrations.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-num">2</div>
+                    <h3>Configure</h3>
+                    <p>Customize report templates, portal branding, and LP access permissions to match your fund's
+                        requirements.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-num">3</div>
+                    <h3>Automate</h3>
+                    <p>Set reporting schedules, distribution workflows, and notification rules to run on autopilot.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-num">4</div>
+                    <h3>Monitor</h3>
+                    <p>Track LP engagement, document views, and portal usage with built-in analytics and insights.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FAQ
+         ========================================== -->
+    <section class="faq-section">
+        <div class="faq-container">
+            <h2 class="faq-heading">Frequently asked questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        What types of reports can be generated automatically?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">The platform generates quarterly capital account statements, annual fund
+                            performance reports, K-1 tax documents, portfolio company updates, cash flow waterfalls, and
+                            custom ad-hoc reports. All templates are fully customizable to match your fund's branding and
+                            reporting standards.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        Can LPs access the portal on mobile devices?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">Yes. The LP portal is fully responsive and optimized for all devices —
+                            desktop, tablet, and mobile. LPs can view performance data, download documents, and review
+                            capital account details from any device with a modern browser.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        How secure is the LP data?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">We employ bank-grade security with AES-256 encryption at rest and TLS 1.3
+                            in transit. Multi-factor authentication, role-based access controls, SOC 2 Type II compliance,
+                            and complete audit trails ensure your data meets the highest security standards.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        Can we white-label the portal with our fund's branding?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">Absolutely. The portal supports full white-labeling including custom logos,
+                            color schemes, typography, custom domain mapping, and branded email communications. Your LPs
+                            will interact with an experience that feels entirely yours.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        What performance metrics are available?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">The platform calculates and displays Net IRR, Gross IRR, TVPI, DPI, RVPI,
+                            MOIC, and custom KPIs. Performance can be viewed at the fund level, portfolio company level,
+                            or individual LP level — with benchmark comparisons against industry indices.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        How long does onboarding take?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">Most funds are fully onboarded within 5–10 business days. Our dedicated
+                            implementation team handles data migration, portal setup, branding configuration, and LP
+                            invite workflows — so you can focus on managing your fund.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         CTA SECTION
+         ========================================== -->
+    <section class="cta-section">
+        <div class="cta-glow"></div>
+        <div class="cta-inner">
+            <h2 class="cta-title">Ready to modernize your LP reporting?</h2>
+            <p class="cta-desc">Talk to our team about how the Reporting & LP Portal can help you deliver
+                institutional-grade transparency to your investors.</p>
+            <a href="mailto:info@neiia.gov.ng?subject=Reporting%20%26%20LP%20Portal%20Inquiry" class="cta-btn">
+                Talk to an expert
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4 class="footer-col-title">Products</h4>
+                    <nav>
+                        <ul class="footer-nav">
+                            <li><a href="../venture-funds/venturefunds.html" class="footer-link">Sub Funds</a></li>
+                            <li><a href="../venture-funds/venturefunds.html" class="footer-link">Venture Funds</a></li>
+                            <li><a href="../rolling-funds/rollingfunds.html" class="footer-link">Rolling Funds</a></li>
+                            <li><a href="../SPVs/SPVs.html" class="footer-link">SPVs</a></li>
+                            <li><a href="../scout-funds/scout.html" class="footer-link">Scout Funds</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-col-title">Administration</h4>
+                    <nav>
+                        <ul class="footer-nav">
+                            <li><a href="../about.html" class="footer-link">About NEIIA</a></li>
+                            <li><a href="../governance.html" class="footer-link">Mandate & Governance</a></li>
+                            <li><a href="../construction.html" class="footer-link">Careers</a></li>
+                            <li><a href="../newsletter.html" class="footer-link">News & Updates</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-col-title">Engagement</h4>
+                    <nav>
+                        <ul class="footer-nav">
+                            <li><a href="../help-center.html" class="footer-link">Support & Enquiries</a></li>
+                            <li><a href="../contact.html" class="footer-link">Contact NEIIA</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 NEIIA</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ==========================================
+            // MOBILE MENU TOGGLE
+            // ==========================================
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const mobileNav = document.querySelector('.mobile-nav-overlay');
+            const mobileCloseBtn = document.querySelector('.mobile-close-btn');
+
+            if (mobileMenuBtn && mobileNav) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileNav.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            if (mobileCloseBtn && mobileNav) {
+                mobileCloseBtn.addEventListener('click', () => {
+                    mobileNav.classList.remove('open');
+                    document.body.style.overflow = '';
+                });
+            }
+
+            // ==========================================
+            // MOBILE SUBMENU LOGIC
+            // ==========================================
+            const mobileResourcesLink = document.getElementById('mobile-resources-link');
+            const resourcesSubmenu = document.getElementById('resources-submenu');
+            const submenuBackBtn = document.getElementById('submenu-back-btn');
+            const mobileCloseBtnSub = document.querySelector('.mobile-close-btn-sub');
+            const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+
+            if (mobileResourcesLink && resourcesSubmenu) {
+                mobileResourcesLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    resourcesSubmenu.classList.add('active');
+                });
+            }
+
+            if (submenuBackBtn && resourcesSubmenu) {
+                submenuBackBtn.addEventListener('click', () => {
+                    resourcesSubmenu.classList.remove('active');
+                });
+            }
+
+            if (mobileCloseBtnSub && resourcesSubmenu) {
+                mobileCloseBtnSub.addEventListener('click', () => {
+                    resourcesSubmenu.classList.remove('active');
+                    if (mobileNavOverlay) {
+                        mobileNavOverlay.classList.remove('open');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+
+            // ==========================================
+            // MOUSE-TRACKING GRADIENT (Hero + Navbar)
+            // ==========================================
+            const trackElements = document.querySelectorAll('.hero, .navbar.pill-nav');
+            trackElements.forEach(el => {
+                let isTicking = false;
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    if (!isTicking) {
+                        window.requestAnimationFrame(() => {
+                            el.style.setProperty('--mouse-x', x + '%');
+                            el.style.setProperty('--mouse-y', y + '%');
+                            isTicking = false;
+                        });
+                        isTicking = true;
+                    }
+                });
+            });
+
+            // ==========================================
+            // BENTO CARD REVEAL ANIMATION
+            // ==========================================
+            const bentoCards = document.querySelectorAll('.bento-card');
+            if (bentoCards.length) {
+                bentoCards.forEach((card, i) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(32px)';
+                    card.style.transition = `opacity 0.6s ease ${i * 0.1}s, transform 0.6s ease ${i * 0.1}s`;
+                });
+
+                const bentoObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                            bentoObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.15 });
+
+                bentoCards.forEach(card => bentoObserver.observe(card));
+            }
+
+            // ==========================================
+            // FAQ ACCORDION
+            // ==========================================
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const trigger = item.querySelector('.faq-trigger');
+                if (trigger) {
+                    trigger.addEventListener('click', () => {
+                        const isOpen = item.classList.contains('active');
+                        faqItems.forEach(otherItem => {
+                            otherItem.classList.remove('active');
+                            const otherTrigger = otherItem.querySelector('.faq-trigger');
+                            const otherContent = otherItem.querySelector('.faq-content');
+                            if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+                            if (otherContent) otherContent.setAttribute('aria-hidden', 'true');
+                        });
+                        if (!isOpen) {
+                            item.classList.add('active');
+                            trigger.setAttribute('aria-expanded', 'true');
+                            const content = item.querySelector('.faq-content');
+                            if (content) content.setAttribute('aria-hidden', 'false');
+                        }
+                    });
+                }
+            });
+
+            // ==========================================
+            // STATS COUNT-UP ANIMATION
+            // ==========================================
+            const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const target = parseFloat(el.dataset.target);
+                        const suffix = el.dataset.suffix || '';
+                        const prefix = el.dataset.prefix || '';
+                        const duration = 1500;
+                        const startTime = performance.now();
+
+                        function animate(currentTime) {
+                            const elapsed = currentTime - startTime;
+                            const progress = Math.min(elapsed / duration, 1);
+                            const eased = 1 - Math.pow(1 - progress, 3);
+                            const current = Math.floor(target * eased);
+                            el.textContent = prefix + current + suffix;
+                            if (progress < 1) requestAnimationFrame(animate);
+                            else el.textContent = prefix + target + suffix;
+                        }
+                        requestAnimationFrame(animate);
+                        statsObserver.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            statNumbers.forEach(el => statsObserver.observe(el));
+        });
+    </script>
+
+</body>
+
+</html>
