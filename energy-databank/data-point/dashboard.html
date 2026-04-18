@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — Data Point</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -23,7 +24,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
-                    <span class="brand-dot"></span>
+                    <img src="../assets/fgn_logo_small.png" class="brand-logo" alt="FGN">
                     Data Point
                 </div>
                 <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
@@ -32,41 +33,80 @@
             </div>
 
             <nav class="sidebar-nav">
-                <span class="nav-section-label">Navigation</span>
-
-                <button class="sidebar-link active" id="sideOverview">
-                    <i class="fas fa-table-cells-large"></i>
-                    <span>Overview</span>
-                </button>
-                <button class="sidebar-link" id="sidePetroleum">
-                    <i class="fas fa-oil-can"></i>
-                    <span>Downstream Oil</span>
-                </button>
-                <button class="sidebar-link" id="sideInsights">
-                    <i class="fas fa-chart-pie"></i>
-                    <span>Retail Insights</span>
-                </button>
-                <button class="sidebar-link" id="sideSettlements">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span>CBN Settlements</span>
-                </button>
-                <button class="sidebar-link" id="sideIoT">
-                    <i class="fas fa-microchip"></i>
-                    <span>IoT Analytics</span>
+                <span class="nav-section-label">National Intel</span>
+                <button class="sidebar-link" id="sideOverview">
+                    <div class="sidebar-link-content">
+                        <i class="fas fa-table-cells-large"></i>
+                        <span>Overview</span>
+                    </div>
                 </button>
                 <button class="sidebar-link" id="sideNodeMap">
-                    <i class="fas fa-map-location-dot"></i>
-                    <span>Live Node Map</span>
+                    <div class="sidebar-link-content">
+                        <i class="fas fa-map-location-dot"></i>
+                        <span>Live Node Map</span>
+                    </div>
+                </button>
+
+                <span class="nav-section-label">Data Bank Ecosystem</span>
+
+                <!-- ENERGY DROPDOWN -->
+                <div class="nav-dropdown-wrap">
+                    <button class="sidebar-link dropdown-trigger" id="dropEnergy">
+                        <div class="sidebar-link-content">
+                            <i class="fas fa-bolt"></i>
+                            <span>Energy Sectors</span>
+                        </div>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </button>
+                    <div class="nav-sub-menu">
+                        <!-- OIL & GAS NESTED -->
+                        <button class="sidebar-link dropdown-trigger sub-dropdown" id="dropOilGas">
+                            <div class="sidebar-link-content">
+                                <i class="fas fa-oil-can" style="font-size: 0.75rem;"></i>
+                                <span>Oil & Gas</span>
+                            </div>
+                            <i class="fas fa-chevron-down chevron"></i>
+                        </button>
+                        <div class="nav-sub-menu">
+                            <button class="sub-link" id="sideUpstream">Upstream <span class="badge badge-amber"
+                                    style="font-size: 0.5rem;">Soon</span></button>
+                            <button class="sub-link" id="sideMidstream">Midstream <span class="badge badge-amber"
+                                    style="font-size: 0.5rem;">Soon</span></button>
+                            <button class="sub-link active" id="sideDownstream">Downstream <span
+                                    class="badge badge-green" style="font-size: 0.5rem;">Live</span></button>
+                        </div>
+
+                        <button class="sub-link" id="sidePower">Power Generation</button>
+                        <button class="sub-link" id="sideRenewable">Renewable Energy</button>
+                        <button class="sub-link" id="sideBioenergy">Bioenergy</button>
+                    </div>
+                </div>
+
+                <button class="sidebar-link" id="sideRevenue">
+                    <div class="sidebar-link-content">
+                        <i class="fas fa-landmark"></i>
+                        <span>Revenue Portal</span>
+                    </div>
+                </button>
+                <button class="sidebar-link" id="sideSettlements">
+                    <div class="sidebar-link-content">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>CBN Settlements</span>
+                    </div>
+                </button>
+                <button class="sidebar-link" id="sideIoT">
+                    <div class="sidebar-link-content">
+                        <i class="fas fa-microchip"></i>
+                        <span>IoT Analytics</span>
+                    </div>
                 </button>
             </nav>
 
             <div class="sidebar-footer">
-                <!-- FX Widget -->
                 <div class="sidebar-fx">
                     <span class="label">FX Source (CBN)</span>
                     <div class="value" id="fxRate">₦1,485.20</div>
                 </div>
-                <!-- Exit -->
                 <button class="sidebar-link danger" onclick="window.location.href='index.html'">
                     <i class="fas fa-power-off"></i>
                     <span>Exit Terminal</span>
@@ -87,116 +127,29 @@
                         <i class="fas fa-magnifying-glass"></i>
                         <input type="text" id="companySearch" class="search-input"
                             placeholder="Search: Oando, NNPC, Total…" autocomplete="off">
+                        <div id="searchResults" class="search-results"></div>
                     </div>
                     <div class="entity-chip" id="entityChip">
-                        <i class="fas fa-building"></i>
-                        <span id="chipLabel">NNPC Retail</span>
+                        <img src="../assets/fgn_logo_small.png" class="entity-logo" id="chipLogo"
+                            style="height: 18px; width: 18px; object-fit: contain;">
+                        <span id="chipLabel">National Aggregate</span>
                     </div>
-                </div>
-                <div class="topbar-right">
-                    <button class="topbar-action" id="printBtn">
-                        <i class="fas fa-print"></i>
-                        <span>Print</span>
-                    </button>
-                    <button class="topbar-action" id="exportBtn">
-                        <i class="fas fa-download"></i>
-                        <span>Export CSV</span>
-                    </button>
                 </div>
             </header>
 
-            <!-- CONTENT -->
-            <div class="content">
-
-                <!-- Page Header -->
-                <div class="page-header">
-                    <div>
-                        <h2 class="page-title" id="dashTitle">
-                            National Downstream<br>
-                            <span>Intelligence.</span>
-                        </h2>
-                        <p class="page-subtitle" id="dashSubtitle">
-                            Aggregated industry data for verified petroleum product sales.
-                        </p>
-                    </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <div
-                            style="font-size: 0.7rem; font-weight: 600; color: var(--text-dark-secondary); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.3rem;">
-                            Last Updated</div>
-                        <div style="font-family: var(--mono); font-size: 0.85rem; color: var(--text-dark);"
-                            id="lastUpdated">—</div>
-                    </div>
+            <!-- DYNAMIC VIEW CONTAINER -->
+            <div class="content" id="viewContainer">
+                <!-- Fragmented views load here -->
+                <div class="loader-wrap">
+                    <div class="loader"></div>
+                    <span>Initializing Intel Nexus...</span>
                 </div>
+            </div>
 
-                <!-- Metric Cards -->
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-label">PMS Volume (Liters)</div>
-                        <div class="metric-value" id="pmsMetric">—</div>
-                        <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 2.1% vs last week</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">AGO (BRL Equivalent)</div>
-                        <div class="metric-value" id="agoMetric">—</div>
-                        <div class="metric-trend down"><i class="fas fa-arrow-down"></i> 0.8% vs last week</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Market Revenue (₦)</div>
-                        <div class="metric-value" id="revMetric">—</div>
-                        <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 5.4% vs last week</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">IoT Nodes Verified</div>
-                        <div class="metric-value" id="iotMetric">—</div>
-                        <div class="metric-trend neutral"><i class="fas fa-circle-check"></i> All nodes active</div>
-                    </div>
-                </div>
-
-                <!-- Chart Block -->
-                <div class="chart-block">
-                    <div class="chart-header">
-                        <div>
-                            <h3>Product Delivery Projections</h3>
-                            <div class="chart-desc">PMS vs AGO — daily throughput in barrels equivalent</div>
-                        </div>
-                        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                            <div class="pill-tabs">
-                                <button class="pill-tab active" data-range="daily">Daily</button>
-                                <button class="pill-tab" data-range="weekly">Weekly</button>
-                                <button class="pill-tab" data-range="monthly">Monthly</button>
-                            </div>
-                            <button class="topbar-action" id="filterBtn" style="font-size: 0.78rem;">
-                                <i class="fas fa-sliders"></i>
-                                <span>Filter</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-canvas-wrap">
-                        <canvas id="mixChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Activity Log -->
-                <div class="log-block">
-                    <div class="log-header">
-                        <h3>Live IoT Downstream Telemetry</h3>
-                        <div class="live-indicator">
-                            <span class="live-dot"></span>
-                            Real-time feed
-                        </div>
-                    </div>
-                    <div class="log-body" id="logStage">
-                        <div class="log-item">
-                            <span class="log-ts">INIT</span>
-                            <span class="log-msg">Connecting to national IoT nexus via CBN-Secure Bridge…</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div><!-- /content -->
         </div><!-- /main -->
     </div><!-- /dashboard -->
 
+    <script src="views.js"></script>
     <script src="main.js"></script>
 </body>
 

@@ -1,1307 +1,822 @@
-// Data Point — Downstream Intelligence Logic Engine
+// Data Point — Downstream Intelligence Logic Engine (Modular & High Density)
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Load persisted state
-    loadState();
-    
-    // 2. Initialize Core Components
-    try {
-        initTimestamp();
-        initChart();
-        initSearch();
-        initReporters();
-        initSidebar();
-        initPillTabs();
-        fetchCbnRate();
-        startLogTicker();
-
-        // 3. Render Initial Page (based on persisted state or default)
-        renderPage(currentPage);
-        
-        // 4. Highlight correct sidebar link
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        sidebarLinks.forEach(link => {
-            link.classList.remove('active');
-            const pageId = link.id.replace('side', '').toLowerCase();
-            // Handle NodeMap case specifically
-            const normalizedId = pageId === 'nodemap' ? 'nodemap' : pageId;
-            if (normalizedId === currentPage) {
-                link.classList.add('active');
-            }
-        });
-
-        // 5. Restore company context if persisted
-        if (currentKey !== 'national') {
-            initMetrics(currentKey);
-            const data = companyData[currentKey];
-            if (data) {
-                currentCompany = data.name;
-                const dashLogo = document.getElementById('dashLogo');
-                const chipLabel = document.getElementById('chipLabel');
-                if (chipLabel) chipLabel.textContent = data.name;
-                if (dashLogo) dashLogo.src = data.logo;
-            }
-        } else {
-            initMetrics('national');
-        }
-    } catch (err) {
-        console.error("Dashboard Persistence Init Error:", err);
-        // Fallback to basic load if state fails
-        renderPage('overview');
-    }
-});
-
-let mixChart;
-let globalFx = 1485.20;
+// --- GLOBAL STATE ---
+let currentPage = 'overview';
+let currentKey = 'national';
 let currentCompany = 'National Aggregate';
+let globalFx = 1485.20;
+let mixChart = null;
+let iotMap = null;
+let mapInstance;
+let mapMarkers = [];
 
-/* =============================================
-   DATA STORE
-   ============================================= */
+// --- DATA STORES ---
 const companyData = {
     national: {
         name: 'National Aggregate',
-        logo: 'https://upload.wikimedia.org/wikipedia/commons/4/4f/Coat_of_arms_of_Nigeria.svg',
-        pms: 62000000,
-        ago: 89400,
-        revenue: 98.6,
-        nodes: 12402,
+        logo: '../assets/fgn_logo_small.png',
+        pms: 62000000, ago: 89400, revenue: 148.6, nodes: 12402,
         mix: {
             daily: { pms: [420, 540, 680, 590, 610, 550, 480], ago: [150, 210, 280, 240, 250, 230, 210], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
             weekly: { pms: [3100, 3800, 4200, 3900, 4100, 3700, 3500], ago: [1200, 1500, 1700, 1600, 1650, 1550, 1400], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] },
             monthly: { pms: [15000, 17200, 18800, 16900, 19200, 18400, 20100], ago: [5800, 6400, 7100, 6600, 7400, 7000, 7800], labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'] }
-        }
+        },
+        remissions: [
+            { date: '2026-03-12', txid: 'CBN-NAT-892', type: 'VAT/Edu', amount: 12.4, status: 'Verified' },
+            { date: '2026-02-10', txid: 'CBN-NAT-771', type: 'VAT/Edu', amount: 11.8, status: 'Verified' },
+            { date: '2026-01-15', txid: 'CBN-NAT-665', type: 'VAT/Edu', amount: 14.1, status: 'Verified' }
+        ]
     },
     oando: {
         name: 'OANDO PLC',
         logo: '../assets/oando-hd-logo.png',
-        pms: 8420000,
-        ago: 12500,
-        revenue: 12.4,
-        nodes: 1402,
-        mix: {
+        pms: 12420000, ago: 18500, revenue: 24.4, nodes: 1402,
+        mix: { 
             daily: { pms: [450, 520, 610, 580, 590, 540, 480], ago: [210, 240, 280, 260, 270, 240, 220], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-            weekly: { pms: [2800, 3100, 3600, 3400, 3500, 3200, 2900], ago: [1100, 1300, 1500, 1400, 1450, 1300, 1200], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] },
-            monthly: { pms: [11000, 12500, 14000, 13200, 14500, 13800, 15200], ago: [4400, 5100, 5600, 5200, 5700, 5500, 6100], labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'] }
-        }
+            weekly: { pms: [650, 720, 810, 780, 790, 740, 680], ago: [310, 340, 380, 360, 370, 340, 320], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] }
+        },
+        remissions: [
+            { date: '2026-03-05', txid: 'CBN-OAN-102', type: 'VAT/Edu', amount: 1.8, status: 'Verified' },
+            { date: '2026-02-04', txid: 'CBN-OAN-098', type: 'VAT/Edu', amount: 1.6, status: 'Verified' }
+        ]
     },
     nnpc: {
         name: 'NNPC Retail Ltd',
         logo: '../assets/nnpc-logo.77c29e8.png',
-        pms: 22500000,
-        ago: 34200,
-        revenue: 35.8,
-        nodes: 4210,
-        mix: {
+        pms: 22500000, ago: 34200, revenue: 55.8, nodes: 4210,
+        mix: { 
             daily: { pms: [1200, 1400, 1680, 1590, 1610, 1550, 1480], ago: [610, 640, 780, 760, 770, 740, 720], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-            weekly: { pms: [8200, 9500, 10800, 10200, 10600, 9900, 9400], ago: [3900, 4400, 5100, 4800, 5000, 4700, 4500], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] },
-            monthly: { pms: [40000, 45000, 50000, 47000, 52000, 49000, 55000], ago: [18000, 20000, 22500, 21000, 23500, 22000, 25000], labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'] }
-        }
+            weekly: { pms: [8200, 8400, 9680, 9590, 9610, 8550, 8480], ago: [4610, 4640, 4780, 4760, 4770, 4740, 4720], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] }
+        },
+        remissions: [
+            { date: '2026-03-01', txid: 'CBN-NNP-772', type: 'VAT/Edu', amount: 4.2, status: 'Verified' },
+            { date: '2026-02-01', txid: 'CBN-NNP-661', type: 'VAT/Edu', amount: 4.0, status: 'Verified' }
+        ]
     },
     total: {
-        name: 'TotalEnergies Nigeria',
+        name: 'TotalEnergies',
         logo: '../assets/total energies.jpeg',
-        pms: 10800000,
-        ago: 18400,
-        revenue: 16.2,
-        nodes: 1840,
-        mix: {
+        pms: 10800000, ago: 18400, revenue: 36.2, nodes: 1840,
+        mix: { 
             daily: { pms: [580, 640, 880, 790, 810, 750, 680], ago: [310, 340, 480, 460, 470, 440, 420], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-            weekly: { pms: [3800, 4300, 5200, 4800, 5000, 4600, 4300], ago: [1900, 2200, 2600, 2400, 2500, 2300, 2150], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] },
-            monthly: { pms: [16000, 18500, 21000, 19500, 22000, 20800, 23500], ago: [7000, 8000, 9200, 8600, 9700, 9100, 10300], labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'] }
-        }
-    },
-    ardova: {
-        name: 'ARDOVA PLC',
-        logo: '../assets/ardova.png',
-        pms: 6200000,
-        ago: 9200,
-        revenue: 8.9,
-        nodes: 950,
-        mix: {
-            daily: { pms: [320, 410, 480, 405, 430, 450, 390], ago: [110, 140, 280, 205, 230, 250, 190], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-            weekly: { pms: [2100, 2600, 2900, 2700, 2850, 2700, 2500], ago: [800, 1000, 1150, 1050, 1100, 1050, 980], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] },
-            monthly: { pms: [9000, 10500, 11800, 11000, 12200, 11500, 13000], ago: [3500, 4100, 4600, 4300, 4800, 4500, 5100], labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'] }
-        }
-    },
-    conoil: {
-        name: 'Conoil PLC',
-        logo: '../assets/conoil.png',
-        pms: 4800000,
-        ago: 6400,
-        revenue: 6.2,
-        nodes: 720,
-        mix: {
-            daily: { pms: [280, 310, 350, 320, 340, 310, 290], ago: [90, 110, 140, 120, 130, 110, 100], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-            weekly: { pms: [1800, 1950, 2200, 2050, 2150, 2000, 1900], ago: [650, 720, 850, 780, 810, 760, 720], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] },
-            monthly: { pms: [7800, 8400, 9600, 8900, 9800, 9200, 10500], ago: [2800, 3100, 3600, 3300, 3700, 3500, 4100], labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'] }
-        }
+            weekly: { pms: [4100, 4300, 4900, 4800, 4500, 4400, 4200], ago: [2100, 2200, 2400, 2300, 2200, 2100, 2000], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] }
+        },
+        remissions: [
+            { date: '2026-03-08', txid: 'CBN-TOT-441', type: 'VAT/Edu', amount: 2.7, status: 'Verified' }
+        ]
     },
     mrs: {
-        name: 'MRS Oil Nigeria',
+        name: 'MRS Oil',
         logo: '../assets/mrs.png',
-        pms: 3900000,
-        ago: 5100,
-        revenue: 5.4,
-        nodes: 612,
-        mix: {
+        pms: 3900000, ago: 5100, revenue: 15.4, nodes: 612,
+        mix: { 
             daily: { pms: [210, 240, 280, 250, 260, 240, 220], ago: [70, 90, 110, 100, 105, 95, 85], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-            weekly: { pms: [1400, 1550, 1750, 1650, 1700, 1600, 1500], ago: [480, 540, 620, 580, 600, 560, 520], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] },
-            monthly: { pms: [6200, 6800, 7800, 7200, 8100, 7600, 8800], ago: [2100, 2400, 2800, 2600, 2900, 2750, 3200], labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'] }
-        }
+            weekly: { pms: [1400, 1500, 1800, 1700, 1600, 1500, 1400], ago: [510, 540, 580, 560, 570, 540, 520], labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'] }
+        },
+        remissions: [
+            { date: '2026-03-10', txid: 'CBN-MRS-551', type: 'VAT/Edu', amount: 1.1, status: 'Verified' }
+        ]
     }
 };
 
-/* =============================================
-   IOT NODE DATA
-   ============================================= */
 const iotNodes = [
-    { id: 'NG-LAG-01', lat: 6.5244, lng: 3.3792, company: 'nnpc', type: 'Static', label: 'Atlas Cove Depot', status: 'Optimal' },
-    { id: 'NG-LAG-02', lat: 6.4253, lng: 3.4095, company: 'oando', type: 'Mobile', label: 'Truck #841 - Lagos Metro', status: 'Moving' },
-    { id: 'NG-ABJ-01', lat: 9.0765, lng: 7.3986, company: 'nnpc', type: 'Static', label: 'Abuja Hub B', status: 'Optimal' },
-    { id: 'NG-PHC-01', lat: 4.8156, lng: 7.0498, company: 'total', type: 'Static', label: 'Onne Terminal Depot', status: 'Optimal' },
-    { id: 'NG-PHC-02', lat: 4.7500, lng: 7.1200, company: 'total', type: 'Mobile', label: 'Vessel - Calabar Run', status: 'Moving' },
-    { id: 'NG-KAN-01', lat: 12.0022, lng: 8.5920, company: 'conoil', type: 'Static', label: 'Kano Industrial Depot', status: 'Low' },
-    { id: 'NG-WAR-01', lat: 12.0100, lng: 8.6100, company: 'oando', type: 'Mobile', label: 'Truck #212 - Kano Loop', status: 'Moving' },
-    { id: 'NG-WAR-02', lat: 5.5160, lng: 5.7505, company: 'mrs', type: 'Static', label: 'Warri Refinery Point', status: 'Optimal' },
-    { id: 'NG-KAD-01', lat: 10.5105, lng: 7.4165, company: 'ardova', type: 'Static', label: 'Kaduna North Terminal', status: 'Critical' },
-    { id: 'NG-LG-09', lat: 6.4500, lng: 3.6000, company: 'ardova', type: 'Mobile', label: 'Truck #901 - Ikorodu Hwy', status: 'Moving' },
-    { id: 'NG-IB-03', lat: 7.3775, lng: 3.9470, company: 'conoil', type: 'Mobile', label: 'Truck #118 - Ibadan Route', status: 'Moving' },
-    { id: 'NG-EN-01', lat: 6.4253, lng: 7.5083, company: 'mrs', type: 'Mobile', label: 'Vessel #002 - Enugu Depot', status: 'Moving' },
+    { id: "NG-LAG-01", lat: 6.4589, lng: 3.4265, company: "oando", type: "pump", label: "Victoria Island Station 4", status: "Optimal" },
+    { id: "NG-LAG-02", lat: 6.5244, lng: 3.3792, company: "total", type: "truck", label: "Fleet Mobile Unit TX-92", status: "Moving" },
+    { id: "NG-ABU-01", lat: 9.0765, lng: 7.3986, company: "nnpc", type: "pump", label: "Maitama Central Station", status: "Optimal" },
+    { id: "NG-PHC-01", lat: 4.8156, lng: 7.0498, company: "total", type: "refinery", label: "PH Midstream Terminal", status: "Optimal" },
+    { id: "NG-DEL-01", lat: 5.5442, lng: 5.7601, company: "oando", type: "well", label: "OML-42 Extraction Site", status: "Active" },
+    { id: "NG-KAD-01", lat: 10.5105, lng: 7.4165, company: "nnpc", type: "refinery", label: "Kaduna Refining Complex", status: "Alert" },
+    { id: "NG-KAN-01", lat: 12.0022, lng: 8.5920, company: "mrs", type: "truck", label: "Kano Supply Convoy B", status: "Moving" },
+    { id: "NG-IBD-01", lat: 7.3775, lng: 3.9470, company: "mrs", type: "pump", label: "Ibadan Distribution Node", status: "Optimal" }
 ];
 
-let iotLeafletMap = null;
-let mapMarkers = [];
+const regionHealth = [
+    { name: "Lagos Hub", nodes: 4201, uptime: 99.8, status: "Optimal", color: "var(--green)" },
+    { name: "Abuja Nexus", nodes: 2140, uptime: 99.4, status: "Optimal", color: "var(--green)" },
+    { name: "PH Refining Zone", nodes: 1840, uptime: 97.2, status: "Alert", color: "var(--amber)" },
+    { name: "Kano Cluster", nodes: 1210, uptime: 99.1, status: "Optimal", color: "var(--green)" },
+    { name: "Ibadan Mesh", nodes: 840, uptime: 99.6, status: "Optimal", color: "var(--green)" },
+    { name: "Kaduna Substrate", nodes: 640, uptime: 88.5, status: "Critical", color: "var(--red)" },
+    { name: "Warri Extraction", nodes: 520, uptime: 98.2, status: "Optimal", color: "var(--green)" },
+    { name: "Enugu Regional", nodes: 480, uptime: 99.2, status: "Optimal", color: "var(--green)" },
+    { name: "Benin Grid", nodes: 320, uptime: 99.9, status: "Optimal", color: "var(--green)" }
+];
 
-let currentRange = 'daily';
-let currentKey = 'national';
-let currentPage = 'overview';
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', async () => {
+    loadState();
+    initShell();
+    initDropdowns();
+    initGlobalSearch();
+    fetchCbnRate();
+    renderPage(currentPage);
+});
 
-/* =============================================
-   STATE PERSISTENCE
-   ============================================= */
-function saveState() {
-    const state = { currentPage, currentKey, currentRange };
-    localStorage.setItem('datapoint_state', JSON.stringify(state));
-}
+async function renderPage(pageId) {
+    // Handle Coming Soon Routing
+    const soonSectors = ['upstream', 'midstream', 'power', 'renewable', 'bioenergy'];
+    let actualViewId = pageId;
+    let sectorName = '';
 
-function loadState() {
-    try {
-        const saved = localStorage.getItem('datapoint_state');
-        if (saved) {
-            const state = JSON.parse(saved);
-            currentPage = state.currentPage || 'overview';
-            currentKey = state.currentKey || 'national';
-            currentRange = state.currentRange || 'daily';
-            return true;
-        }
-    } catch (e) {
-        console.error('Failed to load state:', e);
+    if (soonSectors.includes(pageId)) {
+        actualViewId = 'comingsoon';
+        sectorName = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+        if (pageId === 'upstream' || pageId === 'midstream') sectorName = `Oil & Gas / ${sectorName}`;
     }
-    return false;
-}
 
-/* =============================================
-   TIMESTAMP
-   ============================================= */
-function initTimestamp() {
-    const el = document.getElementById('lastUpdated');
-    if (!el) return;
-    const now = new Date();
-    el.textContent = now.toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    setInterval(() => {
-        const n = new Date();
-        el.textContent = n.toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }, 1000);
-}
-
-/* =============================================
-   METRICS
-   ============================================= */
-function initMetrics(key) {
-    const data = companyData[key];
-    if (!data) return;
-    countUp('pmsMetric', data.pms, v => formatVolume(v));
-    countUp('agoMetric', data.ago, v => formatBrl(v));
-    countUp('revMetric', data.revenue * 1e9, v => `₦${(v / 1e9).toFixed(1)}b`);
-    countUp('iotMetric', data.nodes, v => Math.round(v).toLocaleString());
-}
-
-function countUp(id, target, formatter) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const duration = 800;
-    const start = performance.now();
-    const from = 0;
-    function step(now) {
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        el.textContent = formatter(from + (target - from) * eased);
-        if (progress < 1) requestAnimationFrame(step);
+    // Map 'downstream' to the primary overview/dashboard for this phase
+    if (pageId === 'downstream') {
+        actualViewId = 'overview';
     }
-    requestAnimationFrame(step);
-}
 
-function formatVolume(v) {
-    if (v >= 1e9) return `${(v / 1e9).toFixed(1)}b`;
-    if (v >= 1e6) return `${(v / 1e6).toFixed(1)}m`;
-    if (v >= 1e3) return `${(v / 1e3).toFixed(0)}k`;
-    return Math.round(v).toString();
-}
+    currentPage = pageId;
+    saveState();
+    
+    const container = document.getElementById('viewContainer');
+    
+    if (!VIEWS[actualViewId]) {
+        console.error("View not found:", actualViewId);
+        container.innerHTML = `<div class="error-wrap"><h3>Intelligence Link Severed</h3><p>View [${actualViewId}] is not available in the nexus.</p></div>`;
+        return;
+    }
 
-function formatBrl(v) {
-    if (v >= 1e6) return `${(v / 1e6).toFixed(1)}m`;
-    if (v >= 1e3) return `${(v / 1e3).toFixed(1)}k`;
-    return Math.round(v).toString();
-}
+    container.innerHTML = VIEWS[actualViewId];
 
-/* =============================================
-   SEARCH
-   ============================================= */
-function initSearch() {
-    const input = document.getElementById('companySearch');
-    if (!input) return;
-    input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-            const q = input.value.toLowerCase().trim();
-            const match = Object.keys(companyData).find(k => k.includes(q) || companyData[k].name.toLowerCase().includes(q));
-            if (match) {
-                switchEntity(match);
-                input.value = '';
-                input.blur();
-            } else {
-                renderNotFound(document.querySelector('.content'), q);
-                input.value = '';
-                input.blur();
-            }
+    // Inject Sector Name for Coming Soon
+    if (actualViewId === 'comingsoon') {
+        const label = document.getElementById('sectorLabel');
+        if (label) label.textContent = sectorName;
+        const icon = document.getElementById('sectorIcon');
+        if (icon) {
+            if (pageId === 'power') icon.className = 'fas fa-bolt';
+            if (pageId === 'renewable') icon.className = 'fas fa-sun';
+            if (pageId === 'bioenergy') icon.className = 'fas fa-leaf';
         }
+    }
+    
+    // Modules Logic
+    if (actualViewId === 'overview') {
+        initChart('daily');
+        initPillTabs();
+        initChartFilters();
+    } else if (actualViewId === 'nodemap') {
+        initMap();
+    } else if (actualViewId === 'revenue') {
+        initRevenuePortal();
+    } else if (actualViewId === 'settlements') {
+        initSettlementLedger();
+    } else if (actualViewId === 'iot') {
+        initIoTAnalytics();
+    }
+    
+    syncUI(currentKey);
+    updateSidebarActive(pageId);
+    
+    // Trigger animations
+    setTimeout(() => {
+        document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+    }, 10);
+}
+
+function initShell() {
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const sidebarClose = document.getElementById('sidebarClose');
+
+    if (!menuToggle || !sidebar || !overlay) return;
+
+    const openMenu = () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Lock scroll
+    };
+
+    const closeMenu = () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Unlock scroll
+    };
+
+    menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openMenu();
+    });
+
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeMenu();
+        });
+    }
+
+    overlay.addEventListener('click', closeMenu);
+
+    // Document-level escape and click-outside safety
+    document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+            closeMenu();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMenu();
+    });
+
+    // Link Routing
+    document.querySelectorAll('.sidebar-link[id^="side"], .sub-link[id^="side"]').forEach(l => {
+        l.addEventListener('click', (e) => {
+            const id = l.id.replace('side','').toLowerCase();
+            renderPage(id);
+            if (window.innerWidth <= 1024) closeMenu();
+        });
     });
 }
 
-function switchEntity(key) {
-    if (!companyData[key]) return;
-    currentKey = key;
-    const data = companyData[key];
-    currentCompany = data.name;
-
-    const dashLogo = document.getElementById('dashLogo');
-    const dashTitle = document.getElementById('dashTitle');
-    const dashSubtitle = document.getElementById('dashSubtitle');
-    const entityChip = document.getElementById('entityChip');
-    const chipLabel = document.getElementById('chipLabel');
-
-    if (dashLogo) {
-        dashLogo.src = data.logo;
-    }
-    if (dashTitle) {
-        dashTitle.innerHTML = key === 'national'
-            ? `National Downstream<br><span>Intelligence.</span>`
-            : `${data.name.split(' ')[0]}<br><span>Intelligence.</span>`;
-    }
-    if (dashSubtitle) {
-        dashSubtitle.textContent = key === 'national'
-            ? 'Aggregated industry data for verified petroleum product sales.'
-            : `Full IoT telemetry and revenue projections for ${data.name}.`;
-    }
-    if (entityChip && chipLabel && key !== 'national') {
-        chipLabel.innerHTML = `<img src="${data.logo}" style="width:16px;height:16px;border-radius:4px;margin-right:8px;vertical-align:middle;"> ${data.name}`;
-        entityChip.classList.add('visible');
-    } else if (entityChip) {
-        entityChip.classList.remove('visible');
-    }
-
-    initMetrics(key);
-    renderPage('overview');
-    saveState();
-    pushLog(`[SYSTEM] Switched to dedicated feed for ${data.name}. Nodes online: ${data.nodes.toLocaleString()}.`);
+function initDropdowns() {
+    document.querySelectorAll('.dropdown-trigger').forEach(trigger => {
+        trigger.onclick = (e) => {
+            e.stopPropagation();
+            trigger.classList.toggle('open');
+        };
+    });
 }
 
-/* =============================================
-   CHART
-   ============================================= */
-function initChart() {
-    const ctx = document.getElementById('mixChart')?.getContext('2d');
-    if (!ctx) return;
-    const d = companyData['national']?.mix?.['daily'];
-    if (!d) return;
+function syncUI(key) {
+    initTimestamp();
+    initMetrics(key);
+    const data = companyData[key];
+    const chip = document.getElementById('chipLabel');
+    if (chip) chip.textContent = data.name;
+    const targets = document.querySelectorAll('.entity-logo');
+    targets.forEach(t => t.src = data.logo);
+}
 
+function initMetrics(key) {
+    const d = companyData[key];
+    if (!d) return;
+    const targets = { pmsMetric: d.pms.toLocaleString(), agoMetric: d.ago.toLocaleString(), revMetric: `₦${d.revenue}B`, iotMetric: d.nodes.toLocaleString() };
+    Object.keys(targets).forEach(tid => { const el = document.getElementById(tid); if (el) el.textContent = targets[tid]; });
+}
+
+function initChart(range = 'daily') {
+    const ctx = document.getElementById('mixChart');
+    if (!ctx) return;
+    if (mixChart) mixChart.destroy();
+    
+    const companyMix = companyData[currentKey].mix;
+    const data = companyMix[range] || companyMix['daily'];
+    
     mixChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: d.labels,
+            labels: data.labels,
             datasets: [
                 {
-                    label: 'PMS (Premium Motor Spirit)',
-                    data: d.pms,
-                    borderColor: '#00d068',
-                    borderWidth: 2,
-                    tension: 0.35,
+                    label: 'PMS',
+                    data: data.pms,
+                    borderColor: '#059669',
+                    backgroundColor: 'rgba(5, 150, 105, 0.05)',
                     fill: true,
-                    backgroundColor: (ctx) => {
-                        const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 280);
-                        gradient.addColorStop(0, 'rgba(0,208,104,0.12)');
-                        gradient.addColorStop(1, 'rgba(0,208,104,0)');
-                        return gradient;
-                    },
-                    pointRadius: 4,
-                    pointBackgroundColor: '#00d068',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 6
+                    tension: 0.4,
+                    pointRadius: 3,
+                    borderWidth: 2
                 },
                 {
-                    label: 'AGO (Automotive Gas Oil)',
-                    data: d.ago,
-                    borderColor: '#3b82f6',
+                    label: 'AGO',
+                    data: data.ago,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'transparent',
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 3,
                     borderWidth: 2,
-                    tension: 0.35,
-                    fill: true,
-                    backgroundColor: (ctx) => {
-                        const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 280);
-                        gradient.addColorStop(0, 'rgba(59,130,246,0.08)');
-                        gradient.addColorStop(1, 'rgba(59,130,246,0)');
-                        return gradient;
-                    },
-                    pointRadius: 4,
-                    pointBackgroundColor: '#3b82f6',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 6
+                    borderDash: [5, 5]
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: {
-                    position: 'top',
-                    align: 'end',
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        boxWidth: 7,
-                        font: { size: 11, family: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif", weight: '500' },
-                        color: '#4a607a',
-                        padding: 16
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(10,15,30,0.92)',
-                    titleColor: '#f0f4ff',
-                    bodyColor: '#8899b4',
-                    padding: 12,
-                    borderColor: 'rgba(255,255,255,0.08)',
-                    borderWidth: 1,
-                    cornerRadius: 8,
-                    titleFont: { family: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif", weight: '600', size: 12 },
-                    bodyFont: { family: "'SF Mono', ui-monospace, monospace", size: 11 }
-                }
+                legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 10 } } }
             },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
-                    border: { dash: [4, 4] },
-                    ticks: {
-                        font: { size: 10, family: "'SF Mono', ui-monospace, monospace" },
-                        color: '#8899b4',
-                        padding: 8
-                    }
-                },
-                x: {
-                    grid: { display: false },
-                    border: { display: false },
-                    ticks: {
-                        font: { size: 10, family: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif" },
-                        color: '#8899b4',
-                        padding: 8
-                    }
-                }
+                y: { display: false },
+                x: { grid: { display: false }, ticks: { font: { size: 10 } } }
             }
         }
     });
 }
 
-function updateChart() {
-    if (!mixChart) return;
-    const d = companyData[currentKey]?.mix?.[currentRange];
-    if (!d) return;
-    mixChart.data.labels = d.labels;
-    mixChart.data.datasets[0].data = d.pms;
-    mixChart.data.datasets[1].data = d.ago;
-    mixChart.update('active');
+function initIoTAnalytics() {
+    const grid = document.getElementById('regionHealthGrid');
+    if (!grid) return;
+
+    grid.innerHTML = regionHealth.map(r => `
+        <div class="metric-card reveal active" style="padding: 1.25rem; position: relative; border-left: 4px solid ${r.color};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">${r.name}</div>
+                <div class="badge" style="font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; background: #f8fafc; border: 1px solid #eee; color: ${r.color}; font-weight: 800;">${r.status.toUpperCase()}</div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                <span style="font-weight: 700; color: var(--text-dark);">${r.nodes.toLocaleString()}</span> Nodes online
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-family: var(--mono); font-weight: 700; font-size: 0.85rem; color: var(--text-dark);">${r.uptime}% <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 400;">Uptime</span></div>
+                <div style="width: 60px; height: 4px; background: #f1f5f9; border-radius: 2px; overflow: hidden;">
+                    <div style="width: ${r.uptime}%; height: 100%; background: ${r.color};"></div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function initSettlementLedger() {
+    const tbody = document.getElementById('ledgerTableBody');
+    if (!tbody) return;
+
+    // Generate Ledger from all companies
+    let rows = [];
+    Object.keys(companyData).forEach(key => {
+        if (key === 'national') return;
+        const d = companyData[key];
+        d.remissions.forEach(rem => {
+            rows.push({
+                ref: rem.txid,
+                entity: d.name,
+                logo: d.logo,
+                type: rem.type,
+                amount: rem.amount,
+                date: rem.date,
+                status: rem.status
+            });
+        });
+    });
+
+    tbody.innerHTML = rows.map(r => `
+        <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#fcfdfe'" onmouseleave="this.style.background='transparent'">
+            <td style="padding: 1.25rem 1.5rem; font-family: var(--mono); color: var(--blue); font-weight: 600; font-size: 0.8rem;">${r.ref}</td>
+            <td style="padding: 1rem 0;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="${r.logo}" style="width: 24px; height: 24px; border-radius: 4px; object-fit: contain;">
+                    <span style="font-weight: 700; color: var(--text-dark);">${r.entity}</span>
+                </div>
+            </td>
+            <td><span soft-tag style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; color: var(--text-secondary);">${r.type}</span></td>
+            <td style="font-family: var(--mono); font-weight: 800; color: var(--text-dark); font-size: 0.95rem;">₦${r.amount}${r.amount > 100 ? 'M' : 'B'}</td>
+            <td><span class="badge badge-green" style="font-size: 0.65rem; padding: 4px 10px; font-weight: 700;"><i class="fas fa-check-circle"></i> ${r.status.toUpperCase()}</span></td>
+            <td style="padding-right: 1.5rem; color: var(--text-muted); font-size: 0.8rem; text-align: right; font-weight: 500;">${r.date}</td>
+        </tr>
+    `).join('');
+}
+
+function initTimestamp() { const el = document.getElementById('lastUpdated'); if (el) el.textContent = new Date().toLocaleTimeString(); }
+function fetchCbnRate() { const el = document.getElementById('fxRate'); if (el) el.textContent = `₦${globalFx.toLocaleString()}`; }
+function saveState() { localStorage.setItem('dp_page', currentPage); localStorage.setItem('dp_key', currentKey); }
+function loadState() { currentPage = localStorage.getItem('dp_page') || 'overview'; currentKey = localStorage.getItem('dp_key') || 'national'; }
+
+function updateSidebarActive(id) { 
+    document.querySelectorAll('.sidebar-link, .sub-link').forEach(l => l.classList.remove('active'));
+    const link = document.getElementById('side' + id.charAt(0).toUpperCase() + id.slice(1));
+    if (link) link.classList.add('active');
 }
 
 function initPillTabs() {
-    document.querySelectorAll('.pill-tab[data-range]').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.pill-tab[data-range]').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            currentRange = tab.dataset.range;
-            updateChart();
-        });
+    document.querySelectorAll('.pill-tab').forEach(t => {
+        t.onclick = () => {
+            document.querySelectorAll('.pill-tab').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            const range = t.getAttribute('data-range') || 'daily';
+            initChart(range);
+        };
     });
 }
 
-/* =============================================
-   PAGE RENDERER
-   ============================================= */
-function renderPage(page) {
-    currentPage = page;
-    const content = document.querySelector('.content');
-    if (!content) return;
+function initRevenuePortal() {
+    const list = document.getElementById('revenueList');
+    const search = document.getElementById('revenueSearch');
+    if (!list) return;
 
-    // Destroy existing chart instance before replacing DOM
-    if (mixChart) {
-        mixChart.destroy();
-        mixChart = null;
-    }
-
-    const pages = {
-        overview: renderOverview,
-        petroleum: renderPetroleum,
-        insights: renderInsights,
-        settlements: renderSettlements,
-        iot: renderIoT,
-        nodemap: renderNodeMap,
-        not_found: renderNotFound
-    };
-
-    if (pages[page]) {
-        content.innerHTML = '';
-        pages[page](content);
-        currentPage = page;
-        saveState();
-    }
-}
-
-/* ---- NOT FOUND / SEARCH ERROR ---- */
-function renderNotFound(content, query = '') {
-    if (!content) return;
-    
-    // Reset any state
-    if (mixChart) {
-        mixChart.destroy();
-        mixChart = null;
-    }
-
-    content.innerHTML = `
-        <div style="height: calc(100vh - 200px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: fadeIn 0.5s ease;">
-            <div style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.08); color: var(--red); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; border: 1px solid rgba(239, 68, 68, 0.1);">
-                <i class="fas fa-building-circle-exclamation"></i>
-            </div>
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; letter-spacing: -0.02em;">Entity Not Listed.</h2>
-            <p style="color: var(--text-dark-secondary); max-width: 400px; line-height: 1.6; margin-bottom: 2rem;">
-                The company "<span style="color: var(--text-dark); font-weight: 600;">${query || 'Unknown'}</span>" was not found in the Data Point intelligence grid. Access may be restricted or the node is offline.
-            </p>
-            <div style="padding: 1.25rem 2rem; background: var(--surface); border: 1px solid var(--border-light); border-radius: 16px; display: flex; flex-direction: column; gap: 0.5rem;">
-                <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-dark-secondary); text-transform: uppercase; letter-spacing: 0.05em;">How to proceed</span>
-                <span style="font-size: 0.95rem; color: var(--text-dark);">Please contact <a href="mailto:admin@datapoint.gov" style="color: var(--blue); text-decoration: none; font-weight: 500;">Administrations</a></span>
-            </div>
-            <button onclick="renderPage('overview')" style="margin-top: 2.5rem; background: none; border: none; color: var(--text-dark-secondary); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s;">
-                <i class="fas fa-arrow-left"></i> Return to National Overview
-            </button>
-        </div>
-    `;
-    
-    // Update topbar chip if it exists
-    const entityChip = document.getElementById('entityChip');
-    if (entityChip) entityChip.classList.remove('visible');
-    
-    pushLog(`[SEARCH] Query failed for "${query}". Redirected to administrative contact.`);
-}
-
-/* ---- OVERVIEW (original dashboard) ---- */
-function renderOverview(content) {
-    content.innerHTML = `
-        <div class="page-header">
-            <div style="display:flex;align-items:center;gap:1rem;">
-                <img id="dashLogo" src="${companyData[currentKey].logo}" style="width:52px;height:52px;border-radius:12px;object-fit:contain;background:white;padding:4px;border:1px solid var(--border-light);">
-                <div>
-                    <h2 class="page-title" id="dashTitle">${companyData[currentKey] === companyData.national ? 'National Downstream' : companyData[currentKey].name}<br><span>Intelligence.</span></h2>
-                    <p class="page-subtitle" id="dashSubtitle">Aggregated industry data for verified petroleum product sales.</p>
-                </div>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:0.7rem;font-weight:600;color:var(--text-dark-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.3rem;">Last Updated</div>
-                <div style="font-family:var(--mono);font-size:0.85rem;color:var(--text-dark);" id="lastUpdated">—</div>
-            </div>
-        </div>
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">PMS Volume (Liters)</div>
-                <div class="metric-value" id="pmsMetric">—</div>
-                <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 2.1% vs last week</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">AGO (BRL Equivalent)</div>
-                <div class="metric-value" id="agoMetric">—</div>
-                <div class="metric-trend down"><i class="fas fa-arrow-down"></i> 0.8% vs last week</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Market Revenue (₦)</div>
-                <div class="metric-value" id="revMetric">—</div>
-                <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 5.4% vs last week</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">IoT Nodes Verified</div>
-                <div class="metric-value" id="iotMetric">—</div>
-                <div class="metric-trend neutral"><i class="fas fa-circle-check"></i> All nodes active</div>
-            </div>
-        </div>
-        <div class="chart-block">
-            <div class="chart-header">
-                <div>
-                    <h3>Product Delivery Projections</h3>
-                    <div class="chart-desc">PMS vs AGO — daily throughput in barrels equivalent</div>
-                </div>
-                <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
-                    <div class="pill-tabs">
-                        <button class="pill-tab active" data-range="daily">Daily</button>
-                        <button class="pill-tab" data-range="weekly">Weekly</button>
-                        <button class="pill-tab" data-range="monthly">Monthly</button>
+    function renderList(filter = '') {
+        list.innerHTML = '';
+        Object.keys(companyData).forEach(key => {
+            if (key === 'national') return;
+            const d = companyData[key];
+            if (d.name.toLowerCase().includes(filter.toLowerCase())) {
+                const item = document.createElement('div');
+                item.className = 'rev-item reveal active';
+                item.innerHTML = `
+                    <div class="rev-info">
+                        <img src="${d.logo}" class="rev-logo">
+                        <div><div style="font-weight:700;">${d.name}</div><span class="rev-tag">${key}</span></div>
                     </div>
-                    <button class="topbar-action" id="filterBtn" style="font-size:0.78rem;">
-                        <i class="fas fa-sliders"></i><span>Filter</span>
-                    </button>
-                </div>
-            </div>
-            <div class="chart-canvas-wrap"><canvas id="mixChart"></canvas></div>
-        </div>
-        <div class="log-block">
-            <div class="log-header">
-                <h3>Live IoT Downstream Telemetry</h3>
-                <div class="live-indicator"><span class="live-dot"></span>Real-time feed</div>
-            </div>
-            <div class="log-body" id="logStage">
-                <div class="log-item">
-                    <span class="log-ts">INIT</span>
-                    <span class="log-msg">Connecting to national IoT nexus via CBN-Secure Bridge…</span>
-                </div>
-            </div>
-        </div>`;
-
-    initTimestamp();
-    initChart();
-    initMetrics(currentKey);
-    initPillTabs();
-
-    document.getElementById('filterBtn')?.addEventListener('click', () => {
-        pushLog(`[FILTER] Displaying high-velocity IoT nodes for ${currentCompany}. Nodes above 95th percentile shown.`);
-    });
-
-    // Restore entity chip state
-    const entityChip = document.getElementById('entityChip');
-    const chipLabel = document.getElementById('chipLabel');
-    if (entityChip && chipLabel && currentKey !== 'national') {
-        const data = companyData[currentKey];
-        chipLabel.innerHTML = `<img src="${data.logo}" style="width:16px;height:16px;border-radius:4px;margin-right:8px;vertical-align:middle;"> ${data.name}`;
-        entityChip.classList.add('visible');
-        const dt = document.getElementById('dashTitle');
-        const ds = document.getElementById('dashSubtitle');
-        if (dt) dt.innerHTML = `${data.name.split(' ')[0]}<br><span>Intelligence.</span>`;
-        if (ds) ds.textContent = `Full IoT telemetry and revenue projections for ${data.name}.`;
-    }
-}
-
-/* ---- DOWNSTREAM OIL ---- */
-function renderPetroleum(content) {
-    const depots = [
-        { name: 'Atlas Cove — Lagos', capacity: 480, current: 312, product: 'PMS', status: 'Optimal' },
-        { name: 'Mosimi — Ogun', capacity: 360, current: 298, product: 'AGO', status: 'Optimal' },
-        { name: 'Warri — Delta', capacity: 420, current: 187, product: 'PMS', status: 'Low' },
-        { name: 'Port Harcourt — Rivers', capacity: 510, current: 430, product: 'DPK', status: 'Optimal' },
-        { name: 'Kaduna — NW', capacity: 290, current: 94, product: 'AGO', status: 'Critical' },
-        { name: 'Apapa — Lagos', capacity: 600, current: 521, product: 'PMS', status: 'Optimal' },
-        { name: 'Onne — Rivers', capacity: 340, current: 210, product: 'DPK', status: 'Moderate' },
-        { name: 'Calabar — Cross River', capacity: 260, current: 88, product: 'AGO', status: 'Low' },
-    ];
-
-    const statusColor = { Optimal: 'var(--green)', Low: 'var(--amber)', Critical: 'var(--red)', Moderate: '#3b82f6' };
-    const statusBg = { Optimal: 'rgba(0,208,104,0.08)', Low: 'rgba(245,158,11,0.1)', Critical: 'rgba(239,68,68,0.1)', Moderate: 'rgba(59,130,246,0.1)' };
-
-    content.innerHTML = `
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">Downstream Oil<br><span>Operations.</span></h2>
-                <p class="page-subtitle">Depot inventory, pipeline flow, and product allocation across all terminals.</p>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:0.7rem;font-weight:600;color:var(--text-dark-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.3rem;">Last Updated</div>
-                <div style="font-family:var(--mono);font-size:0.85rem;color:var(--text-dark);" id="lastUpdated">—</div>
-            </div>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Total Depot Capacity (ML)</div>
-                <div class="metric-value" style="font-family:var(--mono);">3,260</div>
-                <div class="metric-trend neutral"><i class="fas fa-warehouse"></i> 8 active terminals</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Current Stock Level</div>
-                <div class="metric-value" style="font-family:var(--mono);">2,140</div>
-                <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 65.6% utilisation</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Pipeline Pressure (avg)</div>
-                <div class="metric-value" style="font-family:var(--mono);">142 PSI</div>
-                <div class="metric-trend neutral"><i class="fas fa-circle-check"></i> Within tolerance</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Critical Alerts</div>
-                <div class="metric-value" style="font-family:var(--mono);color:var(--red);">2</div>
-                <div class="metric-trend down"><i class="fas fa-triangle-exclamation"></i> Requires attention</div>
-            </div>
-        </div>
-
-        <div class="chart-block">
-            <div class="chart-header">
-                <div>
-                    <h3>Depot Inventory Status</h3>
-                    <div class="chart-desc">Current stock vs capacity — all terminals (megalitres)</div>
-                </div>
-            </div>
-            <div style="overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
-                    <thead>
-                        <tr style="border-bottom:2px solid var(--border-light);">
-                            <th style="text-align:left;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Terminal</th>
-                            <th style="text-align:left;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Product</th>
-                            <th style="text-align:right;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Stock (ML)</th>
-                            <th style="text-align:right;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Capacity</th>
-                            <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Fill Level</th>
-                            <th style="text-align:center;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${depots.map((d, i) => {
-        const pct = Math.round((d.current / d.capacity) * 100);
-        const barColor = d.status === 'Critical' ? 'var(--red)' : d.status === 'Low' ? 'var(--amber)' : d.status === 'Moderate' ? '#3b82f6' : 'var(--green)';
-        return `<tr style="border-bottom:1px solid var(--border-light);transition:background 0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.018)'" onmouseout="this.style.background=''">
-                                <td style="padding:0.85rem 1rem;font-weight:500;color:var(--text-dark);">${d.name}</td>
-                                <td style="padding:0.85rem 1rem;"><span style="font-size:0.72rem;font-weight:600;padding:0.2rem 0.55rem;border-radius:999px;background:rgba(0,0,0,0.05);color:var(--text-dark-secondary);">${d.product}</span></td>
-                                <td style="padding:0.85rem 1rem;text-align:right;font-family:var(--mono);font-size:0.88rem;">${d.current}</td>
-                                <td style="padding:0.85rem 1rem;text-align:right;font-family:var(--mono);font-size:0.88rem;color:var(--text-dark-secondary);">${d.capacity}</td>
-                                <td style="padding:0.85rem 1rem;">
-                                    <div style="display:flex;align-items:center;gap:0.6rem;min-width:120px;">
-                                        <div style="flex:1;height:6px;background:var(--border-light);border-radius:999px;overflow:hidden;">
-                                            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:999px;transition:width 0.6s ease;"></div>
-                                        </div>
-                                        <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dark-secondary);flex-shrink:0;">${pct}%</span>
-                                    </div>
-                                </td>
-                                <td style="padding:0.85rem 1rem;text-align:center;">
-                                    <span style="font-size:0.72rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:999px;background:${statusBg[d.status]};color:${statusColor[d.status]};">${d.status}</span>
-                                </td>
-                            </tr>`;
-    }).join('')}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="log-block">
-            <div class="log-header">
-                <h3>Pipeline & Terminal Feed</h3>
-                <div class="live-indicator"><span class="live-dot"></span>Real-time feed</div>
-            </div>
-            <div class="log-body" id="logStage">
-                <div class="log-item"><span class="log-ts">INIT</span><span class="log-msg">Connecting to terminal monitoring network…</span></div>
-            </div>
-        </div>`;
-
-    initTimestamp();
-    setTimeout(() => {
-        pushLog('[ATLAS-COVE] Flow meter reading: 1,240 L/min. Tanker discharge in progress.');
-        pushLog('[KADUNA] Stock level below 35% threshold. Replenishment request submitted.');
-        pushLog('[WARRI] Pipeline pressure normalised after maintenance window.');
-        pushLog('[SYSTEM] All 8 terminal feeds confirmed active.');
-    }, 400);
-}
-
-/* ---- RETAIL INSIGHTS ---- */
-function renderInsights(content) {
-    const retailers = [
-        { name: 'NNPC Retail', share: 36.2, stations: 612, avgDaily: 18400, growth: '+3.2%', trend: 'up', logo: '../assets/nnpc-logo.77c29e8.png' },
-        { name: 'TotalEnergies', share: 16.4, stations: 284, avgDaily: 8200, growth: '+1.8%', trend: 'up', logo: '../assets/total energies.jpeg' },
-        { name: 'OANDO PLC', share: 12.8, stations: 198, avgDaily: 6400, growth: '-0.4%', trend: 'down', logo: '../assets/oando-hd-logo.png' },
-        { name: 'ARDOVA PLC', share: 9.0, stations: 142, avgDaily: 4500, growth: '+0.9%', trend: 'up', logo: '../assets/ardova.png' },
-        { name: 'Conoil', share: 7.6, stations: 118, avgDaily: 3800, growth: '+2.1%', trend: 'up', logo: '../assets/conoil.png' },
-        { name: 'MRS Oil', share: 6.2, stations: 96, avgDaily: 3100, growth: '-1.2%', trend: 'down', logo: '../assets/mrs.png' },
-        { name: 'Others', share: 11.8, stations: 320, avgDaily: 5900, growth: '+0.3%', trend: 'up' },
-    ];
-
-    const colors = ['#00d068', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#94a3b8'];
-
-    content.innerHTML = `
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">Retail Insights<br><span>& Market Share.</span></h2>
-                <p class="page-subtitle">Station-level performance, market share analysis, and regional sales breakdown.</p>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:0.7rem;font-weight:600;color:var(--text-dark-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.3rem;">Last Updated</div>
-                <div style="font-family:var(--mono);font-size:0.85rem;color:var(--text-dark);" id="lastUpdated">—</div>
-            </div>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Active Retail Stations</div>
-                <div class="metric-value" style="font-family:var(--mono);">1,770</div>
-                <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 14 new this month</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Avg Daily Throughput</div>
-                <div class="metric-value" style="font-family:var(--mono);">50.3k L</div>
-                <div class="metric-trend up"><i class="fas fa-arrow-up"></i> per station</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">PMS Retail Price (avg)</div>
-                <div class="metric-value" style="font-family:var(--mono);">₦897</div>
-                <div class="metric-trend neutral"><i class="fas fa-minus"></i> Stable this week</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Non-compliance Flags</div>
-                <div class="metric-value" style="font-family:var(--mono);color:var(--amber);">38</div>
-                <div class="metric-trend down"><i class="fas fa-triangle-exclamation"></i> Under review</div>
-            </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.75rem;">
-            <div class="chart-block" style="margin-bottom:0;">
-                <div class="chart-header" style="margin-bottom:1rem;">
-                    <div>
-                        <h3>Market Share</h3>
-                        <div class="chart-desc">By retailer — % of national PMS volume</div>
-                    </div>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:0.6rem;">
-                    ${retailers.map((r, i) => `
-                    <div style="display:flex;align-items:center;gap:0.75rem;">
-                        <img src="${r.logo}" style="width:20px;height:20px;border-radius:4px;object-fit:contain;background:white;">
-                        <div style="width:90px;font-size:0.78rem;color:var(--text-dark-secondary);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.name}</div>
-                        <div style="flex:1;height:8px;background:var(--surface);border-radius:999px;overflow:hidden;border:1px solid var(--border-light);">
-                            <div style="width:${r.share / 40 * 100}%;height:100%;background:${colors[i]};border-radius:999px;"></div>
-                        </div>
-                        <div style="font-family:var(--mono);font-size:0.78rem;font-weight:500;width:36px;text-align:right;">${r.share}%</div>
-                    </div>`).join('')}
-                </div>
-            </div>
-
-            <div class="chart-block" style="margin-bottom:0;">
-                <div class="chart-header" style="margin-bottom:1rem;">
-                    <div>
-                        <h3>Regional Breakdown</h3>
-                        <div class="chart-desc">Sales volume by geopolitical zone</div>
-                    </div>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:0.85rem;">
-                    ${[
-            { zone: 'South West', pct: 31, vol: '19.2m L' },
-            { zone: 'North Central', pct: 18, vol: '11.2m L' },
-            { zone: 'South South', pct: 16, vol: '9.9m L' },
-            { zone: 'North West', pct: 14, vol: '8.7m L' },
-            { zone: 'South East', pct: 11, vol: '6.8m L' },
-            { zone: 'North East', pct: 10, vol: '6.2m L' },
-        ].map(z => `
-                    <div>
-                        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
-                            <span style="font-size:0.82rem;font-weight:500;color:var(--text-dark);">${z.zone}</span>
-                            <span style="font-family:var(--mono);font-size:0.78rem;color:var(--text-dark-secondary);">${z.vol}</span>
-                        </div>
-                        <div style="height:6px;background:var(--surface);border-radius:999px;overflow:hidden;border:1px solid var(--border-light);">
-                            <div style="width:${z.pct}%;height:100%;background:var(--green);border-radius:999px;opacity:${0.4 + z.pct / 60};"></div>
-                        </div>
-                    </div>`).join('')}
-                </div>
-            </div>
-        </div>
-
-        <div class="log-block">
-            <div class="log-header">
-                <h3>Retail Intelligence Feed</h3>
-                <div class="live-indicator"><span class="live-dot"></span>Real-time feed</div>
-            </div>
-            <div class="log-body" id="logStage">
-                <div class="log-item"><span class="log-ts">INIT</span><span class="log-msg">Loading retail telemetry streams…</span></div>
-            </div>
-        </div>`;
-
-    initTimestamp();
-    setTimeout(() => {
-        pushLog('[NNPC] 14 new stations activated in Abuja metro corridor this week.');
-        pushLog('[COMPLIANCE] 38 stations flagged for price-cap violations. DPR notified.');
-        pushLog('[ARDOVA] Average queue time down 18% following nozzle-count upgrade.');
-        pushLog('[SYSTEM] Retail telemetry feed live. 1,770 stations reporting.');
-    }, 400);
-}
-
-/* ---- CBN SETTLEMENTS ---- */
-function renderSettlements(content) {
-    const transactions = [
-        { ref: 'CBN-TXN-240417-0091', entity: 'NNPC Retail', logo: '../assets/nnpc-logo.77c29e8.png', amount: '₦4.82b', type: 'Subsidy Disbursement', status: 'Settled', date: 'Today 09:14' },
-        { ref: 'CBN-TXN-240417-0088', entity: 'TotalEnergies', logo: '../assets/total energies.jpeg', amount: '₦2.11b', type: 'Import Levy', status: 'Settled', date: 'Today 08:52' },
-        { ref: 'CBN-TXN-240417-0084', entity: 'ARDOVA PLC', logo: '../assets/ardova.png', amount: '₦890m', type: 'Subsidy Disbursement', status: 'Pending', date: 'Today 08:31' },
-        { ref: 'CBN-TXN-240416-0074', entity: 'OANDO PLC', logo: '../assets/oando-hd-logo.png', amount: '₦1.44b', type: 'Pipeline Tariff', status: 'Settled', date: 'Yesterday 16:40' },
-        { ref: 'CBN-TXN-240416-0070', entity: 'Conoil', logo: '../assets/conoil.png', amount: '₦620m', type: 'Import Levy', status: 'Settled', date: 'Yesterday 14:18' },
-        { ref: 'CBN-TXN-240416-0068', entity: 'MRS Oil', logo: '../assets/mrs.png', amount: '₦510m', type: 'Subsidy Disbursement', status: 'Failed', date: 'Yesterday 11:05' },
-        { ref: 'CBN-TXN-240415-0055', entity: 'NNPC Retail', logo: '../assets/nnpc-logo.77c29e8.png', amount: '₦3.96b', type: 'Bridging Fund', status: 'Settled', date: 'Apr 15, 2026' },
-        { ref: 'CBN-TXN-240415-0051', entity: 'TotalEnergies', logo: '../assets/total energies.jpeg', amount: '₦1.78b', type: 'Subsidy Disbursement', status: 'Settled', date: 'Apr 15, 2026' },
-    ];
-
-    const statusColor = { Settled: 'var(--green)', Pending: 'var(--amber)', Failed: 'var(--red)' };
-    const statusBg = { Settled: 'rgba(0,208,104,0.08)', Pending: 'rgba(245,158,11,0.1)', Failed: 'rgba(239,68,68,0.1)' };
-
-    content.innerHTML = `
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">CBN Settlements<br><span>& Reconciliation.</span></h2>
-                <p class="page-subtitle">Automated petroleum subsidy flows and financial reconciliation via CBN-Nexus Bridge.</p>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:0.7rem;font-weight:600;color:var(--text-dark-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.3rem;">Last Updated</div>
-                <div style="font-family:var(--mono);font-size:0.85rem;color:var(--text-dark);" id="lastUpdated">—</div>
-            </div>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Total Disbursed (MTD)</div>
-                <div class="metric-value" style="font-family:var(--mono);">₦16.1b</div>
-                <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 8.3% vs last month</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Transactions Today</div>
-                <div class="metric-value" style="font-family:var(--mono);">24</div>
-                <div class="metric-trend neutral"><i class="fas fa-circle-check"></i> 22 settled</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Pending Value</div>
-                <div class="metric-value" style="font-family:var(--mono);color:var(--amber);">₦890m</div>
-                <div class="metric-trend neutral"><i class="fas fa-clock"></i> Awaiting CBN confirm</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Failed Transactions</div>
-                <div class="metric-value" style="font-family:var(--mono);color:var(--red);">1</div>
-                <div class="metric-trend down"><i class="fas fa-triangle-exclamation"></i> MRS Oil — retry pending</div>
-            </div>
-        </div>
-
-        <div class="chart-block">
-            <div class="chart-header">
-                <div>
-                    <h3>Transaction Ledger</h3>
-                    <div class="chart-desc">Recent CBN-Nexus Bridge activity — secured financial settlements</div>
-                </div>
-                <span style="font-size:0.72rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:999px;background:rgba(0,208,104,0.08);color:var(--green);">
-                    <i class="fas fa-shield-halved" style="margin-right:4px;"></i>CBN-Secured
-                </span>
-            </div>
-            <div style="overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
-                    <thead>
-                        <tr style="border-bottom:2px solid var(--border-light);">
-                            <th style="text-align:left;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Reference</th>
-                            <th style="text-align:left;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Entity</th>
-                            <th style="text-align:left;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Type</th>
-                            <th style="text-align:right;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Amount</th>
-                            <th style="text-align:center;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Status</th>
-                            <th style="text-align:right;padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dark-secondary);">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${transactions.map(t => `
-                        <tr style="border-bottom:1px solid var(--border-light);transition:background 0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.018)'" onmouseout="this.style.background=''">
-                            <td style="padding:0.85rem 1rem;font-family:var(--mono);font-size:0.78rem;color:var(--text-dark-secondary);">${t.ref}</td>
-                            <td style="padding:0.85rem 1rem;font-weight:500;color:var(--text-dark);display:flex;align-items:center;border:none;">
-                                <img src="${t.logo}" style="width:20px;height:20px;border-radius:4px;margin-right:10px;object-fit:contain;background:white;">
-                                ${t.entity}
-                            </td>
-                            <td style="padding:0.85rem 1rem;font-size:0.83rem;color:var(--text-dark-secondary);">${t.type}</td>
-                            <td style="padding:0.85rem 1rem;text-align:right;font-family:var(--mono);font-weight:600;font-size:0.88rem;">${t.amount}</td>
-                            <td style="padding:0.85rem 1rem;text-align:center;">
-                                <span style="font-size:0.72rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:999px;background:${statusBg[t.status]};color:${statusColor[t.status]};">${t.status}</span>
-                            </td>
-                            <td style="padding:0.85rem 1rem;text-align:right;font-size:0.8rem;color:var(--text-dark-secondary);">${t.date}</td>
-                        </tr>`).join('')}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="log-block">
-            <div class="log-header">
-                <h3>CBN-Nexus Bridge Events</h3>
-                <div class="live-indicator"><span class="live-dot"></span>Real-time feed</div>
-            </div>
-            <div class="log-body" id="logStage">
-                <div class="log-item"><span class="log-ts">INIT</span><span class="log-msg">Establishing secure CBN-Nexus connection…</span></div>
-            </div>
-        </div>`;
-
-    initTimestamp();
-    setTimeout(() => {
-        pushLog('[CBN-NEXUS] TLS-1.3 handshake complete. Settlement channel secured.');
-        pushLog('[CBN-TXN-240417-0084] ARDOVA PLC ₦890m — awaiting CBN confirmation signature.');
-        pushLog('[CBN-TXN-240416-0068] MRS Oil ₦510m — retry scheduled 14:00 today.');
-        pushLog('[SYSTEM] 22 transactions settled successfully today. Bridge latency: 48ms.');
-    }, 400);
-}
-
-/* ---- IoT NODES ---- */
-function renderIoT(content) {
-    const nodeZones = [
-        { zone: 'Lagos Metro', nodes: 2840, online: 2838, alerts: 2, uptime: '99.93%' },
-        { zone: 'Abuja FCT', nodes: 1420, online: 1420, alerts: 0, uptime: '100%' },
-        { zone: 'Port Harcourt', nodes: 1680, online: 1674, alerts: 6, uptime: '99.64%' },
-        { zone: 'Kano', nodes: 980, online: 978, alerts: 2, uptime: '99.80%' },
-        { zone: 'Ibadan', nodes: 840, online: 840, alerts: 0, uptime: '100%' },
-        { zone: 'Kaduna', nodes: 720, online: 712, alerts: 8, uptime: '98.89%' },
-        { zone: 'Warri', nodes: 640, online: 636, alerts: 4, uptime: '99.38%' },
-        { zone: 'Enugu', nodes: 580, online: 580, alerts: 0, uptime: '100%' },
-        { zone: 'Benin City', nodes: 480, online: 479, alerts: 1, uptime: '99.79%' },
-        { zone: 'Others', nodes: 1222, online: 1205, alerts: 17, uptime: '98.61%' },
-    ];
-
-    content.innerHTML = `
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">IoT Node<br><span>Network.</span></h2>
-                <p class="page-subtitle">12,402 hardware nodes streaming tamper-proof consumption data across all regions.</p>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:0.7rem;font-weight:600;color:var(--text-dark-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.3rem;">Last Updated</div>
-                <div style="font-family:var(--mono);font-size:0.85rem;color:var(--text-dark);" id="lastUpdated">—</div>
-            </div>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Total Nodes Deployed</div>
-                <div class="metric-value" style="font-family:var(--mono);">12,402</div>
-                <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 64 added this week</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Currently Online</div>
-                <div class="metric-value" style="font-family:var(--mono);color:var(--green);">12,362</div>
-                <div class="metric-trend up"><i class="fas fa-circle-check"></i> 99.68% uptime</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Active Alerts</div>
-                <div class="metric-value" style="font-family:var(--mono);color:var(--amber);">40</div>
-                <div class="metric-trend down"><i class="fas fa-triangle-exclamation"></i> Across 7 zones</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Avg Data Latency</div>
-                <div class="metric-value" style="font-family:var(--mono);">1.2s</div>
-                <div class="metric-trend neutral"><i class="fas fa-signal"></i> Within SLA</div>
-            </div>
-        </div>
-
-        <div class="chart-block">
-            <div class="chart-header">
-                <div>
-                    <h3>Node Health by Region</h3>
-                    <div class="chart-desc">Online status, alert count, and uptime for all deployment zones</div>
-                </div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;">
-                ${nodeZones.map(z => {
-        const onlinePct = Math.round((z.online / z.nodes) * 100);
-        const barColor = z.alerts === 0 ? 'var(--green)' : z.alerts <= 3 ? 'var(--amber)' : 'var(--red)';
-        const alertBg = z.alerts === 0 ? 'rgba(0,208,104,0.08)' : z.alerts <= 3 ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)';
-        const alertColor = z.alerts === 0 ? 'var(--green)' : z.alerts <= 3 ? 'var(--amber)' : 'var(--red)';
-        return `
-                    <div style="background:var(--surface-raised);border:1px solid var(--border-light);border-radius:var(--r-md);padding:1.1rem;">
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
-                            <div style="font-weight:600;font-size:0.88rem;color:var(--text-dark);">${z.zone}</div>
-                            <span style="font-size:0.68rem;font-weight:600;padding:0.2rem 0.5rem;border-radius:999px;background:${alertBg};color:${alertColor};">
-                                ${z.alerts === 0 ? '✓ Healthy' : `${z.alerts} alerts`}
-                            </span>
-                        </div>
-                        <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
-                            <span style="font-family:var(--mono);font-size:1.1rem;font-weight:500;color:var(--text-dark);">${z.online.toLocaleString()}<span style="font-size:0.72rem;color:var(--text-dark-secondary);font-weight:400;margin-left:2px;">/ ${z.nodes.toLocaleString()}</span></span>
-                            <span style="font-size:0.78rem;color:var(--text-dark-secondary);font-family:var(--mono);">${z.uptime}</span>
-                        </div>
-                        <div style="height:5px;background:var(--surface);border-radius:999px;overflow:hidden;border:1px solid var(--border-light);">
-                            <div style="width:${onlinePct}%;height:100%;background:${barColor};border-radius:999px;"></div>
-                        </div>
+                    <div style="text-align:right;">
+                        <div style="font-family:var(--mono); font-weight:700;">₦${d.revenue}B</div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);">Verified Revenue</div>
                     </div>`;
-    }).join('')}
+                item.onclick = () => showRevDetail(key);
+                list.appendChild(item);
+            }
+        });
+    }
+
+    if (search) search.oninput = (e) => renderList(e.target.value);
+    renderList();
+}
+
+function showRevDetail(key, monthFilter = 'All', yearFilter = 'All') {
+    const d = companyData[key];
+    const panel = document.getElementById('revDetailPanel');
+    const overlay = document.getElementById('revDetailOverlay');
+    const content = document.getElementById('revDetailContent');
+    if (!panel) return;
+
+    const vat = (d.revenue * 0.075).toFixed(2);
+    const edu = (d.revenue * 0.02).toFixed(2);
+
+    // Composite Filtering logic
+    const filteredRemissions = d.remissions.filter(r => {
+        const date = new Date(r.date);
+        const m = date.toLocaleString('default', { month: 'long' });
+        const y = date.getFullYear().toString();
+        
+        const mMatch = (monthFilter === 'All' || m === monthFilter);
+        const yMatch = (yearFilter === 'All' || y === yearFilter);
+        return mMatch && yMatch;
+    });
+
+    const years = ['All', ...new Set(d.remissions.map(r => new Date(r.date).getFullYear().toString()))];
+    const months = ['All', ...new Set(d.remissions.map(r => new Date(r.date).toLocaleString('default', { month: 'long' })))];
+
+    let remissionsHtml = '';
+    if (d.remissions && d.remissions.length > 0) {
+        remissionsHtml = `
+            <div style="margin-top:2.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;" class="no-print">
+                    <h4 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-secondary); display:flex; align-items:center; gap:8px; margin:0;">
+                        <i class="fas fa-history"></i> Registry of Remittances (NEDB Ledger)
+                    </h4>
+                    <div style="display:flex; gap:8px;">
+                        <select class="ledger-filter-select" onchange="showRevDetail('${key}', '${monthFilter}', this.value)">
+                            ${years.map(y => `<option value="${y}" ${yearFilter === y ? 'selected' : ''}>Year: ${y}</option>`).join('')}
+                        </select>
+                        <select class="ledger-filter-select" onchange="showRevDetail('${key}', this.value, '${yearFilter}')">
+                            ${months.map(m => `<option value="${m}" ${monthFilter === m ? 'selected' : ''}>Month: ${m}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive" style="background:rgba(0,0,0,0.02); border-radius:12px; border:1px solid #eee;">
+                    <table style="width:100%; min-width: 400px; border-collapse:collapse; font-size:0.8rem;">
+                        <thead>
+                            <tr style="text-align:left; background:rgba(0,0,0,0.02); color:var(--text-secondary); border-bottom:1px solid #eee;">
+                                <th style="padding:12px;">Date</th>
+                                <th>Transaction ID</th>
+                                <th>Category</th>
+                                <th style="text-align:right; padding-right:12px;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredRemissions.map(r => `
+                                <tr style="border-bottom:1px solid rgba(0,0,0,0.03);">
+                                    <td style="padding:12px;">${r.date}</td>
+                                    <td style="font-family:var(--mono);">${r.txid}</td>
+                                    <td><span style="font-size:0.65rem; padding:2px 6px; background:#f1f5f9; border-radius:4px;">${r.type}</span></td>
+                                    <td style="text-align:right; padding-right:12px; font-weight:700;">₦${r.amount}${r.amount > 100 ? 'M' : 'B'}</td>
+                                </tr>
+                            `).join('')}
+                            ${filteredRemissions.length === 0 ? '<tr><td colspan="4" style="padding:20px; text-align:center; color:var(--text-secondary);">No records found for the selected period.</td></tr>' : ''}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+    }
+
+    content.innerHTML = `
+        <div class="audit-certificate-wrap" style="padding: 1rem; position: relative; background:#fff;">
+            <!-- Official Header -->
+            <!-- Official Header - Grid Based for Mathematical Centering -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); align-items:center; gap:20px; margin-bottom:2.5rem; padding-bottom:1.5rem; border-bottom:3px solid var(--text-dark);">
+                <div style="display:flex; justify-content:center;">
+                    <img src="${d.logo}" style="height:55px; width:auto; object-fit:contain;">
+                </div>
+                <div style="text-align:center;">
+                    <img src="../assets/fgn_logo_small.png" style="height:45px; margin-bottom:8px; display:inline-block;">
+                    <h1 style="font-size:0.85rem; margin:0; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-dark); font-weight:800;">Energy Commission of Nigeria</h1>
+                    <p style="font-size:0.6rem; margin:0; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">National Energy Data Bank (NEDB) Registry</p>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:0.55rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; font-weight:600;">Certificate No.</div>
+                    <div style="font-family:var(--mono); font-weight:800; font-size:0.75rem; color:var(--text-dark);">CERT-${Math.floor(Math.random()*900000)+100000}</div>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-bottom:2rem;">
+                <h2 style="font-size:1.5rem; margin:0; letter-spacing:-0.02em; color:var(--text-dark);">${d.name}</h2>
+                <p style="color:#64748b; margin:0; font-weight:500; text-transform:uppercase; font-size:0.75rem; letter-spacing:0.1em;">Fiscal Performance Verification Certificate — FY 2026</p>
+            </div>
+            
+            <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important; gap:1.5rem; margin-bottom:2rem;">
+                <div class="metric-card" style="background:#f8fafc; border:1px solid #e2e8f0; padding:1.1rem;">
+                    <div class="metric-label" style="font-size:0.65rem;">Total Validated Revenue</div>
+                    <div class="metric-value" style="color:var(--text-dark); font-size:1.4rem;">₦${d.revenue}B</div>
+                </div>
+                <div class="metric-card" style="background:#f8fafc; border:1px solid #e2e8f0; padding:1.1rem;">
+                    <div class="metric-label" style="font-size:0.65rem;">Total Tax Remissions</div>
+                    <div class="metric-value" style="color:var(--green); font-size:1.4rem;">₦${(parseFloat(vat)+parseFloat(edu)).toFixed(2)}B</div>
+                </div>
+            </div>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:1rem; font-size:0.9rem;">
+                <thead>
+                    <tr style="text-align:left; border-bottom:2px solid var(--text-dark); color:var(--text-dark); text-transform:uppercase; font-size:0.7rem; letter-spacing:0.1em;">
+                        <th style="padding:12px 10px;">Audit Component</th>
+                        <th>Value (₦B)</th>
+                        <th style="text-align:right; padding-right:10px;">Verification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid #eee;">
+                        <td style="padding:15px 10px; font-weight:600;">Value Added Tax (7.5%)</td>
+                        <td style="font-family:var(--mono); font-weight:700;">₦${vat}B</td>
+                        <td style="text-align:right; color:#059669; font-weight:700; padding-right:10px;"><i class="fas fa-check-circle"></i> REMITTED</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #eee;">
+                        <td style="padding:15px 10px; font-weight:600;">Education Tax (2%)</td>
+                        <td style="font-family:var(--mono); font-weight:700;">₦${edu}B</td>
+                        <td style="text-align:right; color:#059669; font-weight:700; padding-right:10px;"><i class="fas fa-check-circle"></i> REMITTED</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            ${remissionsHtml}
+
+            <div style="margin-top:4rem; padding-top:2rem; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:flex-end;">
+                <div style="text-align:center;">
+                   <div style="height:40px; border-bottom:1px solid var(--text-dark); width:180px; margin:0 auto 5px;"></div>
+                   <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Director of Finance (NEDB)</div>
+                </div>
+                <div style="text-align:center; opacity:0.15; position:absolute; left:50%; transform:translateX(-50%); bottom:100px;">
+                    <i class="fas fa-certificate" style="font-size:12rem; color:var(--green);"></i>
+                </div>
+                <div style="text-align:center;">
+                   <div style="height:40px; border-bottom:1px solid var(--text-dark); width:180px; margin:0 auto 5px;"></div>
+                   <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Audit Commissioner</div>
+                </div>
+            </div>
+            
+            <div style="margin-top:3rem; text-align:center; font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; line-height:1.6;">
+                This document serves as an official proof of fiscal audit within the National Energy Data Bank framework.<br>
+                Verification Code: ${btoa(key + Date.now()).substring(0, 12)}
             </div>
         </div>
-
-        <div class="log-block">
-            <div class="log-header">
-                <h3>Node Telemetry Stream</h3>
-                <div class="live-indicator"><span class="live-dot"></span>Real-time feed</div>
-            </div>
-            <div class="log-body" id="logStage">
-                <div class="log-item"><span class="log-ts">INIT</span><span class="log-msg">Connecting to IoT nexus — polling all zones…</span></div>
-            </div>
+        <div style="margin-top:2rem; text-align:right;" class="no-print">
+                     <button class="topbar-action" onclick="downloadAudit('${d.name.replace(/'/g, "\\'")}')"><i class="fas fa-file-pdf"></i> Download Audit Certificate</button>
         </div>`;
 
-    initTimestamp();
-    setTimeout(() => {
-        pushLog('[IOT] Handshake complete with NNPC Nexus Hub.');
-        pushLog('[CRYPTO] Secured link established via local gateway.');
-        pushLog('[SYSTEM] IoT Analytics stream live.');
-    }, 400);
+    panel.classList.add('active');
+    overlay.classList.add('active');
+
+    document.getElementById('closeRevDetail').onclick = () => {
+        panel.classList.remove('active');
+        overlay.classList.remove('active');
+    };
 }
 
-/* ---- LIVE NODE MAP (Dedicated) ---- */
-function renderNodeMap(content) {
-    content.innerHTML = `
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">Live Node Map<br><span>& Dynamic Telemetry.</span></h2>
-                <p class="page-subtitle">Interactive visualization of all active downstream nodes across Nigeria.</p>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:0.7rem;font-weight:600;color:var(--text-dark-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.3rem;">Nodes Active</div>
-                <div style="font-family:var(--mono);font-size:0.85rem;color:var(--green);" id="activeNodeCount">0</div>
-            </div>
-        </div>
+function initMap() {
+    const mapContainer = document.getElementById('iotMap');
+    if (!mapContainer) return;
 
-        <div class="chart-block" style="padding:0; overflow:hidden; border-radius:var(--r-lg);">
-            <div id="iotMap" style="height:620px; border-radius:0; border:none; margin:0;"></div>
-        </div>
+    // Initialize MapLibre in Top-Down 2D Mode (Light Theme)
+    mapInstance = new maplibregl.Map({
+        container: 'iotMap',
+        style: 'https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+        center: [8.6753, 9.0820],
+        zoom: 6.0,
+        pitch: 0,
+        bearing: 0,
+        antialias: true
+    });
 
-        <div style="display:flex; gap:1.5rem; margin-top:1.5rem;">
-            <div class="metric-card" style="flex:1;">
-                <div class="metric-label">National Coverage</div>
-                <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.5rem;">
-                    <span style="width:10px;height:10px;background:var(--green);border-radius:50%;"></span>
-                    <span style="font-family:var(--mono);font-size:1.1rem;font-weight:600;">Optimal</span>
-                </div>
-            </div>
-            <div class="metric-card" style="flex:1;">
-                <div class="metric-label">Telemetry Status</div>
-                <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.5rem;">
-                    <span style="width:10px;height:10px;background:var(--blue);border-radius:50%;"></span>
-                    <span style="font-family:var(--mono);font-size:1.1rem;font-weight:600;">Synchronized</span>
-                </div>
-            </div>
-        </div>
-    `;
-
-    initTimestamp();
-    // We need to initialize the map after the DOM is rendered
-    setTimeout(() => initIoTMap(), 250);
+    mapInstance.on('load', () => {
+        renderMapNodes();
+        setTimeout(() => mapInstance.resize(), 500);
+    });
 }
 
-function initIoTMap() {
-    try {
-        if (iotLeafletMap) {
-            iotLeafletMap.remove();
-            iotLeafletMap = null;
+function updateFilteredMap() {
+    renderMapNodes();
+}
+
+function renderMapNodes() {
+    if (!mapInstance) return;
+
+    // Clear existing markers
+    mapMarkers.forEach(m => m.remove());
+    mapMarkers = [];
+
+    // Get active filters
+    const activeFilters = Array.from(document.querySelectorAll('.map-filter:checked')).map(cb => cb.value);
+    
+    let activeTotal = 0;
+    let alertTotal = 0;
+
+    const filtered = iotNodes.filter(node => activeFilters.includes(node.type));
+
+    filtered.forEach(node => {
+        const el = document.createElement('div');
+        el.className = `marker ${node.type}`;
+        const icon = { truck: 'fa-truck', pump: 'fa-gas-pump', refinery: 'fa-industry', well: 'fa-oil-well' }[node.type] || 'fa-microchip';
+        
+        const isAlert = node.status === 'Alert';
+        if (isAlert) alertTotal++; else activeTotal++;
+
+        el.innerHTML = `
+            <div class="marker-pin-classic" style="color:${isAlert ? 'var(--red)' : 'var(--blue)'};">
+                <i class="fas fa-map-marker-alt" style="font-size: 1.8rem;"></i>
+                <div class="marker-icon-overlay" style="color: #fff;">
+                    <i class="fas ${icon}" style="font-size: 0.6rem;"></i>
+                </div>
+            </div>
+        `;
+
+        const marker = new maplibregl.Marker(el)
+            .setLngLat([node.lng, node.lat])
+            .setPopup(new maplibregl.Popup({ offset: 25 })
+                .setHTML(`
+                    <div class="map-popup" style="color:#0f172a; padding:12px; min-width: 180px;">
+                        <div style="font-size:0.6rem; font-weight:800; color:${isAlert ? 'var(--red)' : 'var(--green)'}; text-transform:uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${node.type} // STATUS: ${node.status.toUpperCase()}</div>
+                        <h3 style="font-size:1rem; margin:0 0 8px; font-weight: 700;">${node.label}</h3>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px;">ID: ${node.id}</div>
+                        <button class="popup-btn" style="background:var(--ink-secondary); color:#fff; border:none; width:100%; padding:10px; border-radius:6px; font-size: 0.75rem; font-weight:700; cursor:pointer;" onclick="mapInstance.flyTo({center: [${node.lng}, ${node.lat}], zoom: 14})">Center View</button>
+                    </div>
+                `))
+            .addTo(mapInstance);
+            
+        mapMarkers.push(marker);
+    });
+
+    // Update Counter UI
+    const activeEl = document.getElementById('activeNodesCount');
+    const alertEl = document.getElementById('alertNodesCount');
+    if (activeEl) activeEl.textContent = activeTotal;
+    if (alertEl) alertEl.textContent = alertTotal;
+}
+
+function downloadAudit(companyName) {
+    const element = document.querySelector('.audit-certificate-wrap');
+    if (!element) {
+        alert("Certificate container not found.");
+        return;
+    }
+
+    // Snapshot the current HTML so images aren't re-fetched
+    const certHTML = element.outerHTML;
+    const cleanName = companyName.replace(/[^a-z0-9]/gi, '_').toUpperCase();
+
+    // Collect all existing <style> and <link rel="stylesheet"> from the host page
+    const styles = Array.from(document.styleSheets).map(sheet => {
+        try {
+            const rules = Array.from(sheet.cssRules).map(r => r.cssText).join('\n');
+            return `<style>${rules}</style>`;
+        } catch {
+            // Cross-origin sheets can't be read — link them by href instead
+            return sheet.href ? `<link rel="stylesheet" href="${sheet.href}">` : '';
+        }
+    }).join('\n');
+
+    const printWin = window.open('', '_blank', 'width=900,height=700');
+    printWin.document.write(`<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${cleanName}_NEDB_Audit_2026</title>
+    ${styles}
+    <style>
+        @media print {
+            body { margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+        }
+        body { background: #fff; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; }
+    </style>
+</head>
+<body>
+    ${certHTML}
+    <script>
+        // Wait for images to load before printing
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                window.print();
+                window.close();
+            }, 400);
+        });
+    <\/script>
+</body>
+</html>`);
+    printWin.document.close();
+}
+
+function showPageInfo(view) {
+    const info = {
+        overview: "Executive summary of national petroleum throughput, showing fiscal settlement velocity and distribution health across all 36 states.",
+        settlements: "Central Bank of Nigeria (CBN) verification portal. Tracks the immediate transmission of product revenues into the Single Treasury Account.",
+        iot: "Tactical engineering substrate monitoring real-time pressure, signal integrity, and location telemetry for 12,000+ national mesh nodes."
+    };
+    alert(`[NEDB INTELLIGENCE OVERVIEW]\n\n${info[view] || "Sector documentation is currently restricted to cleared operators."}`);
+}
+
+function initGlobalSearch() {
+    const searchInput = document.getElementById('companySearch');
+    const resultsContainer = document.getElementById('searchResults');
+    if (!searchInput || !resultsContainer) return;
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        
+        if (query.length < 2) {
+            resultsContainer.classList.remove('active');
+            resultsContainer.innerHTML = '';
+            return;
         }
 
-        const mapContainer = document.getElementById('iotMap');
-        if (!mapContainer) return;
-
-        mapMarkers = [];
-
-        // Nigeria bounds
-        iotLeafletMap = L.map('iotMap', {
-            center: [9.082, 8.675],
-            zoom: 6,
-            zoomControl: false,
-            attributionControl: false
+        // Filter matches
+        const matches = Object.keys(companyData).filter(key => {
+            const data = companyData[key];
+            return key.toLowerCase().includes(query) || data.name.toLowerCase().includes(query);
         });
 
-        // Minimalist Map Tiles (Apple-style Positron)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19
-        }).addTo(iotLeafletMap);
-
-        // Filter nodes based on current company
-        const filteredNodes = currentKey === 'national' 
-            ? iotNodes 
-            : iotNodes.filter(n => n.company === currentKey);
-
-        const nodeCountEl = document.getElementById('activeNodeCount');
-        if (nodeCountEl) nodeCountEl.textContent = filteredNodes.length.toLocaleString();
-
-        filteredNodes.forEach(node => {
-            const icon = L.divIcon({
-                className: 'custom-ping-marker',
-                html: `<div class="ping-wrapper ${node.type.toLowerCase()}">
-                        <div class="ping-ring"></div>
-                        <div class="ping-dot"></div>
-                      </div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
-            });
-
-            const popupContent = `
-                <div class="iot-popup">
-                    <h4>${node.label}</h4>
-                    <div class="p-meta">
-                        <div class="p-row"><span>ID:</span> <b>${node.id}</b></div>
-                        <div class="p-row"><span>Type:</span> <b>${node.type}</b></div>
-                        <div class="p-row"><span>Entity:</span> <b>${node.company.toUpperCase()}</b></div>
+        resultsContainer.classList.add('active');
+        if (matches.length > 0) {
+            resultsContainer.innerHTML = matches.map(key => {
+                const data = companyData[key];
+                return `
+                    <div class="search-result-item" onclick="selectCompanySearch('${key}')">
+                        <img src="${data.logo}">
+                        <span style="font-weight: 700;">${data.name}</span>
                     </div>
-                    <div class="p-status ${node.status === 'Moving' ? 'moving' : ''}">${node.status}</div>
+                `;
+            }).join('');
+        } else {
+            resultsContainer.innerHTML = `
+                <div class="search-no-match">
+                    <i class="fas fa-circle-exclamation"></i> 
+                    Entry not found in National Ledger.<br>
+                    <b>Please contact System Administrator.</b>
                 </div>
             `;
-
-            const marker = L.marker([node.lat, node.lng], { icon })
-                .bindPopup(popupContent, { className: 'apple-map-popup' })
-                .addTo(iotLeafletMap);
-            
-            mapMarkers.push(marker);
-        });
-
-        if (filteredNodes.length > 0 && currentKey !== 'national') {
-            const group = new L.featureGroup(mapMarkers);
-            iotLeafletMap.fitBounds(group.getBounds().pad(0.3));
         }
+    });
 
-        pushLog(`[MAP] Switched to dedicated node cluster for ${currentCompany}.`);
-    } catch (err) {
-        console.error('Leaflet initialization failed:', err);
-    }
-}
+    // Close results on click outside
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+            resultsContainer.classList.remove('active');
+        }
+    });
 
-/* =============================================
-   REPORTS
-   ============================================= */
-function initReporters() {
-    document.getElementById('printBtn')?.addEventListener('click', () => window.print());
-
-    document.getElementById('exportBtn')?.addEventListener('click', () => {
-        const data = companyData[currentKey];
-        const rows = [
-            ['Metric', 'Value', 'Entity'],
-            ['PMS Volume (L)', formatVolume(data.pms), currentCompany],
-            ['AGO Volume (BRL)', formatBrl(data.ago), currentCompany],
-            ['Total Revenue (₦)', `₦${data.revenue}b`, currentCompany],
-            ['IoT Nodes', data.nodes, currentCompany],
-            ['FX Rate', `₦${globalFx.toFixed(2)}`, 'CBN Source']
-        ];
-        const csv = 'data:text/csv;charset=utf-8,' + rows.map(r => r.join(',')).join('\n');
-        const link = Object.assign(document.createElement('a'), {
-            href: encodeURI(csv),
-            download: `DataPoint_${currentCompany.replace(/\s+/g, '_')}_Report.csv`
-        });
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        pushLog(`[REPORT] CSV export generated for ${currentCompany}.`);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchInput.blur();
     });
 }
 
-/* =============================================
-   SIDEBAR
-   ============================================= */
-function initSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const menuToggle = document.getElementById('menuToggle');
-    const closeBtn = document.getElementById('sidebarClose');
+function selectCompanySearch(key) {
+    const data = companyData[key];
+    if (!data) return;
 
-    function openSidebar() {
-        sidebar?.classList.add('open');
-        overlay?.classList.add('visible');
-        document.body.style.overflow = 'hidden';
-    }
+    currentKey = key;
+    currentCompany = data.name;
+    saveState();
+    syncUI(currentKey);
 
-    function closeSidebar() {
-        sidebar?.classList.remove('open');
-        overlay?.classList.remove('visible');
-        document.body.style.overflow = '';
-    }
+    // Take user to the Revenue page
+    renderPage('revenue');
 
-    menuToggle?.addEventListener('click', openSidebar);
-    closeBtn?.addEventListener('click', closeSidebar);
-    overlay?.addEventListener('click', closeSidebar);
+    // Clean up
+    const searchInput = document.getElementById('companySearch');
+    const resultsContainer = document.getElementById('searchResults');
+    if (searchInput) searchInput.value = '';
+    if (resultsContainer) resultsContainer.classList.remove('active');
+}
 
-    const pageMap = {
-        sideOverview: 'overview',
-        sidePetroleum: 'petroleum',
-        sideInsights: 'insights',
-        sideSettlements: 'settlements',
-        sideIoT: 'iot',
-        sideNodeMap: 'nodemap'
+function initChartFilters() {
+    const filterBtn = document.getElementById('filterBtn');
+    if (!filterBtn) return;
+    
+    filterBtn.onclick = () => {
+        if (!mixChart) return;
+        const datasets = mixChart.data.datasets;
+        const pmsHidden = datasets[0].hidden;
+        const agoHidden = datasets[1].hidden;
+        
+        if (!pmsHidden && !agoHidden) {
+            datasets[1].hidden = true;
+        } else if (!pmsHidden && agoHidden) {
+            datasets[0].hidden = true;
+            datasets[1].hidden = false;
+        } else {
+            datasets[0].hidden = false;
+            datasets[1].hidden = false;
+        }
+        mixChart.update();
     };
-
-    const links = document.querySelectorAll('.sidebar-link');
-    links.forEach(link => {
-        link.addEventListener('click', function () {
-            if (this.classList.contains('danger')) return;
-            links.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-
-            const page = pageMap[this.id];
-            if (page) renderPage(page);
-
-            closeSidebar();
-        });
-    });
-}
-
-/* =============================================
-   CBN FX RATE
-   ============================================= */
-function fetchCbnRate() {
-    const el = document.getElementById('fxRate');
-    if (!el) return;
-    el.textContent = `₦${globalFx.toFixed(2)}`;
-    setInterval(() => {
-        const drift = (Math.random() * 2 - 0.8).toFixed(2);
-        globalFx = parseFloat((globalFx + parseFloat(drift)).toFixed(2));
-        el.textContent = `₦${globalFx.toFixed(2)}`;
-    }, 8000);
-}
-
-/* =============================================
-   LIVE LOG TICKER
-   ============================================= */
-function startLogTicker() {
-    const messages = [
-        'Verified consumption of 450 BRL via Terminal-LAG.',
-        'IoT Node sync: 100% data integrity confirmed.',
-        'Revenue reconciliation via CBN-Nexus successful.',
-        'Flow-meter check: ±0.01% deviation within tolerance.',
-        'Inventory alert: Low storage at Depot-PH. Replenishment scheduled.',
-        'Report generated for Federal Revenue Service (FRS).',
-        'Product allocation request approved for southern corridor.',
-        'Satellite telemetry updated for Abuja region nodes.',
-        'Meter calibration complete at Terminal-KAN depot.',
-        'Compliance check passed for Q1 2026 audit cycle.'
-    ];
-
-    setTimeout(() => {
-        pushLog(`[SYSTEM] National IoT Nexus connected. ${companyData.national.nodes.toLocaleString()} nodes online.`);
-        initMetrics('national');
-    }, 600);
-
-    setInterval(() => {
-        const msg = messages[Math.floor(Math.random() * messages.length)];
-        const entity = currentCompany.split(' ')[0];
-        pushLog(`[${entity}] ${msg}`);
-    }, 5500);
-}
-
-function pushLog(message, ts = null) {
-    const stage = document.getElementById('logStage');
-    if (!stage) return;
-
-    const now = new Date();
-    const time = ts || now.toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-    const item = document.createElement('div');
-    item.className = 'log-item';
-    const formatted = message.replace(/\[([^\]]+)\]/g, (match, tag) => {
-        return `<span class="entity">[${tag}]</span>`;
-    });
-    item.innerHTML = `<span class="log-ts">${time}</span><span class="log-msg">${formatted}</span>`;
-    stage.prepend(item);
-
-    while (stage.children.length > 20) stage.lastElementChild.remove();
 }
