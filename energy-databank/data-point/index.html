@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Point — Energy Intelligence Suite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="landing-wrap">
+
+        <!-- NAV -->
+        <nav class="top-nav">
+            <div class="nav-inner">
+                <div class="brand">
+                    <span class="brand-dot"></span>
+                    Data Point
+                </div>
+                <div class="nav-links">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="login.html" class="btn btn-primary" style="padding: 0.45rem 1.1rem; font-size: 0.85rem;">
+                        Open Dashboard <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="hero container">
+            <div class="badge badge-green">
+                <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                National Energy Intelligence
+            </div>
+            <h1 class="display">Nigeria's center of<br><span style="color: var(--green);">energy transparency.</span>
+            </h1>
+            <p>One source of truth for Nigeria's entire downstream energy sector. Aggregating production, grids, and
+                sales data with IoT precision.</p>
+            <div class="hero-cta">
+                <a href="login.html" class="btn btn-dark">
+                    Open Dashboard <i class="fas fa-chevron-right" style="font-size: 0.75rem;"></i>
+                </a>
+                <a href="#features" class="btn btn-ghost">Learn more</a>
+            </div>
+
+            <!-- Stats Banner -->
+            <div class="stats-banner">
+                <div class="stat-item">
+                    <div class="stat-label">FX Source (CBN)</div>
+                    <div class="stat-value green mono" id="cbnTicker">₦1,485.20</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Energy Mix</div>
+                    <div class="stat-value green">100%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">IoT Verified Nodes</div>
+                    <div class="stat-value">12,402</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="features-section container" id="features">
+            <div class="section-header">
+                <span class="label">What's inside</span>
+                <h2>Built for precision at every layer</h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Grid Telemetry</h3>
+                    <p>Real-time monitoring of electricity generation and distribution across the national grid
+                        infrastructure.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-gas-pump"></i></div>
+                    <h3>Downstream Flow</h3>
+                    <p>Precise tracking of petroleum product sales through verified flow meters at the pump level
+                        nationwide.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-mountain"></i></div>
+                    <h3>Solid Minerals</h3>
+                    <p>Tracking coal exports and biomass consumption indicators for coordinated energy policy decisions.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-microchip"></i></div>
+                    <h3>IoT Node Network</h3>
+                    <p>Over 12,400 verified hardware nodes streaming tamper-proof consumption data in real time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h3>CBN Settlements</h3>
+                    <p>Automated reconciliation of petroleum subsidy flows via secure CBN-Nexus financial bridge.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
+                    <h3>Secure Clearance</h3>
+                    <p>Role-based access control with identity-locked energy clearance IDs for all verified operators.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="landing-footer container">
+            <p>&copy; 2026 Energy Commission of Nigeria &mdash; Intelligence secured via CBN Bridge.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // CBN Rate Ticker
+        const ticker = document.getElementById('cbnTicker');
+        setInterval(() => {
+            const drift = (Math.random() * 3 - 1).toFixed(2);
+            const rate = (1485.20 + parseFloat(drift)).toFixed(2);
+            ticker.textContent = `₦${rate}`;
+        }, 5000);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
