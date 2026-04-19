@@ -10,7 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css?v=2.0">
-    <script src="../auth-check.js?v=2.0"></script>
+    <script src="config.js?v=1.0"></script>
+    <script src="evillage-api.js?v=1.0"></script>
+    <script>window.EVILLAGE_REQUIRED_ROLES = ['citizen'];</script>
+    <script src="evillage-guard.js?v=1.0"></script>
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
@@ -736,7 +739,7 @@
             <div class="user-avatar">AD</div>
             <div class="user-info">
                 <div class="user-name">Adewale David</div>
-                <div class="user-role">Agba Village</div>
+                <div class="user-role" data-user="profile.state">Agba Village</div>
             </div>
         </div>
     </aside>
@@ -745,8 +748,8 @@
     <main class="main-content">
         <div class="header">
             <div class="welcome-text">
-                <h1>Welcome back, Adewale</h1>
-                <p>Here's your energy dashboard for Agba Village.</p>
+                <h1>Welcome back, <span data-user="greetingFirstName">there</span></h1>
+                <p>Here's your energy dashboard for <span data-user="profile.lga">your community</span>.</p>
             </div>
             <div class="header-actions">
                 <button class="icon-btn" onclick="openPanel('notificationPanel')">
@@ -1013,7 +1016,7 @@
                 <div class="user-info">
                     <div class="user-name" style="font-size: 16px; color: var(--text-primary, #111827);">Adewale David
                     </div>
-                    <div class="user-role" style="color: var(--text-secondary, #6b7280);">adewale.d@evillage.ng</div>
+                    <div class="user-role" style="color: var(--text-secondary, #6b7280);" data-user="email">adewale.d@evillage.ng</div>
                 </div>
             </div>
 
@@ -1232,7 +1235,6 @@
 
 </style>
 
-    <script src="script.js?v=2.0"></script>
     <script>
         function toggleSidebar() {
             var overlay = document.getElementById("mobileOverlay");
