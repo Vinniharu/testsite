@@ -390,17 +390,20 @@
 
 .edu-article-hero-image {
     width: 100%;
-    aspect-ratio: 21 / 9;
+    max-height: 600px;
     border-radius: 12px;
     overflow: hidden;
     background-color: #eee;
     margin-bottom: 64px;
+    display: block;
 }
 
 .edu-article-hero-image img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    object-position: center;
 }
 
 .edu-article-body {

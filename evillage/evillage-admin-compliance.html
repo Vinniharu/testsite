@@ -15,7 +15,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../styles.css?v=2.0" />
-    <!-- <script src="../auth-check.js?v=2.0"></script> -->
+    <script src="config.js?v=1.0"></script>
+    <script src="evillage-api.js?v=1.0"></script>
+    <script>window.EVILLAGE_REQUIRED_ROLES = ['super_admin'];</script>
+    <script src="evillage-guard.js?v=1.0"></script>
     <style>
       body {
         font-family:
@@ -592,12 +595,6 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="evillage-admin-loans.html" class="nav-link" id="nav-loans">
-            <i class="fas fa-hand-holding-usd"></i>
-            <span>Loan Management</span>
-          </a>
-        </li>
-        <li class="nav-item">
           <a
             href="evillage-admin-directory.html"
             class="nav-link"
@@ -652,102 +649,488 @@
         <div class="section-title">Vendor Registrations</div>
       </div>
       <div class="card-container" style="overflow-x: auto">
-        
+
         <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-radius: 8px; box-shadow: inset 0 0 4px rgba(0,0,0,0.02); margin-bottom: 8px; padding-bottom: 8px;">
             <table class="data-table">
           <thead>
             <tr>
-              <th>Vendor Name</th>
               <th>Business Name</th>
+              <th>Contact Person</th>
+              <th>Email</th>
+              <th>State / LGA</th>
               <th>Status</th>
-              <th>Identity (NIN)</th>
-              <th>Docs</th>
+              <th>Submitted</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="vetting-tbody">
-            <!-- Populated by JS -->
+            <tr><td colspan="7" style="text-align:center;">Loading vendors…</td></tr>
           </tbody>
         </table>
         </div>
       </div>
     </main>
 
-    <!-- Logic Script -->
-    <script src="evillage-admin-logic.js"></script>
+    <!-- Reject Reason Modal -->
+    <div id="rejectReasonModal" class="reject-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rejectReasonTitle">
+      <div class="reject-modal-backdrop" data-close-reject></div>
+      <div class="reject-modal-card" role="document">
+        <div class="reject-modal-header">
+          <h3 id="rejectReasonTitle">Reject Vendor</h3>
+          <button class="reject-modal-close" type="button" data-close-reject aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="reject-modal-body">
+          <p class="reject-modal-intro">
+            Provide a reason for rejecting
+            <strong id="rejectVendorName">this vendor</strong>.
+            The vendor will see this message.
+          </p>
+          <label for="rejectReasonInput" class="reject-modal-label">Reason</label>
+          <textarea
+            id="rejectReasonInput"
+            rows="4"
+            placeholder="e.g. CAC number could not be verified against the CAC registry"
+            maxlength="500"
+          ></textarea>
+          <div id="rejectReasonError" class="reject-modal-error" hidden role="alert"></div>
+        </div>
+        <div class="reject-modal-footer">
+          <button type="button" class="btn-cancel-reject" data-close-reject>Cancel</button>
+          <button type="button" class="btn-confirm-reject" id="btnConfirmReject">
+            <i class="fas fa-times-circle"></i> Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+    <style>
+      .reject-modal { position: fixed; inset: 0; display: none; z-index: 1100; }
+      .reject-modal.is-open { display: block; }
+      .reject-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.55); }
+      .reject-modal-card {
+        position: relative; max-width: 480px; width: calc(100% - 32px);
+        margin: 64px auto; background: #fff; border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden;
+        display: flex; flex-direction: column;
+      }
+      .reject-modal-header {
+        padding: 18px 22px; border-bottom: 1px solid #e5e7eb;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .reject-modal-header h3 { margin: 0; font-size: 17px; font-weight: 600; color: #111827; }
+      .reject-modal-close { background: none; border: none; cursor: pointer; color: #6b7280; font-size: 16px; }
+      .reject-modal-body { padding: 20px 22px; }
+      .reject-modal-intro { margin: 0 0 16px 0; color: #4b5563; font-size: 14px; line-height: 1.5; }
+      .reject-modal-intro strong { color: #111827; }
+      .reject-modal-label {
+        display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;
+      }
+      #rejectReasonInput {
+        width: 100%; padding: 12px 14px; font-size: 14px; font-family: inherit;
+        border: 1.5px solid #e5e7eb; border-radius: 8px; resize: vertical; min-height: 96px;
+        color: #111827; background: #fff; transition: border-color .15s ease, box-shadow .15s ease;
+      }
+      #rejectReasonInput:focus {
+        outline: none; border-color: #991b1b; box-shadow: 0 0 0 3px rgba(153, 27, 27, 0.1);
+      }
+      .reject-modal-error {
+        background: #fee2e2; border: 1px solid #fecaca; color: #991b1b;
+        padding: 10px 12px; border-radius: 6px; font-size: 13px; margin-top: 12px;
+      }
+      .reject-modal-footer {
+        display: flex; gap: 10px; justify-content: flex-end;
+        padding: 14px 22px; border-top: 1px solid #e5e7eb; background: #fafafa;
+      }
+      .btn-cancel-reject {
+        padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 14px;
+        cursor: pointer; border: 1px solid #e5e7eb; background: #fff; color: #374151;
+        transition: background .15s ease;
+      }
+      .btn-cancel-reject:hover { background: #f9fafb; }
+      .btn-confirm-reject {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 14px;
+        cursor: pointer; border: 1px solid transparent; background: #dc2626; color: #fff;
+        transition: background .15s ease;
+      }
+      .btn-confirm-reject:hover:not(:disabled) { background: #b91c1c; }
+      .btn-confirm-reject:disabled, .btn-cancel-reject:disabled { opacity: .6; cursor: not-allowed; }
+    </style>
+
+    <!-- Vendor Detail Drawer -->
+    <div id="vendorModal" class="vendor-drawer" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="vendor-drawer-backdrop" data-close-modal></div>
+      <aside class="vendor-drawer-panel" role="document" aria-labelledby="vendorModalTitle">
+        <div class="vendor-drawer-header">
+          <h3 id="vendorModalTitle">Vendor Details</h3>
+          <button class="vendor-drawer-close" type="button" data-close-modal aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="vendor-drawer-body" id="vendorModalBody">
+          <div class="vendor-drawer-loading">Loading…</div>
+        </div>
+        <div class="vendor-drawer-footer" id="vendorModalFooter" hidden>
+          <div id="vendorActionError" class="vendor-action-error" hidden role="alert"></div>
+          <div class="vendor-drawer-actions">
+            <button type="button" class="btn-reject" id="btnRejectVendor">
+              <i class="fas fa-times-circle"></i> Reject
+            </button>
+            <button type="button" class="btn-approve" id="btnApproveVendor">
+              <i class="fas fa-check-circle"></i> Approve
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <style>
+      .vendor-drawer { position: fixed; inset: 0; display: none; z-index: 1000; }
+      .vendor-drawer.is-open { display: block; }
+      .vendor-drawer-backdrop {
+        position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+        opacity: 0; transition: opacity .3s ease;
+      }
+      .vendor-drawer.is-open .vendor-drawer-backdrop { opacity: 1; }
+      .vendor-drawer-panel {
+        position: absolute; top: 0; right: 0; bottom: 0;
+        width: min(520px, 100%); background: #fff;
+        box-shadow: -20px 0 60px rgba(0,0,0,0.25);
+        display: flex; flex-direction: column;
+        transform: translateX(100%); transition: transform .3s ease;
+      }
+      .vendor-drawer.is-open .vendor-drawer-panel { transform: translateX(0); }
+      .vendor-drawer-header {
+        padding: 20px 24px; border-bottom: 1px solid #e5e7eb;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .vendor-drawer-header h3 { margin: 0; font-size: 18px; font-weight: 600; color: #111827; }
+      .vendor-drawer-close {
+        background: none; border: none; cursor: pointer; color: #6b7280; font-size: 18px;
+      }
+      .vendor-drawer-body { padding: 24px; overflow-y: auto; flex: 1; }
+      .vendor-drawer-loading { text-align: center; color: #6b7280; padding: 24px 0; }
+      .vendor-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+      .vendor-detail-grid .full { grid-column: 1 / -1; }
+      .vendor-detail-label {
+        font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+        text-transform: uppercase; color: #6b7280; margin-bottom: 4px;
+      }
+      .vendor-detail-value { font-size: 15px; color: #111827; word-break: break-word; }
+      .vendor-detail-value.empty { color: #9ca3af; }
+      .vendor-chip {
+        display: inline-block; padding: 4px 10px; border-radius: 999px;
+        background: #ecfdf5; color: #065f46; font-size: 12px; font-weight: 500; margin: 2px 4px 2px 0;
+      }
+      .vendor-status { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+      .vendor-status.active { background: #ecfdf5; color: #065f46; }
+      .vendor-status.pending_approval { background: #fef3c7; color: #92400e; }
+      .vendor-status.rejected { background: #fee2e2; color: #991b1b; }
+      .vendor-status.inactive { background: #f3f4f6; color: #4b5563; }
+      .vendor-drawer-footer {
+        padding: 16px 24px; border-top: 1px solid #e5e7eb; background: #fafafa;
+      }
+      .vendor-action-error {
+        background: #fee2e2; border: 1px solid #fecaca; color: #991b1b;
+        padding: 10px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 12px;
+      }
+      .vendor-drawer-actions { display: flex; gap: 12px; justify-content: flex-end; }
+      .vendor-drawer-actions button {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px;
+        cursor: pointer; border: 1px solid transparent; transition: all .15s ease;
+      }
+      .vendor-drawer-actions button:disabled { opacity: .6; cursor: not-allowed; }
+      .btn-approve { background: #10b981; color: #fff; }
+      .btn-approve:hover:not(:disabled) { background: #059669; }
+      .btn-reject { background: #fff; color: #991b1b; border-color: #fecaca; }
+      .btn-reject:hover:not(:disabled) { background: #fef2f2; border-color: #fca5a5; }
+      @media (max-width: 560px) {
+        .vendor-detail-grid { grid-template-columns: 1fr; }
+        .vendor-drawer-panel { width: 100%; }
+      }
+    </style>
+
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // Set active nav
         document.getElementById("nav-compliance").classList.add("active");
 
-        const renderTable = () => {
-          const tbody = document.getElementById("vetting-tbody");
-          const queue = window.evillageData.vettingQueue;
+        const tbody = document.getElementById("vetting-tbody");
+        const modal = document.getElementById("vendorModal");
+        const modalBody = document.getElementById("vendorModalBody");
+        const modalTitle = document.getElementById("vendorModalTitle");
+        const modalFooter = document.getElementById("vendorModalFooter");
+        const btnApprove = document.getElementById("btnApproveVendor");
+        const btnReject = document.getElementById("btnRejectVendor");
+        const actionError = document.getElementById("vendorActionError");
 
-          if (queue.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending registrations.</td></tr>`;
+        const rejectModal = document.getElementById("rejectReasonModal");
+        const rejectInput = document.getElementById("rejectReasonInput");
+        const rejectError = document.getElementById("rejectReasonError");
+        const rejectVendorName = document.getElementById("rejectVendorName");
+        const btnConfirmReject = document.getElementById("btnConfirmReject");
+
+        let currentVendor = null;
+
+        function esc(s) {
+          if (s == null) return "";
+          return String(s)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+
+        function prettyStatus(s) {
+          if (!s) return "—";
+          return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        }
+
+        function prettyCategory(c) {
+          return String(c || "").replace(/_/g, " ").replace(/\b\w/g, (x) => x.toUpperCase());
+        }
+
+        function fmtDate(iso) {
+          if (!iso) return "—";
+          try {
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return iso;
+            return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+          } catch (e) { return iso; }
+        }
+
+        function renderRow(v) {
+          const status = v.status || "—";
+          const statusClass = "vendor-status " + esc(status);
+          return `
+            <tr>
+              <td style="font-weight: 500; color: #111827;">${esc(v.business_name || "—")}</td>
+              <td>${esc(v.contact_person || "—")}</td>
+              <td>${esc(v.email || "—")}</td>
+              <td>${esc([v.state, v.lga].filter(Boolean).join(" / ") || "—")}</td>
+              <td><span class="${statusClass}">${esc(prettyStatus(status))}</span></td>
+              <td>${esc(fmtDate(v.created_at))}</td>
+              <td>
+                <button class="btn-outline" data-vendor-id="${esc(v.user_id)}">View</button>
+              </td>
+            </tr>`;
+        }
+
+        async function loadVendors() {
+          try {
+            const res = await window.EvillageAPI.getAdminVendors({ limit: 50, offset: 0 });
+            const items = (res && Array.isArray(res.items)) ? res.items : [];
+            if (items.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No vendor registrations found.</td></tr>`;
+              return;
+            }
+            tbody.innerHTML = items.map(renderRow).join("");
+          } catch (err) {
+            console.error("Failed to load vendors:", err);
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#991b1b;">Could not load vendors: ${esc(err && err.message || "unknown error")}</td></tr>`;
+          }
+        }
+
+        function openModal() {
+          modal.classList.add("is-open");
+          modal.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+          modal.classList.remove("is-open");
+          modal.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          currentVendor = null;
+          modalFooter.hidden = true;
+          actionError.hidden = true;
+          actionError.textContent = "";
+        }
+
+        function showActionError(msg) {
+          actionError.textContent = msg;
+          actionError.hidden = false;
+        }
+        function clearActionError() {
+          actionError.hidden = true;
+          actionError.textContent = "";
+        }
+
+        function updateFooterForStatus(status) {
+          // Hide footer entirely for already-active vendors.
+          if (status === "active") {
+            modalFooter.hidden = true;
+            return;
+          }
+          modalFooter.hidden = false;
+          // Approve hidden for active or rejected vendors; Reject hidden for active vendors.
+          btnApprove.style.display = (status === "active" || status === "rejected") ? "none" : "";
+          btnReject.style.display = status === "active" ? "none" : "";
+        }
+
+        function renderVendorDetail(v) {
+          const categories = Array.isArray(v.categories) && v.categories.length
+            ? v.categories.map((c) => `<span class="vendor-chip">${esc(prettyCategory(c))}</span>`).join("")
+            : `<span class="vendor-detail-value empty">None</span>`;
+
+          const rows = [
+            { label: "Business Name", value: v.business_name, full: true },
+            { label: "Status", value: `<span class="vendor-status ${esc(v.status || "")}">${esc(prettyStatus(v.status))}</span>`, html: true },
+            { label: "Contact Person", value: v.contact_person },
+            { label: "Email", value: v.email },
+            { label: "Phone", value: v.phone },
+            { label: "CAC Number", value: v.cac_number },
+            { label: "TIN", value: v.tin },
+            { label: "State", value: v.state },
+            { label: "LGA", value: v.lga },
+            { label: "Business Address", value: v.business_address, full: true },
+            { label: "Categories", value: categories, html: true, full: true },
+            { label: "Submitted", value: fmtDate(v.created_at) },
+            { label: "Verified", value: fmtDate(v.verified_at) },
+          ];
+          if (v.rejection_reason) {
+            rows.push({ label: "Rejection Reason", value: v.rejection_reason, full: true });
+          }
+          if (v.user_id) {
+            rows.push({ label: "User ID", value: v.user_id, full: true });
+          }
+
+          modalTitle.textContent = v.business_name || "Vendor Details";
+          modalBody.innerHTML = `
+            <div class="vendor-detail-grid">
+              ${rows.map((r) => {
+                const valHtml = r.html
+                  ? (r.value || `<span class="vendor-detail-value empty">—</span>`)
+                  : (r.value ? `<div class="vendor-detail-value">${esc(r.value)}</div>` : `<div class="vendor-detail-value empty">—</div>`);
+                return `
+                  <div class="${r.full ? "full" : ""}">
+                    <div class="vendor-detail-label">${esc(r.label)}</div>
+                    ${r.html ? `<div class="vendor-detail-value">${valHtml}</div>` : valHtml}
+                  </div>`;
+              }).join("")}
+            </div>`;
+        }
+
+        async function loadVendorDetail(id) {
+          openModal();
+          modalTitle.textContent = "Vendor Details";
+          modalBody.innerHTML = `<div class="vendor-drawer-loading">Loading vendor…</div>`;
+          modalFooter.hidden = true;
+          clearActionError();
+          currentVendor = null;
+          try {
+            const v = await window.EvillageAPI.getAdminVendor(id);
+            currentVendor = v;
+            renderVendorDetail(v);
+            updateFooterForStatus(v && v.status);
+          } catch (err) {
+            console.error("Failed to load vendor:", err);
+            modalBody.innerHTML = `<div class="vendor-drawer-loading" style="color:#991b1b;">Could not load vendor: ${esc(err && err.message || "unknown error")}</div>`;
+          }
+        }
+
+        async function approveCurrentVendor() {
+          if (!currentVendor || !currentVendor.user_id) return;
+          clearActionError();
+          const originalA = btnApprove.innerHTML;
+          const originalR = btnReject.innerHTML;
+          btnApprove.disabled = true; btnReject.disabled = true;
+          btnApprove.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving…';
+          try {
+            const updated = await window.EvillageAPI.approveAdminVendor(currentVendor.user_id);
+            currentVendor = updated || currentVendor;
+            renderVendorDetail(currentVendor);
+            updateFooterForStatus(currentVendor.status);
+            await loadVendors();
+          } catch (err) {
+            console.error("Approve failed:", err);
+            showActionError(err && err.message ? err.message : "Could not approve vendor.");
+          } finally {
+            btnApprove.disabled = false; btnReject.disabled = false;
+            btnApprove.innerHTML = originalA;
+            btnReject.innerHTML = originalR;
+          }
+        }
+
+        function openRejectModal() {
+          if (!currentVendor || !currentVendor.user_id) return;
+          rejectVendorName.textContent = currentVendor.business_name || "this vendor";
+          rejectInput.value = "";
+          rejectError.hidden = true;
+          rejectError.textContent = "";
+          rejectModal.classList.add("is-open");
+          rejectModal.setAttribute("aria-hidden", "false");
+          setTimeout(() => rejectInput.focus(), 50);
+        }
+
+        function closeRejectModal() {
+          rejectModal.classList.remove("is-open");
+          rejectModal.setAttribute("aria-hidden", "true");
+          rejectError.hidden = true;
+          rejectError.textContent = "";
+        }
+
+        async function confirmRejection() {
+          if (!currentVendor || !currentVendor.user_id) return;
+          const reason = (rejectInput.value || "").trim();
+          if (!reason) {
+            rejectError.textContent = "Please provide a reason for rejection.";
+            rejectError.hidden = false;
+            rejectInput.focus();
             return;
           }
 
-          tbody.innerHTML = queue
-            .map(
-              (v) => `
-                    <tr>
-                        <td style="font-weight: 500; color: #111827;">${v.fullName}</td>
-                        <td>${v.businessName}</td>
-                        <td>
-                            <span class="badge ${v.status === "Verified" ? "badge-success" : "badge-warning"}">
-                                ${v.status}
-                            </span>
-                        </td>
-                        <td style="font-family: monospace; letter-spacing: 1px;">
-                            ${v.nin.substring(0, 4)} **** ${v.nin.substring(8)}
-                        </td>
-                        <td>
-                            <a href="#" style="color: #3b82f6; text-decoration: none; font-size: 13px; font-weight: 500;">
-                                <i class="fas fa-file-pdf"></i> View CAC
-                            </a>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                ${
-                                  v.status === "Pending"
-                                    ? `<button class="btn-outline admit" onclick="handleAdmit('${v.id}')">Admit</button>`
-                                    : `<button class="btn-outline" onclick="handleManage('${v.id}')">Manage</button>`
-                                }
-                            </div>
-                        </td>
-                    </tr>
-                `,
-            )
-            .join("");
-        };
+          const originalConfirm = btnConfirmReject.innerHTML;
+          btnConfirmReject.disabled = true;
+          btnConfirmReject.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting…';
+          btnApprove.disabled = true;
+          btnReject.disabled = true;
 
-        // Global handlers exposed
-        window.handleAdmit = (id) => {
-          const vendorIndex = window.evillageData.vettingQueue.findIndex(
-            (v) => v.id === id,
-          );
-          if (vendorIndex > -1) {
-            const vendor = window.evillageData.vettingQueue[vendorIndex];
-            vendor.status = "Verified";
-
-            // Show mock email alert
-            window.evillageData.showMockEmail(
-              `Hello ${vendor.fullName}, your business ${vendor.businessName} has been verified. You can now upload products for client view.`,
-            );
-
-            // Re-render
-            renderTable();
+          try {
+            const updated = await window.EvillageAPI.rejectAdminVendor(currentVendor.user_id, reason);
+            currentVendor = updated || Object.assign({}, currentVendor, { status: "rejected", rejection_reason: reason });
+            renderVendorDetail(currentVendor);
+            updateFooterForStatus(currentVendor.status);
+            closeRejectModal();
+            await loadVendors();
+          } catch (err) {
+            console.error("Reject failed:", err);
+            rejectError.textContent = err && err.message ? err.message : "Could not reject vendor.";
+            rejectError.hidden = false;
+          } finally {
+            btnConfirmReject.disabled = false;
+            btnConfirmReject.innerHTML = originalConfirm;
+            btnApprove.disabled = false;
+            btnReject.disabled = false;
           }
-        };
+        }
 
-        window.handleManage = (id) => {
-          alert("Management panel opening for " + id);
-        };
+        btnApprove.addEventListener("click", approveCurrentVendor);
+        btnReject.addEventListener("click", openRejectModal);
+        btnConfirmReject.addEventListener("click", confirmRejection);
 
-        // Initial render
-        renderTable();
+        rejectModal.addEventListener("click", (e) => {
+          if (e.target.closest("[data-close-reject]")) closeRejectModal();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && rejectModal.classList.contains("is-open")) closeRejectModal();
+        });
+
+        // Row click → open modal
+        tbody.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-vendor-id]");
+          if (!btn) return;
+          e.preventDefault();
+          loadVendorDetail(btn.getAttribute("data-vendor-id"));
+        });
+
+        // Modal close handlers
+        modal.addEventListener("click", (e) => {
+          if (e.target.closest("[data-close-modal]")) closeModal();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+        });
+
+        loadVendors();
       });
     </script>
   

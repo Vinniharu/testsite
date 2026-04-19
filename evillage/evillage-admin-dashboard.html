@@ -15,7 +15,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../styles.css?v=2.0" />
-    <!-- <script src="../auth-check.js?v=2.0"></script> -->
+    <script src="config.js?v=1.0"></script>
+    <script src="evillage-api.js?v=1.0"></script>
+    <script>window.EVILLAGE_REQUIRED_ROLES = ['super_admin'];</script>
+    <script src="evillage-guard.js?v=1.0"></script>
     <style>
       body {
         font-family:
@@ -592,12 +595,6 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="evillage-admin-loans.html" class="nav-link" id="nav-loans">
-            <i class="fas fa-hand-holding-usd"></i>
-            <span>Loan Management</span>
-          </a>
-        </li>
-        <li class="nav-item">
           <a
             href="evillage-admin-directory.html"
             class="nav-link"
@@ -653,7 +650,7 @@
           <div class="stat-header">
             <div class="stat-content">
               <h3>Total Vendors</h3>
-              <div class="stat-value" id="stat-vendors">0</div>
+              <div class="stat-value" id="stat-vendors">—</div>
             </div>
             <div class="stat-icon bg-blue"><i class="fas fa-users"></i></div>
           </div>
@@ -662,24 +659,23 @@
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-content">
-              <h3>Requested Loans</h3>
-              <div class="stat-value" id="stat-loans-req">0</div>
+              <h3>Active Vendors</h3>
+              <div class="stat-value" id="stat-vendors-active">—</div>
             </div>
-            <div class="stat-icon bg-orange">
-              <i class="fas fa-hand-holding-usd"></i>
-            </div>
+            <div class="stat-icon bg-green"><i class="fas fa-user-check"></i></div>
           </div>
         </div>
 
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-content">
-              <h3>Loans Paid Out (NGN)</h3>
-              <div class="stat-value" id="stat-loans-paid">₦0</div>
+              <h3>Pending Vendors</h3>
+              <div class="stat-value" id="stat-vendors-pending">—</div>
             </div>
-            <div class="stat-icon bg-green"><i class="fas fa-wallet"></i></div>
+            <div class="stat-icon bg-orange"><i class="fas fa-user-clock"></i></div>
           </div>
         </div>
+
       </div>
 
       <!-- Active Vendors List -->
@@ -693,65 +689,93 @@
           <thead>
             <tr>
               <th>Business Name</th>
-              <th>Total Products</th>
-              <th>Total Loans Facilitated</th>
-              <th>Status</th>
+              <th>Contact Person</th>
+              <th>Email</th>
+              <th>State / LGA</th>
+              <th>Verified</th>
             </tr>
           </thead>
           <tbody id="active-vendors-tbody">
-            <!-- Populated by JS -->
+            <tr><td colspan="5" style="text-align:center;">Loading active vendors…</td></tr>
           </tbody>
         </table>
         </div>
       </div>
     </main>
 
-    <!-- Logic Script -->
-    <script src="evillage-admin-logic.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // Set active nav
         document.getElementById("nav-dashboard").classList.add("active");
 
-        const { vendors, loans } = window.evillageData;
+        const fmtNumber = (n) =>
+          n == null || Number.isNaN(Number(n))
+            ? "0"
+            : Number(n).toLocaleString();
 
-        // Stats Calculation
-        const totalVendors = vendors ? vendors.length : 0;
-        const requestedLoansCount = loans.length;
-
-        // Assuming 'Given' means paid out
-        const loansPaidOut = loans
-          .filter((l) => l.status === "Given")
-          .reduce((sum, l) => sum + l.amount, 0);
-
-        document.getElementById("stat-vendors").textContent = totalVendors;
-        document.getElementById("stat-loans-req").textContent =
-          requestedLoansCount;
-        document.getElementById("stat-loans-paid").textContent =
-          "₦" + loansPaidOut.toLocaleString();
-
-        // Populate Table
-        const tbody = document.getElementById("active-vendors-tbody");
-        const activeVendors = vendors
-          ? vendors.filter((v) => v.status === "Active")
-          : [];
-
-        if (activeVendors.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No active vendors found.</td></tr>`;
-        } else {
-          tbody.innerHTML = activeVendors
-            .map(
-              (vendor) => `
-                    <tr>
-                        <td style="font-weight: 500; color: #111827;">${vendor.businessName}</td>
-                        <td>${vendor.metrics.listedProducts}</td>
-                        <td>${vendor.metrics.totalInstallments}</td>
-                        <td><span class="badge badge-success">Active</span></td>
-                    </tr>
-                `,
-            )
-            .join("");
+        function setStat(id, value) {
+          const el = document.getElementById(id);
+          if (el) el.textContent = value;
         }
+
+        async function loadOverview() {
+          try {
+            const data = await window.EvillageAPI.getAdminOverview();
+            setStat("stat-vendors", fmtNumber(data.total_vendors));
+            setStat("stat-vendors-active", fmtNumber(data.active_vendors));
+            setStat("stat-vendors-pending", fmtNumber(data.pending_vendors));
+          } catch (err) {
+            console.error("Failed to load admin overview:", err);
+            ["stat-vendors", "stat-vendors-active", "stat-vendors-pending"]
+              .forEach((id) => setStat(id, "—"));
+          }
+        }
+
+        loadOverview();
+
+        const tbody = document.getElementById("active-vendors-tbody");
+
+        function esc(s) {
+          if (s == null) return "";
+          return String(s)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+
+        function fmtDate(iso) {
+          if (!iso) return "—";
+          try {
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return iso;
+            return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+          } catch (e) { return iso; }
+        }
+
+        async function loadActiveVendors() {
+          try {
+            const res = await window.EvillageAPI.getAdminVendors({ status: "active", limit: 50, offset: 0 });
+            const items = (res && Array.isArray(res.items)) ? res.items : [];
+            // Defensive client-side filter in case the backend ignores the status param.
+            const active = items.filter((v) => (v.status || "").toLowerCase() === "active");
+            if (active.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No active vendors yet.</td></tr>`;
+              return;
+            }
+            tbody.innerHTML = active.map((v) => `
+              <tr>
+                <td style="font-weight: 500; color: #111827;">${esc(v.business_name || "—")}</td>
+                <td>${esc(v.contact_person || "—")}</td>
+                <td>${esc(v.email || "—")}</td>
+                <td>${esc([v.state, v.lga].filter(Boolean).join(" / ") || "—")}</td>
+                <td>${esc(fmtDate(v.verified_at))}</td>
+              </tr>
+            `).join("");
+          } catch (err) {
+            console.error("Failed to load active vendors:", err);
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#991b1b;">Could not load vendors: ${esc(err && err.message || "unknown error")}</td></tr>`;
+          }
+        }
+
+        loadActiveVendors();
       });
     </script>
   
