@@ -4,19 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investor Management | NEIIA</title>
+    <title>Reporting & LP Portal | NEIIA</title>
     <meta name="description"
-        content="Elevate every investor touchpoint with automated fund reporting, LP dashboards, and real-time portfolio transparency.">
+        content="Automated fund reporting, LP dashboards, and real-time portfolio transparency — built for modern fund managers and institutional investors.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="auth-check.js"></script>
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <script src="../auth-check.js"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
     <style>
         /* ============================================
            CUSTOM FONTS
            ============================================ */
         @font-face {
             font-family: 'NEIIA';
-            src: url('assets/font/NEIIA_VF-s.p.3bb41c0a.woff2') format('woff2');
+            src: url('../assets/font/NEIIA_VF-s.p.3bb41c0a.woff2') format('woff2');
             font-weight: 100 900;
             font-style: normal;
             font-display: swap;
@@ -24,7 +24,7 @@
 
         @font-face {
             font-family: 'NEIIA';
-            src: url('assets/font/NEIIA_Italic_VF-s.p.31e87b9d.woff2') format('woff2');
+            src: url('../assets/font/NEIIA_Italic_VF-s.p.31e87b9d.woff2') format('woff2');
             font-weight: 100 900;
             font-style: italic;
             font-display: swap;
@@ -32,7 +32,7 @@
 
         @font-face {
             font-family: 'NEIIA Display';
-            src: url('assets/font/NEIIADisplay_Regular-s.p.9a576876.woff2') format('woff2');
+            src: url('../assets/font/NEIIADisplay_Regular-s.p.9a576876.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
             font-display: swap;
@@ -89,12 +89,7 @@
             overflow-x: hidden;
         }
 
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
+        h1, h2, h3, h4, h5, h6 {
             font-family: var(--font-display);
             font-weight: 500;
         }
@@ -105,13 +100,9 @@
             transition: opacity 0.2s;
         }
 
-        a:hover {
-            opacity: 0.8;
-        }
+        a:hover { opacity: 0.8; }
 
-        ul {
-            list-style: none;
-        }
+        ul { list-style: none; }
 
         img {
             max-width: 100%;
@@ -183,9 +174,7 @@
             justify-content: center;
         }
 
-        .dark-mode-logo {
-            display: none !important;
-        }
+        .dark-mode-logo { display: none !important; }
 
         .brand-text {
             font-size: 0.35rem;
@@ -222,9 +211,7 @@
             height: 80px;
         }
 
-        .nav-link {
-            font-weight: 500;
-        }
+        .nav-link { font-weight: 500; }
 
         .nav-links {
             display: none;
@@ -286,9 +273,7 @@
             transition: opacity 0.3s ease;
         }
 
-        .navbar.pill-nav:hover::before {
-            opacity: 1;
-        }
+        .navbar.pill-nav:hover::before { opacity: 1; }
 
         .navbar.pill-nav>* {
             position: relative;
@@ -310,16 +295,12 @@
             text-decoration: none;
         }
 
-        .navbar.pill-nav .nav-links a:hover {
-            color: #fff;
-        }
+        .navbar.pill-nav .nav-links a:hover { color: #fff; }
 
         /* ============================================
            MEGA MENU
            ============================================ */
-        .nav-item.dropdown {
-            position: static;
-        }
+        .nav-item.dropdown { position: static; }
 
         .mega-menu {
             position: absolute;
@@ -380,9 +361,7 @@
             margin: 0;
         }
 
-        .mm-list li {
-            margin-bottom: 12px;
-        }
+        .mm-list li { margin-bottom: 12px; }
 
         .mm-list a {
             display: block;
@@ -407,13 +386,9 @@
             font-weight: 500;
         }
 
-        .nav-link.dropdown-toggle:hover {
-            color: #fff;
-        }
+        .nav-link.dropdown-toggle:hover { color: #fff; }
 
-        .nav-item.dropdown:hover .dropdown-toggle i {
-            transform: rotate(180deg);
-        }
+        .nav-item.dropdown:hover .dropdown-toggle i { transform: rotate(180deg); }
 
         .mm-card {
             display: flex;
@@ -427,9 +402,7 @@
             margin-bottom: 24px;
         }
 
-        .mm-card:hover {
-            background: transparent;
-        }
+        .mm-card:hover { background: transparent; }
 
         .mm-icon {
             width: 80px;
@@ -490,18 +463,11 @@
             cursor: pointer;
         }
 
-        .mobile-nav-overlay {
-            display: none;
-        }
+        .mobile-nav-overlay { display: none; }
 
         @media (min-width: 769px) {
-            .nav-links {
-                display: flex;
-            }
-
-            .mobile-menu-btn {
-                display: none;
-            }
+            .nav-links { display: flex; }
+            .mobile-menu-btn { display: none; }
         }
 
         /* ============================================
@@ -520,9 +486,7 @@
                 position: absolute;
             }
 
-            .navbar.pill-nav {
-                display: none;
-            }
+            .navbar.pill-nav { display: none; }
 
             .mobile-menu-btn {
                 background: none;
@@ -537,13 +501,11 @@
                 left: 0;
                 width: 100vw !important;
                 height: 100vh !important;
-                background: rgba(255, 255, 255, 0.8);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
+                background: #fff;
                 z-index: 2000;
                 padding: 0;
                 transform: translateX(100%);
-                transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                transition: transform 0.3s ease;
                 display: flex;
                 flex-direction: column;
             }
@@ -553,13 +515,8 @@
                 display: flex;
             }
 
-            .mobile-nav-overlay ul {
-                list-style: none;
-            }
-
-            .mobile-nav-overlay ul li {
-                margin-bottom: 0;
-            }
+            .mobile-nav-overlay ul { list-style: none; }
+            .mobile-nav-overlay ul li { margin-bottom: 0; }
 
             .mobile-nav-overlay ul li a {
                 font-size: 1.1rem;
@@ -610,15 +567,10 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 24px;
-                font-size: 18px; /* Slightly punchier for mobile focus */
-                font-weight: 600;
-                color: #0f172a;
+                font-size: 1.1rem;
+                font-weight: 500;
+                color: #333;
                 text-decoration: none;
-                transition: background 0.2s;
-            }
-
-            .mobile-nav-list li a:active {
-                background: #f8fafc;
             }
 
             .mobile-nav-list li a i {
@@ -697,9 +649,7 @@
             font-weight: 500;
         }
 
-        .navbar.pill-nav {
-            pointer-events: auto;
-        }
+        .navbar.pill-nav { pointer-events: auto; }
 
         .mobile-btn-sticky-container {
             position: fixed;
@@ -710,17 +660,9 @@
         }
 
         @media (max-width: 768px) {
-            .header-brand {
-                padding: 0 20px;
-            }
-
-            .nav-sticky-zone {
-                background: transparent;
-            }
-
-            .auth-sticky {
-                display: none;
-            }
+            .header-brand { padding: 0 20px; }
+            .nav-sticky-zone { background: transparent; }
+            .auth-sticky { display: none; }
         }
 
         /* ============================================
@@ -741,9 +683,7 @@
             overflow-y: auto;
         }
 
-        .mobile-submenu.active {
-            transform: translateX(0);
-        }
+        .mobile-submenu.active { transform: translateX(0); }
 
         .submenu-header {
             padding: 24px;
@@ -782,9 +722,7 @@
             flex: 1;
         }
 
-        .submenu-section {
-            margin-bottom: 40px;
-        }
+        .submenu-section { margin-bottom: 40px; }
 
         .submenu-label {
             font-size: 12px;
@@ -840,9 +778,7 @@
             color: inherit;
         }
 
-        .suite-card:last-child {
-            margin-bottom: 0;
-        }
+        .suite-card:last-child { margin-bottom: 0; }
 
         .suite-icon {
             width: 48px;
@@ -953,7 +889,7 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: clamp(10px, 5vh, 40px) 24px clamp(40px, 10vh, 80px); /* Fluid padding for visibility */
+            padding: 140px 24px 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -963,17 +899,14 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px); /* Glassmorphism */
-            -webkit-backdrop-filter: blur(12px);
-            color: #0d3d44;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #01000e;
+            font-size: 13px;
+            font-weight: 500;
             border-radius: 100px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             margin-bottom: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
         .hero-pill svg {
@@ -1027,26 +960,23 @@
             align-items: center;
             gap: 8px;
             padding: 16px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-family: inherit;
+            margin-left: 12px;
         }
 
-        .hero h1 {
-            font-size: clamp(32px, 8vw, 64px); /* Fluid font size */
-            font-weight: 500;
-            line-height: 1.1;
-            color: #0f172a;
-            max-width: 900px;
-            margin-bottom: 24px;
-            letter-spacing: -2px;
-            text-align: center;
-        }
-
-        .hero-subtitle {
-            font-size: clamp(16px, 2vw, 20px); /* Fluid subtitle */
-            color: #64748b;
-            max-width: 600px;
-            margin-bottom: 40px;
-            line-height: 1.6;
-            text-align: center;
+        .hero-cta-secondary:hover {
+            background: #000;
+            color: #fff;
+            border-color: #000;
         }
 
         .hero-btns {
@@ -1058,13 +988,10 @@
         }
 
         @media (max-width: 768px) {
-            .hero-inner {
-                padding: clamp(20px, 4vh, 40px) 20px 40px; /* Fluid mobile padding */
-            }
-
-            .hero-cta-secondary {
-                margin-left: 0;
-            }
+            .hero h1 { font-size: 38px; letter-spacing: -0.5px; }
+            .hero-subtitle { font-size: 16px; }
+            .hero-inner { padding: 120px 20px 60px; }
+            .hero-cta-secondary { margin-left: 0; }
         }
 
         /* ============================================
@@ -1099,17 +1026,9 @@
             border-radius: 50%;
         }
 
-        .dash-dot.red {
-            background: #ff5f57;
-        }
-
-        .dash-dot.yellow {
-            background: #febc2e;
-        }
-
-        .dash-dot.green {
-            background: #28c840;
-        }
+        .dash-dot.red { background: #ff5f57; }
+        .dash-dot.yellow { background: #febc2e; }
+        .dash-dot.green { background: #28c840; }
 
         .dash-grid {
             display: grid;
@@ -1148,13 +1067,8 @@
             gap: 4px;
         }
 
-        .dash-card-change.positive {
-            color: #3fb950;
-        }
-
-        .dash-card-change.negative {
-            color: #f85149;
-        }
+        .dash-card-change.positive { color: #3fb950; }
+        .dash-card-change.negative { color: #f85149; }
 
         .dash-wide {
             grid-column: 1 / -1;
@@ -1230,14 +1144,8 @@
         }
 
         @media (max-width: 768px) {
-            .dash-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-frame {
-                padding: 16px;
-                border-radius: 12px;
-            }
+            .dash-grid { grid-template-columns: 1fr; }
+            .dashboard-frame { padding: 16px; border-radius: 12px; }
         }
 
         /* ============================================
@@ -1277,16 +1185,11 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 40px 24px;
             }
-
-            .stat-number {
-                font-size: 36px;
-            }
+            .stat-number { font-size: 36px; }
         }
 
         @media (max-width: 480px) {
-            .stats-strip-inner {
-                grid-template-columns: 1fr;
-            }
+            .stats-strip-inner { grid-template-columns: 1fr; }
         }
 
         /* ============================================
@@ -1412,24 +1315,13 @@
                 flex-direction: column;
                 gap: 48px;
             }
-
-            .feature-content {
-                max-width: 100%;
-            }
+            .feature-content { max-width: 100%; }
         }
 
         @media (max-width: 768px) {
-            .feature-title {
-                font-size: 32px;
-            }
-
-            .feature-section {
-                padding: 80px 0;
-            }
-
-            .f-card-desc {
-                padding-left: 0;
-            }
+            .feature-title { font-size: 32px; }
+            .feature-section { padding: 80px 0; }
+            .f-card-desc { padding-left: 0; }
         }
 
         /* ============================================
@@ -1510,9 +1402,7 @@
         }
 
         /* Wide cards span 2 columns */
-        .bento-wide {
-            grid-column: span 2;
-        }
+        .bento-wide { grid-column: span 2; }
 
         /* Dark themed card */
         .bento-dark {
@@ -1521,17 +1411,11 @@
             border-color: transparent;
         }
 
-        .bento-dark .bento-desc {
-            color: rgba(255, 255, 255, 0.6);
-        }
+        .bento-dark .bento-desc { color: rgba(255, 255, 255, 0.6); }
 
-        .bento-dark .bento-check-item {
-            color: rgba(255, 255, 255, 0.7);
-        }
+        .bento-dark .bento-check-item { color: rgba(255, 255, 255, 0.7); }
 
-        .bento-dark .bento-check-item svg {
-            stroke: #BDBBFF;
-        }
+        .bento-dark .bento-check-item svg { stroke: #BDBBFF; }
 
         /* Accent gradient card */
         .bento-accent {
@@ -1540,17 +1424,11 @@
             border-color: transparent;
         }
 
-        .bento-accent .bento-desc {
-            color: rgba(255, 255, 255, 0.65);
-        }
+        .bento-accent .bento-desc { color: rgba(255, 255, 255, 0.65); }
 
-        .bento-accent .bento-check-item {
-            color: rgba(255, 255, 255, 0.7);
-        }
+        .bento-accent .bento-check-item { color: rgba(255, 255, 255, 0.7); }
 
-        .bento-accent .bento-check-item svg {
-            stroke: rgba(189, 187, 255, 0.9);
-        }
+        .bento-accent .bento-check-item svg { stroke: rgba(189, 187, 255, 0.9); }
 
         /* Lavender card */
         .bento-lavender {
@@ -1570,9 +1448,7 @@
             transition: transform 0.3s ease;
         }
 
-        .bento-card:hover .bento-icon {
-            transform: scale(1.08);
-        }
+        .bento-card:hover .bento-icon { transform: scale(1.08); }
 
         .bento-dark .bento-icon,
         .bento-accent .bento-icon {
@@ -1614,9 +1490,7 @@
             gap: 10px;
         }
 
-        .bento-wide .bento-checklist {
-            grid-template-columns: repeat(3, 1fr);
-        }
+        .bento-wide .bento-checklist { grid-template-columns: repeat(3, 1fr); }
 
         .bento-check-item {
             display: flex;
@@ -1661,128 +1535,19 @@
         }
 
         @media (max-width: 1024px) {
-            .bento-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .bento-wide .bento-checklist {
-                grid-template-columns: 1fr 1fr;
-            }
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+            .bento-wide .bento-checklist { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
-            .bento-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .bento-wide {
-                grid-column: span 1;
-            }
-
-            .bento-card {
-                padding: 32px 24px;
-            }
-
-            .bento-title {
-                font-size: 20px;
-            }
-
-            .bento-checklist {
-                grid-template-columns: 1fr;
-            }
-
-            .bento-wide .bento-checklist {
-                grid-template-columns: 1fr;
-            }
-
-            .key-features-section {
-                padding: 64px 0 80px;
-            }
-
-            .kf-header h2 {
-                font-size: 32px;
-            }
-        }
-
-        /* PRODUCT FEATURES BENTO GRID */
-        .product-features-bento {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-
-        .product-features-bento .bento-card {
-            background: #ffffff;
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
-            padding: 48px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .product-features-bento .bento-wide {
-            grid-column: span 2;
-        }
-
-        .product-features-bento .bento-reporting {
-            background: #f8fafc;
-            flex-direction: row;
-            align-items: center;
-            flex-wrap: wrap; 
-            padding: 0; 
-        }
-
-        .product-features-bento .bento-reporting > div {
-            flex: 1;
-            min-width: 300px;
-            padding: 48px;
-        }
-
-        .product-features-bento .bento-branding {
-            background: #0d3d44;
-            color: white;
-            justify-content: flex-start;
-        }
-
-        .product-features-bento .bento-secure {
-            background: #f8fafc;
-        }
-
-        @media (max-width: 1024px) {
-            .product-features-bento {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .product-features-bento {
-                grid-template-columns: 1fr;
-            }
-
-            .product-features-bento .bento-wide {
-                grid-column: span 1;
-            }
-
-            .product-features-bento .bento-card {
-                padding: 32px 24px;
-            }
-
-            .product-features-bento .bento-reporting {
-                flex-direction: column;
-            }
-
-            .product-features-bento .bento-reporting > div {
-                min-width: 100%;
-                padding: 32px 24px;
-            }
-
-            .product-features-bento .bento-reporting > div:last-child {
-                padding-top: 0;
-            }
+            .bento-grid { grid-template-columns: 1fr; }
+            .bento-wide { grid-column: span 1; }
+            .bento-card { padding: 32px 24px; }
+            .bento-title { font-size: 20px; }
+            .bento-checklist { grid-template-columns: 1fr; }
+            .bento-wide .bento-checklist { grid-template-columns: 1fr; }
+            .key-features-section { padding: 64px 0 80px; }
+            .kf-header h2 { font-size: 32px; }
         }
 
         /* ============================================
@@ -1866,24 +1631,13 @@
         }
 
         @media (max-width: 768px) {
-            .hiw-steps {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 24px;
-            }
-
-            .hiw-title {
-                font-size: 34px;
-            }
-
-            .how-it-works {
-                padding: 64px 20px;
-            }
+            .hiw-steps { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+            .hiw-title { font-size: 34px; }
+            .how-it-works { padding: 64px 20px; }
         }
 
         @media (max-width: 480px) {
-            .hiw-steps {
-                grid-template-columns: 1fr;
-            }
+            .hiw-steps { grid-template-columns: 1fr; }
         }
 
         /* ============================================
@@ -1943,9 +1697,7 @@
             margin-left: 16px;
         }
 
-        .faq-item.active .faq-trigger svg {
-            transform: rotate(45deg);
-        }
+        .faq-item.active .faq-trigger svg { transform: rotate(45deg); }
 
         .faq-content {
             max-height: 0;
@@ -1953,9 +1705,7 @@
             transition: max-height 0.3s ease;
         }
 
-        .faq-item.active .faq-content {
-            max-height: 300px;
-        }
+        .faq-item.active .faq-content { max-height: 300px; }
 
         .faq-answer {
             padding-bottom: 24px;
@@ -1965,13 +1715,8 @@
         }
 
         @media (max-width: 768px) {
-            .faq-heading {
-                font-size: 30px;
-            }
-
-            .faq-section {
-                padding: 64px 20px;
-            }
+            .faq-heading { font-size: 30px; }
+            .faq-section { padding: 64px 20px; }
         }
 
         /* ============================================
@@ -2041,13 +1786,8 @@
         }
 
         @media (max-width: 768px) {
-            .cta-title {
-                font-size: 32px;
-            }
-
-            .cta-section {
-                padding: 80px 20px;
-            }
+            .cta-title { font-size: 32px; }
+            .cta-section { padding: 80px 20px; }
         }
 
         /* ============================================
@@ -2083,9 +1823,7 @@
             margin: 0;
         }
 
-        .footer-nav li {
-            margin-bottom: 12px;
-        }
+        .footer-nav li { margin-bottom: 12px; }
 
         .footer-link {
             font-size: 14px;
@@ -2094,9 +1832,7 @@
             transition: color 0.15s;
         }
 
-        .footer-link:hover {
-            color: var(--text-primary);
-        }
+        .footer-link:hover { color: var(--text-primary); }
 
         .footer-bottom {
             margin-top: 48px;
@@ -2107,10 +1843,7 @@
         }
 
         @media (max-width: 768px) {
-            .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 32px;
-            }
+            .footer-grid { grid-template-columns: 1fr; gap: 32px; }
         }
 
         /* ============================================
@@ -2121,7 +1854,6 @@
                 opacity: 0;
                 transform: translateY(24px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -2133,32 +1865,21 @@
             animation: fadeInUp 0.7s ease forwards;
         }
 
-        .fade-delay-1 {
-            animation-delay: 0.1s;
-        }
-
-        .fade-delay-2 {
-            animation-delay: 0.2s;
-        }
-
-        .fade-delay-3 {
-            animation-delay: 0.3s;
-        }
-
-        .fade-delay-4 {
-            animation-delay: 0.4s;
-        }
+        .fade-delay-1 { animation-delay: 0.1s; }
+        .fade-delay-2 { animation-delay: 0.2s; }
+        .fade-delay-3 { animation-delay: 0.3s; }
+        .fade-delay-4 { animation-delay: 0.4s; }
     </style>
 </head>
 
 <body>
 
     <!-- Logo -->
-    <a href="index.html" class="logo-fixed">
+    <a href="../index.html" class="logo-fixed">
         <div class="logo-wrapper">
-            <img src="assets/images/neiis-logo-green.png" alt="NEIIA Logo" class="brand-logo light-mode-logo"
+            <img src="../assets/images/neiis-logo-green.png" alt="NEIIA Logo" class="brand-logo light-mode-logo"
                 style="max-width: 120px;">
-            <img src="assets/images/neiih_logo_white.png" alt="NEIIA Logo" class="brand-logo dark-mode-logo"
+            <img src="../assets/images/neiih_logo_white.png" alt="NEIIA Logo" class="brand-logo dark-mode-logo"
                 style="max-width: 120px; display: none;">
             <div class="brand-text">NATIONAL ENERGY INVESTMENT & INTELLIGENCE ADMINISTRATION</div>
         </div>
@@ -2175,33 +1896,33 @@
                         <div class="mm-column">
                             <h4>Fund Administration</h4>
                             <ul class="mm-list">
-                                <li><a href="sub-funds/subfunds.html">Sub Funds</a></li>
-                                <li><a href="venture-funds/venturefunds.html">Venture Funds</a></li>
-                                <li><a href="rolling-funds/rollingfunds.html">Rolling Funds</a></li>
-                                <li><a href="scout-funds/scout.html">Scout Funds</a></li>
-                                <li><a href="SPVs/SPVs.html">SPVs</a></li>
-                                <li><a href="roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
+                                <li><a href="../sub-funds/subfunds.html">Sub Funds</a></li>
+                                <li><a href="../venture-funds/venturefunds.html">Venture Funds</a></li>
+                                <li><a href="../rolling-funds/rollingfunds.html">Rolling Funds</a></li>
+                                <li><a href="../scout-funds/scout.html">Scout Funds</a></li>
+                                <li><a href="../SPVs/SPVs.html">SPVs</a></li>
+                                <li><a href="../roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
                             </ul>
                         </div>
                         <div class="mm-column">
                             <h4>Investor Management</h4>
                             <ul class="mm-list">
-                                <li><a href="government-site/digital.html">Digital Subscriptions</a></li>
-                                <li><a href="databank.html">Data Bank</a></li>
+                                <li><a href="../government-site/digital.html">Digital Subscriptions</a></li>
+                                <li><a href="../databank.html">Data Bank</a></li>
                             </ul>
                             <div style="margin-top: 24px;">
                                 <h4>Intelligence</h4>
                                 <ul class="mm-list">
-                                    <li><a href="fin/fin.html">Fin <span
+                                    <li><a href="../fin/fin.html">Fin <span
                                                 style="font-size: 10px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">BETA</span></a>
                                     </li>
-                                    <li><a href="edu-center/educenter.html">Edu Center</a></li>
+                                    <li><a href="../edu-center/educenter.html">Edu Center</a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="mm-footer"
                             style="border-top: none; padding-top: 10px; margin-top: auto; color: #6b7280; font-size: 15px;">
-                            Looking for tools for startups? Explore <a href="construction.html"
+                            Looking for tools for startups? Explore <a href="../construction.html"
                                 style="color: #6b7280 !important; text-decoration: underline; margin-left: 2px;">Rollups.</a>
                             <svg width="10" height="10" viewBox="0 0 12 12" fill="none"
                                 style="margin-left: 4px; display: inline-block;">
@@ -2213,16 +1934,16 @@
                     <div class="mm-right-panel">
                         <div class="mm-column">
                             <h4>Product Suites</h4>
-                            <a href="fund-administration/fund-administration.html" class="mm-card">
-                                <div class="mm-icon"><img src="assets/images/fund_administration.png"
+                            <a href="../fund-administration/fund-administration.html" class="mm-card">
+                                <div class="mm-icon"><img src="../assets/images/fund_administration.png"
                                         alt="Fund Administration"></div>
                                 <div class="mm-content">
                                     <h5>Fund Administration</h5>
                                     <p>All-in-one partner to launch an investment vehicle</p>
                                 </div>
                             </a>
-                            <a href="investor-management.html" class="mm-card">
-                                <div class="mm-icon"><img src="assets/images/investor_management.png"
+                            <a href="../investor-management.html" class="mm-card">
+                                <div class="mm-icon"><img src="../assets/images/investor_management.png"
                                         alt="Investor Management"></div>
                                 <div class="mm-content">
                                     <h5>Investor Management</h5>
@@ -2233,16 +1954,16 @@
                     </div>
                 </div>
             </div>
-            <a href="finance.html">Energy Finance & Capital</a>
-            <a href="dashboard.html">Energy Ecosystem</a>
-            <a href="citibim.html">NEIIA</a>
+            <a href="../finance.html">Energy Finance & Capital</a>
+            <a href="../dashboard.html">Energy Ecosystem</a>
+            <a href="../citibim.html">NEIIA</a>
         </div>
     </nav>
 
     <!-- Auth Links -->
     <div class="auth-sticky">
-        <a href="signin.html" class="nav-link">Sign In</a>
-        <a href="newsletter.html" class="btn btn-black">Join</a>
+        <a href="../signin.html" class="nav-link">Sign In</a>
+        <a href="../newsletter.html" class="btn btn-black">Join</a>
     </div>
 
     <!-- Mobile Menu Button -->
@@ -2260,8 +1981,8 @@
     <!-- Mobile Navigation Overlay -->
     <div class="mobile-nav-overlay">
         <div class="mobile-nav-header">
-            <a href="index.html">
-                <img src="assets/images/neiis-logo-green.png" alt="NEIIA" style="max-height: 40px;">
+            <a href="../index.html">
+                <img src="../assets/images/neiis-logo-green.png" alt="NEIIA" style="max-height: 40px;">
             </a>
             <button class="mobile-close-btn">
                 <i class="fas fa-times"></i>
@@ -2269,15 +1990,16 @@
         </div>
         <div class="mobile-nav-content">
             <ul class="mobile-nav-list">
-                <li><a href="finance.html">Energy Finance & Capital <i class="fas fa-arrow-right"></i></a></li>
-                <li><a href="dashboard.html">Energy Ecosystem <i class="fas fa-arrow-right"></i></a></li>
-                <li><a href="citibim.html">NEIIA <i class="fas fa-arrow-right"></i></a></li>
-                <li><a href="nefund.html" id="mobile-resources-link">NEFUND <i class="fas fa-chevron-right"></i></a>
+                <li><a href="../finance.html">Energy Finance & Capital <i class="fas fa-arrow-right"></i></a></li>
+                <li><a href="../dashboard.html">Energy Ecosystem <i class="fas fa-arrow-right"></i></a></li>
+                <li><a href="../citibim.html">NEIIA <i class="fas fa-arrow-right"></i></a></li>
+                <li><a href="../nefund.html" id="mobile-resources-link">NEFUND <i
+                            class="fas fa-chevron-right"></i></a>
                 </li>
             </ul>
             <div class="mobile-nav-footer">
-                <a href="contact.html" class="btn btn-primary full-width">Contact Support</a>
-                <a href="signin.html" class="btn btn-secondary full-width">Sign in</a>
+                <a href="../contact.html" class="btn btn-primary full-width">Contact Support</a>
+                <a href="../signin.html" class="btn btn-secondary full-width">Sign in</a>
             </div>
         </div>
         <!-- Resources Submenu -->
@@ -2294,31 +2016,31 @@
                 <div class="submenu-section">
                     <span class="submenu-label">Fund Administration</span>
                     <ul class="submenu-list">
-                        <li><a href="sub-funds/subfunds.html">Sub Funds</a></li>
-                        <li><a href="venture-funds/venturefunds.html">Venture Funds</a></li>
-                        <li><a href="rolling-funds/rollingfunds.html">Rolling Funds</a></li>
-                        <li><a href="scout-funds/scout.html">Scout Funds</a></li>
-                        <li><a href="SPVs/SPVs.html">SPVs</a></li>
-                        <li><a href="roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
+                        <li><a href="../sub-funds/subfunds.html">Sub Funds</a></li>
+                        <li><a href="../venture-funds/venturefunds.html">Venture Funds</a></li>
+                        <li><a href="../rolling-funds/rollingfunds.html">Rolling Funds</a></li>
+                        <li><a href="../scout-funds/scout.html">Scout Funds</a></li>
+                        <li><a href="../SPVs/SPVs.html">SPVs</a></li>
+                        <li><a href="../roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
                     </ul>
                 </div>
                 <div class="submenu-section">
                     <span class="submenu-label">Investor Management</span>
                     <ul class="submenu-list">
-                        <li><a href="government-site/digital.html">Digital Subscriptions</a></li>
-                        <li><a href="databank.html">Data Bank</a></li>
+                        <li><a href="../government-site/digital.html">Digital Subscriptions</a></li>
+                        <li><a href="../databank.html">Data Bank</a></li>
                     </ul>
                 </div>
                 <div class="submenu-section">
                     <span class="submenu-label">Intelligence</span>
                     <ul class="submenu-list">
-                        <li><a href="fin/fin.html">Fin <span class="beta-badge">Beta</span></a></li>
-                        <li><a href="edu-center/educenter.html">Edu Center</a></li>
+                        <li><a href="../fin/fin.html">Fin <span class="beta-badge">Beta</span></a></li>
+                        <li><a href="../edu-center/educenter.html">Edu Center</a></li>
                     </ul>
                 </div>
                 <div class="product-suites-box">
                     <span class="submenu-label" style="margin-bottom: 24px; display: block;">Product Suites</span>
-                    <a href="fund-administration/fund-administration.html" class="suite-card">
+                    <a href="../fund-administration/fund-administration.html" class="suite-card">
                         <div class="suite-icon">
                             <i class="fas fa-circle-notch" style="color: #A3E635; font-size: 24px;"></i>
                         </div>
@@ -2327,7 +2049,7 @@
                             <p>All-in-one partner to launch an investment vehicle</p>
                         </div>
                     </a>
-                    <a href="investor-management.html" class="suite-card">
+                    <a href="../investor-management.html" class="suite-card">
                         <div class="suite-icon">
                             <i class="fas fa-layer-group" style="color: #A3E635; font-size: 24px;"></i>
                         </div>
@@ -2337,13 +2059,13 @@
                         </div>
                     </a>
                 </div>
-                <a href="construction.html" class="submenu-footer-link">
+                <a href="../construction.html" class="submenu-footer-link">
                     Looking for tools for startups? Explore Rollups. <i class="fas fa-arrow-right"
                         style="font-size: 12px;"></i>
                 </a>
                 <div class="submenu-btn-group">
-                    <a href="contact.html" class="btn-lavender">Contact sales</a>
-                    <a href="signin.html" class="btn-gray-light">Sign in</a>
+                    <a href="../contact.html" class="btn-lavender">Contact sales</a>
+                    <a href="../signin.html" class="btn-gray-light">Sign in</a>
                 </div>
             </div>
         </div>
@@ -2352,169 +2074,123 @@
     <!-- ==========================================
          HERO SECTION
          ========================================== -->
-
-    <!-- HERO SECTION -->
-    <section class="hero" style="padding-bottom: 60px; padding-top: 80px;">
+    <section class="hero" id="hero-section">
         <div class="hero-glow-fixed"></div>
+        <div class="hero-glow-left"></div>
         <div class="hero-inner">
-            <div class="hero-pill" style="opacity: 0; animation: fadeInUp 0.8s forwards;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            <div class="hero-pill fade-in-up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
                 </svg>
-                Investor Management
+                Reporting & LP Portal
             </div>
-            <h1 style="opacity: 0; animation: fadeInUp 0.8s 0.2s forwards; margin: 16px 0;">
-                Elevate every investor <span
-                    style="background: linear-gradient(120deg, #10b981, #0d3d44); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">touchpoint</span>
-            </h1>
-            <p
-                style="font-size: 20px; color: #5e6d8a; max-width: 600px; margin: 0 auto 24px; font-weight: 400; opacity: 0; animation: fadeInUp 0.8s 0.4s forwards;">
-                Build investor trust with every interaction. Give LPs a modern, customized experience, and your firm the
-                tools to build lasting relationships.
-            </p>
-            <div style="display: flex; gap: 16px; opacity: 0; animation: fadeInUp 0.8s 0.6s forwards;">
-                <a href="contact.html" class="hero-cta">Contact Sales <i class="fas fa-arrow-right"
-                        style="font-size: 13px;"></i></a>
-                <a href="signin.html" class="btn btn-secondary"
-                    style="padding: 16px 32px; border-radius: 8px; font-weight: 600;">Sign In</a>
-            </div>
-
-            <!-- Bento-Style Minimal Graphic representation for Investor Management -->
-            <div
-                style="margin-top: 24px; width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; opacity: 0; animation: fadeInUp 1s 0.8s forwards; perspective: 1000px;">
-                <a href="government-site/digital.html"
-                    style="background: #f8fafc; text-decoration: none; border-radius: 16px; padding: 40px; border: 1px solid #e2e8f0; text-align: left; transform: rotateX(5deg); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); opacity: 0; animation: fadeInUp 0.8s 0.9s forwards; box-shadow: 0 4px 6px rgba(0,0,0,0.02), 0 10px 15px rgba(0,0,0,0.03);"
-                    onmouseover="this.style.transform='rotateX(0) translateY(-8px)'; this.style.boxShadow='0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';"
-                    onmouseout="this.style.transform='rotateX(5deg)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.02), 0 10px 15px rgba(0,0,0,0.03)'; this.style.borderColor='#e2e8f0';">
-                    <div
-                        style="width: 48px; height: 48px; background: #e0e7ff; color: #4338ca; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 24px;">
-                        <i class="fas fa-file-signature"></i>
-                    </div>
-                    <h3 style="font-size: 24px; margin-bottom: 12px; color: #0f172a;">Digital Subscriptions</h3>
-                    <p style="color: #64748b; margin: 0; font-size: 16px;">Streamline investor onboarding with secure
-                        e-signatures and digital documents.</p>
+            <h1 class="fade-in-up fade-delay-1">Transparent reporting your LPs will actually read</h1>
+            <p class="hero-subtitle fade-in-up fade-delay-2">Automated fund reports, branded LP dashboards, and
+                real-time portfolio transparency — purpose-built for modern fund managers and institutional
+                investors.</p>
+            <div class="hero-btns fade-in-up fade-delay-3">
+                <a href="mailto:info@neiia.gov.ng?subject=Reporting%20%26%20LP%20Portal%20-%20Schedule%20Demo"
+                    class="hero-cta">
+                    Schedule a demo
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </a>
-                <a href="databank.html"
-                    style="background: #0d3d44; text-decoration: none; border-radius: 16px; padding: 40px; border: 1px solid #002b30; text-align: left; transform: rotateX(5deg); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); box-shadow: 0 10px 30px rgba(13, 61, 68, 0.2); opacity: 0; animation: fadeInUp 0.8s 1.1s forwards;"
-                    onmouseover="this.style.transform='rotateX(0) translateY(-8px)'; this.style.boxShadow='0 30px 60px rgba(13, 61, 68, 0.4)';"
-                    onmouseout="this.style.transform='rotateX(5deg)'; this.style.boxShadow='0 10px 30px rgba(13, 61, 68, 0.2)';">
-                    <div
-                        style="width: 48px; height: 48px; background: rgba(255,255,255,0.1); color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 24px;">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3 style="font-size: 24px; margin-bottom: 12px; color: #fff;">Data Bank</h3>
-                    <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 16px;">Secure document sharing with
-                        granular access controls and activity tracking.</p>
-                </a>
+                <a href="../contact.html" class="hero-cta-secondary">Talk to an expert</a>
             </div>
         </div>
     </section>
 
-    <!-- STATS STRIP -->
-    <section class="stats-strip"
-        style="background: #ffffff; padding: 60px 0; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -50%; left: -10%; width: 40%; height: 200%; background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%); pointer-events: none;"></div>
-        <div class="container" style="max-width: 1000px; position: relative; z-index: 1;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); text-align: center; gap: 40px; opacity: 0; animation: fadeInUp 0.8s 0.2s forwards;">
-                <div style="opacity: 0; animation: fadeInUp 0.8s 0.3s forwards;">
-                    <h3
-                        style="font-size: 56px; font-weight: 500; font-family: 'NEIIA Display'; color: #0d3d44; margin-bottom: 8px;">
-                        $80B+</h3>
-                    <p
-                        style="font-size: 16px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Assets Administered</p>
+    <!-- ==========================================
+         DASHBOARD PREVIEW
+         ========================================== -->
+    <section style="background: #fff; padding: 0 24px 80px;">
+        <div class="dashboard-preview fade-in-up fade-delay-4">
+            <div class="dashboard-frame">
+                <div class="dash-top-bar">
+                    <div class="dash-dot red"></div>
+                    <div class="dash-dot yellow"></div>
+                    <div class="dash-dot green"></div>
+                    <span style="color: #8b949e; font-size: 12px; margin-left: 12px;">LP Dashboard — Fund Overview</span>
                 </div>
-                <div style="opacity: 0; animation: fadeInUp 0.8s 0.4s forwards;">
-                    <h3
-                        style="font-size: 56px; font-weight: 500; font-family: 'NEIIA Display'; color: #0d3d44; margin-bottom: 8px;">
-                        31K</h3>
-                    <p
-                        style="font-size: 16px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Funds Managed</p>
-                </div>
-                <div style="opacity: 0; animation: fadeInUp 0.8s 0.5s forwards;">
-                    <h3
-                        style="font-size: 56px; font-weight: 500; font-family: 'NEIIA Display'; color: #0d3d44; margin-bottom: 8px;">
-                        130K+</h3>
-                    <p
-                        style="font-size: 16px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Investors Served</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FEATURES BENTO GRID -->
-    <section style="padding: 120px 24px; background: #ffffff;">
-        <div class="container">
-            <div style="text-align: center; margin-bottom: 80px;">
-                <h2 style="font-size: 40px; color: #0f172a; margin-bottom: 16px; font-weight: 500;">Build investor trust
-                    with every interaction</h2>
-                <p style="font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto;">Everything you need to
-                    deliver a premium, transparent experience to your Limited Partners.</p>
-            </div>
-
-            <div class="product-features-bento">
-                <div class="bento-card bento-wide bento-reporting"
-                    onmouseover="this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'"
-                    onmouseout="this.style.boxShadow='none'">
-                    <div>
-                        <h3>Always-on Reporting</h3>
-                        <p>Give investors real-time access to
-                            performance data, capital accounts, and portfolio updates in a beautiful dashboard.</p>
-                    </div>
-                    <div style="display: flex; justify-content: flex-end;">
-                        <img src="assets/images/investor-management/feature2.png" alt="Reporting"
-                            style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 100%;">
-                    </div>
-                </div>
-
-                <div class="bento-card bento-branding"
-                    onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'">
-                    <div>
-                        <div
-                            style="width: 48px; height: 48px; background: rgba(255,255,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 24px;">
-                            <i class="fas fa-paint-brush"></i>
+                <div class="dash-grid">
+                    <div class="dash-card">
+                        <div class="dash-card-label">Total AUM</div>
+                        <div class="dash-card-value">$2.4B</div>
+                        <div class="dash-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3M6 3L3 6M6 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            +12.4% YTD
                         </div>
-                        <h3 style="font-size: 28px; margin-bottom: 16px;">Custom Branding</h3>
-                        <p style="color: rgba(255,255,255,0.8); font-size: 18px;">White-label your investor portal with
-                            your firm's branding, custom colors, and personalized domain.</p>
                     </div>
-                </div>
-
-                <div class="bento-card bento-analytics"
-                    onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'">
-                    <div>
-                        <div
-                            style="width: 48px; height: 48px; background: #f1f5f9; color: #0f172a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 24px;">
-                            <i class="fas fa-chart-pie"></i>
+                    <div class="dash-card">
+                        <div class="dash-card-label">Active LPs</div>
+                        <div class="dash-card-value">847</div>
+                        <div class="dash-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3M6 3L3 6M6 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            +38 this quarter
                         </div>
-                        <h3 style="font-size: 24px; color: #0f172a; margin-bottom: 16px;">Fund Analytics</h3>
-                        <p style="color: #64748b; font-size: 16px;">Visualize IRR, TVPI, and detailed KPI metrics across
-                            your entire portfolio effortlessly.</p>
                     </div>
-                </div>
-
-                <div class="bento-card bento-wide bento-secure"
-                    onmouseover="this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'"
-                    onmouseout="this.style.boxShadow='none'">
-                    <div>
-                        <h3 style="font-size: 28px; color: #0f172a; margin-bottom: 16px;">Secure Delivery</h3>
-                        <p style="color: #64748b; font-size: 18px; max-width: 400px;">Deliver K-1s, capital call
-                            notices, and quarterly letters directly to LP inboxes with bank-grade encryption and
-                            watermark protection.</p>
-                    </div>
-                    <div style="margin-top: 40px; display: flex; gap: 16px;">
-                        <div
-                            style="background: white; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 16px; flex: 1;">
-                            <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 24px;"></i>
-                            <div style="font-weight: 500;">Notice Q3.pdf</div>
+                    <div class="dash-card">
+                        <div class="dash-card-label">Net IRR</div>
+                        <div class="dash-card-value">24.7%</div>
+                        <div class="dash-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3M6 3L3 6M6 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            +3.2% vs benchmark
                         </div>
-                        <div
-                            style="background: white; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 16px; flex: 1;">
-                            <i class="fas fa-lock" style="color: #10b981; font-size: 24px;"></i>
-                            <div style="font-weight: 500;">Encrypted K-1</div>
+                    </div>
+                    <div class="dash-wide">
+                        <div class="dash-wide-header">
+                            <div class="dash-wide-title">Capital Deployment by Quarter</div>
+                            <div class="dash-wide-tabs">
+                                <span class="dash-tab">1Y</span>
+                                <span class="dash-tab active">3Y</span>
+                                <span class="dash-tab">All</span>
+                            </div>
+                        </div>
+                        <div class="chart-bars">
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 40px;"></div>
+                                <span class="chart-bar-label">Q1 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 60px;"></div>
+                                <span class="chart-bar-label">Q2 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 45px;"></div>
+                                <span class="chart-bar-label">Q3 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 85px;"></div>
+                                <span class="chart-bar-label">Q4 '24</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 70px;"></div>
+                                <span class="chart-bar-label">Q1 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 95px;"></div>
+                                <span class="chart-bar-label">Q2 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 80px;"></div>
+                                <span class="chart-bar-label">Q3 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 110px;"></div>
+                                <span class="chart-bar-label">Q4 '25</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 75px;"></div>
+                                <span class="chart-bar-label">Q1 '26</span>
+                            </div>
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: 100px;"></div>
+                                <span class="chart-bar-label">Q2 '26</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2522,235 +2198,313 @@
         </div>
     </section>
 
-    <!-- EXPERIENCES APPS CARDS -->
-    <section style="padding: 0 24px 120px; background: #ffffff;">
-        <div class="container">
-            <h2
-                style="font-size: 32px; font-weight: 500; font-family: 'NEIIA Display'; margin-bottom: 40px; color: #0f172a; text-align: center;">
-                Redefine investor experiences for the modern era</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 800px; margin: 0 auto; gap: 24px;">
-                <a href="construction.html"
-                    style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; text-decoration: none; transition: all 0.2s ease; position: relative;"
-                    onmouseover="this.style.background='#ffffff'; this.style.borderColor='#cbd5e1'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.05)';"
-                    onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
-                    <div
-                        style="width: 48px; height: 48px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #0f172a; margin-bottom: auto; margin-bottom: 60px;">
-                        <i class="fas fa-file-signature"></i>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                        <h3 style="font-size: 20px; font-weight: 500; color: #0f172a; margin: 0;">Digital Subscriptions
-                        </h3>
-                        <div
-                            style="width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: #0f172a; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-                </a>
+    <!-- ==========================================
+         STATS STRIP
+         ========================================== -->
+    <section class="stats-strip">
+        <div class="stats-strip-inner">
+            <div class="stat-box">
+                <div class="stat-number" data-target="99" data-suffix="%">0%</div>
+                <div class="stat-label">Report delivery on time</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-target="80" data-suffix="%">0%</div>
+                <div class="stat-label">Reduction in manual reporting</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-target="15" data-suffix="k+">0k+</div>
+                <div class="stat-label">LP reports generated</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-target="24" data-suffix="/7">0/7</div>
+                <div class="stat-label">Real-time portfolio access</div>
+            </div>
+        </div>
+    </section>
 
-                <a href="databank.html"
-                    style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; text-decoration: none; transition: all 0.2s ease; position: relative;"
-                    onmouseover="this.style.background='#ffffff'; this.style.borderColor='#cbd5e1'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.05)';"
-                    onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
-                    <div
-                        style="width: 48px; height: 48px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #0f172a; margin-bottom: auto; margin-bottom: 60px;">
-                        <i class="fas fa-folder-open"></i>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                        <h3 style="font-size: 20px; font-weight: 500; color: #0f172a; margin: 0;">Data Bank</h3>
-                        <div
-                            style="width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: #0f172a; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
+    <!-- ==========================================
+         FEATURE SECTION (DARK)
+         ========================================== -->
+    <section class="feature-section">
+        <div class="feature-container">
+            <div class="feature-content">
+                <div class="feature-label">LP Experience</div>
+                <h2 class="feature-title">Give your LPs the transparency they deserve</h2>
+                <p class="feature-desc">Every LP gets a personalized, branded dashboard showing their capital
+                    account, distributions, documents, and performance metrics — updated in real time.</p>
+                <a href="mailto:info@neiia.gov.ng?subject=Reporting%20LP%20Portal%20Demo" class="cta-btn"
+                    style="margin-top: 8px;">
+                    Request access
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </a>
             </div>
-        </div>
-    </section>
-
-    <!-- TESTIMONIALS -->
-    <section style="padding: 100px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
-        <div class="container">
-            <h2
-                style="font-size: 32px; font-weight: 500; font-family: 'NEIIA Display'; margin-bottom: 60px; text-align: center; color: #0f172a;">
-                Trusted by visionary leaders</h2>
-
-            <style>
-                .testimonial-carousel::-webkit-scrollbar {
-                    display: none;
-                }
-
-                .testimonial-carousel {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                    cursor: grab;
-                }
-
-                .testimonial-carousel:active {
-                    cursor: grabbing;
-                }
-            </style>
-            <div class="testimonial-carousel"
-                style="display: flex; gap: 32px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 40px; padding-top: 10px;">
-                <!-- Testimonial 1 (Dark Anchor) -->
-                <div style="flex: 0 0 min(90%, 650px); scroll-snap-align: center; background: #0d3d44; color: white; border-radius: 20px; padding: 48px; position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); box-shadow: 0 10px 30px rgba(13,61,68,0.15);"
-                    onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 25px 50px rgba(13,61,68,0.3)'"
-                    onmouseout="this.style.transform='none'; this.style.boxShadow='0 10px 30px rgba(13,61,68,0.15)'">
-                    <i class="fas fa-quote-left"
-                        style="position: absolute; top: 10px; right: 20px; font-size: 140px; color: #ffffff; opacity: 0.06; z-index: 0; transform: rotate(10deg);"></i>
-                    <p
-                        style="font-size: 22px; line-height: 1.6; color: rgba(255,255,255,0.95); margin-bottom: 40px; font-style: italic; position: relative; z-index: 1; letter-spacing: -0.01em; font-weight: 300;">
-                        "Partnering with NEIIA has revolutionized our approach to national energy data management. The
-                        Data Bank provides the transparency and intelligence required to drive sustainable investment
-                        and power Nigeria's future."</p>
-                    <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">
-                        <img src="assets/images/investor-management/mustapha-dg.jpeg" alt="Dr. Mustapha Abdullahi"
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 600; color: #ffffff; margin: 0 0 4px;">Dr. Mustapha
-                                Abdullahi</h4>
-                            <p style="font-size: 14px; color: rgba(255,255,255,0.7); margin: 0;">Director General (DG),
-                                Energy Commission of Nigeria</p>
+            <div class="feature-visual">
+                <div class="feature-card-stack">
+                    <div class="f-card">
+                        <div class="f-card-header">
+                            <div class="f-card-icon">
+                                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </div>
+                            <div class="f-card-title">Automated Report Distribution</div>
                         </div>
+                        <div class="f-card-desc">Quarterly statements, K-1s, and capital account summaries delivered automatically to each LP's portal.</div>
                     </div>
-                </div>
-
-                <!-- Testimonial 2 (Clean White) -->
-                <div style="flex: 0 0 min(90%, 650px); scroll-snap-align: center; background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 48px; position: relative; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease;"
-                    onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'"
-                    onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <i class="fas fa-quote-left"
-                        style="position: absolute; top: 10px; right: 20px; font-size: 120px; color: #0d3d44; opacity: 0.03; z-index: 0; transform: rotate(-5deg);"></i>
-                    <p
-                        style="font-size: 20px; line-height: 1.6; color: #334155; margin-bottom: 40px; font-style: italic; position: relative; z-index: 1;">
-                        "Accelerating Nigeria's energy transition requires robust partnerships and innovative data
-                        systems. NEIIA gives us the strategic oversight needed to harmonize public policy with private
-                        sector execution."</p>
-                    <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">
-                        <img src="assets/images/investor-management/olu.jpeg" alt="Mrs. Olu Verheijen"
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 4px;">Mrs. Olu
-                                Verheijen</h4>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">Special Adviser to the President on
-                                Energy</p>
+                    <div class="f-card">
+                        <div class="f-card-header">
+                            <div class="f-card-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                            </div>
+                            <div class="f-card-title">Custom-Branded Portals</div>
                         </div>
+                        <div class="f-card-desc">White-label your LP portal with your fund's logo, colors, and domain for a fully branded investor experience.</div>
                     </div>
-                </div>
-
-                <!-- Testimonial 3 (Subtle Slate Tint) -->
-                <div style="flex: 0 0 min(90%, 650px); scroll-snap-align: center; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 20px; padding: 48px; position: relative; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease;"
-                    onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.04)'"
-                    onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <i class="fas fa-quote-left"
-                        style="position: absolute; top: 10px; right: 20px; font-size: 120px; color: #0d3d44; opacity: 0.03; z-index: 0; transform: rotate(5deg);"></i>
-                    <div
-                        style="position: absolute; left: 0; top: 40px; bottom: 40px; width: 4px; background: rgba(13,61,68,0.1); border-radius: 0 4px 4px 0;">
-                    </div>
-                    <p
-                        style="font-size: 20px; line-height: 1.6; color: #334155; margin-bottom: 40px; font-style: italic; position: relative; z-index: 1;">
-                        "The National Energy Fund is committed to unlocking capital for critical infrastructure. NEIIA's
-                        platform provides the rigorous financial tracking and project visibility essential for banking
-                        institutions and global investors."</p>
-                    <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">
-                        <img src="assets/images/investor-management/kas.png" alt="Dr. Kassim Gidado"
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 4px;">Dr. Kassim
-                                Gidado</h4>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">Chairman, National Energy Fund
-                                (NEFUND)</p>
+                    <div class="f-card">
+                        <div class="f-card-header">
+                            <div class="f-card-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <div class="f-card-title">Real-Time Performance Tracking</div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Testimonial 4 (Clean White) -->
-                <div style="flex: 0 0 min(90%, 650px); scroll-snap-align: center; background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 48px; position: relative; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease;"
-                    onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'"
-                    onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <i class="fas fa-quote-left"
-                        style="position: absolute; top: 10px; right: 20px; font-size: 120px; color: #0d3d44; opacity: 0.03; z-index: 0; transform: rotate(-5deg);"></i>
-                    <p
-                        style="font-size: 20px; line-height: 1.6; color: #334155; margin-bottom: 40px; font-style: italic; position: relative; z-index: 1;">
-                        "J.P. Morgan's partnership with NEIIA exemplifies how global financial institutions can
-                        effectively participate in Nigeria's energy sector. The robust regulatory framework and
-                        transparent data access provide the confidence needed for large-scale capital deployment."</p>
-                    <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">
-                        <img src="assets/images/investor-management/daps.jpg.webp" alt="Dapo Olagunju"
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 4px;">Dapo
-                                Olagunju</h4>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">Managing Director at JPMorgan</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Testimonial 5 (Subtle Slate Tint) -->
-                <div style="flex: 0 0 min(90%, 650px); scroll-snap-align: center; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 20px; padding: 48px; position: relative; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease;"
-                    onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.04)'"
-                    onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <i class="fas fa-quote-left"
-                        style="position: absolute; top: 10px; right: 20px; font-size: 120px; color: #0d3d44; opacity: 0.03; z-index: 0; transform: rotate(5deg);"></i>
-                    <p
-                        style="font-size: 20px; line-height: 1.6; color: #334155; margin-bottom: 40px; font-style: italic; position: relative; z-index: 1;">
-                        "CardinalStone relies on accurate data to drive local investment strategies. NEIIA's
-                        intelligence platforms provide the granular insights we need to identify high-potential energy
-                        assets and confidently mobilize domestic capital."</p>
-                    <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">
-                        <img src="assets/images/investor-management/mariam.png" alt="Mariam Bolakale"
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 4px;">Mariam
-                                Bolakale</h4>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">Executive Director, CardinalStone
-                                Asset Management</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Testimonial 6 (Green Gradient Accent) -->
-                <div style="flex: 0 0 min(90%, 650px); scroll-snap-align: center; background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 48px; position: relative; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease;"
-                    onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.05)'"
-                    onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <div
-                        style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10b981, #0d3d44);">
-                    </div>
-                    <i class="fas fa-quote-left"
-                        style="position: absolute; top: 10px; right: 20px; font-size: 120px; color: #0d3d44; opacity: 0.03; z-index: 0; transform: rotate(-5deg);"></i>
-                    <p
-                        style="font-size: 20px; line-height: 1.6; color: #334155; margin-bottom: 40px; font-style: italic; position: relative; z-index: 1;">
-                        "FirstCap leverages NEIIA’s comprehensive market data to structure complex public finance and
-                        corporate advisory deals. The platform’s transparency ensures we can align capital market
-                        opportunities with national development goals effectively."</p>
-                    <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">
-                        <img src="assets/images/investor-management/oluola.jpg" alt="Oluseun Olatidoye"
-                            style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 4px;">Oluseun
-                                Olatidoye</h4>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">Head, Capital Markets, FirstCap</p>
-                        </div>
+                        <div class="f-card-desc">IRR, TVPI, DPI, and MOIC calculated continuously so LPs always see the latest portfolio performance.</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CALL TO ACTION -->
-    <section style="padding: 120px 24px; text-align: center; background: #ffffff;">
-        <div class="container" style="max-width: 800px;">
-            <h2
-                style="font-size: 40px; font-weight: 500; font-family: 'NEIIA Display'; color: #0f172a; margin-bottom: 24px;">
-                Start upgrading your investor experience</h2>
-            <p style="font-size: 18px; color: #64748b; margin-bottom: 40px;">Join thousands of fund managers who trust
-                us to streamline their investor relationships.</p>
-            <div style="display: flex; justify-content: center; gap: 16px;">
-                <a href="#" onclick="handleGetStarted(event)"
-                    style="background: #000; color: white; padding: 16px 36px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; border: 1px solid #000; transition: background 0.2s;">Get
-                    Started Today</a>
+    <!-- ==========================================
+         KEY FEATURES — BENTO GRID
+         ========================================== -->
+    <section class="key-features-section" id="key-features">
+        <div class="kf-header">
+            <div class="kf-header-label"><span></span> Capabilities</div>
+            <h2>Everything you need for LP transparency</h2>
+            <p>A complete suite of reporting, portal, analytics, and compliance tools designed for institutional-grade fund operations.</p>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Card 1: Automated Reporting — WIDE + DARK -->
+            <div class="bento-card bento-wide bento-dark">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                </div>
+                <h3 class="bento-title">Automated Fund Reporting</h3>
+                <p class="bento-desc">Generate quarterly and annual reports with a single click. Pre-built templates for capital account statements, performance summaries, and portfolio reviews — all customizable to your fund's standards.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Quarterly statements</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Annual reviews</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> K-1 distribution</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Custom templates</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Batch generation</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Multi-fund support</div>
+                </div>
+            </div>
+
+            <!-- Card 2: LP Portal — SINGLE -->
+            <div class="bento-card bento-lavender">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3 class="bento-title">Branded LP Portal</h3>
+                <p class="bento-desc">Secure, personalized portals with capital account details, distribution history, and documents — white-labeled to your brand.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> White-label</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Capital accounts</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> SSO auth</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Distributions</div>
+                </div>
+            </div>
+
+            <!-- Card 3: Analytics — SINGLE -->
+            <div class="bento-card">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                </div>
+                <h3 class="bento-title">Portfolio Analytics</h3>
+                <p class="bento-desc">Interactive performance dashboards with IRR, TVPI, DPI, MOIC and custom KPIs — with configurable benchmarking.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Performance metrics</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Benchmarks</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Vintage analysis</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Sector breakdown</div>
+                </div>
+            </div>
+
+            <!-- Card 4: Compliance — ACCENT GRADIENT -->
+            <div class="bento-card bento-accent">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3 class="bento-title">Compliance & Audit Trail</h3>
+                <p class="bento-desc">Every action logged with full audit trails. Meet regulatory requirements with automated compliance checks and controlled access.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full audit logs</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Access controls</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Regulatory reports</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Data encryption</div>
+                </div>
+            </div>
+
+            <!-- Card 5: Documents — WIDE -->
+            <div class="bento-card bento-wide">
+                <div class="bento-icon">
+                    <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                </div>
+                <h3 class="bento-title">Secure Document Management</h3>
+                <p class="bento-desc">Centralize all fund documents — LPAs, side letters, tax forms, and investor correspondence — in a secure, searchable document vault with granular sharing permissions.</p>
+                <div class="bento-checklist">
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Document vault</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Version control</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> E-signatures</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Granular permissions</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full-text search</div>
+                    <div class="bento-check-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Activity tracking</div>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- ==========================================
+         HOW IT WORKS
+         ========================================== -->
+    <section class="how-it-works">
+        <div class="hiw-container">
+            <div class="hiw-header">
+                <div class="hiw-label">How it works</div>
+                <h2 class="hiw-title">Up and running in days, not months</h2>
+                <p class="hiw-subtitle">Our team handles the setup while you focus on running your fund. No
+                    engineering resources required.</p>
+            </div>
+            <div class="hiw-steps">
+                <div class="hiw-step">
+                    <div class="hiw-step-num">1</div>
+                    <h3>Connect</h3>
+                    <p>Link your fund administration data, portfolio systems, and accounting platforms through secure
+                        integrations.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-num">2</div>
+                    <h3>Configure</h3>
+                    <p>Customize report templates, portal branding, and LP access permissions to match your fund's
+                        requirements.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-num">3</div>
+                    <h3>Automate</h3>
+                    <p>Set reporting schedules, distribution workflows, and notification rules to run on autopilot.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-step-num">4</div>
+                    <h3>Monitor</h3>
+                    <p>Track LP engagement, document views, and portal usage with built-in analytics and insights.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FAQ
+         ========================================== -->
+    <section class="faq-section">
+        <div class="faq-container">
+            <h2 class="faq-heading">Frequently asked questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        What types of reports can be generated automatically?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">The platform generates quarterly capital account statements, annual fund
+                            performance reports, K-1 tax documents, portfolio company updates, cash flow waterfalls, and
+                            custom ad-hoc reports. All templates are fully customizable to match your fund's branding and
+                            reporting standards.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        Can LPs access the portal on mobile devices?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">Yes. The LP portal is fully responsive and optimized for all devices —
+                            desktop, tablet, and mobile. LPs can view performance data, download documents, and review
+                            capital account details from any device with a modern browser.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        How secure is the LP data?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">We employ bank-grade security with AES-256 encryption at rest and TLS 1.3
+                            in transit. Multi-factor authentication, role-based access controls, SOC 2 Type II compliance,
+                            and complete audit trails ensure your data meets the highest security standards.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        Can we white-label the portal with our fund's branding?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">Absolutely. The portal supports full white-labeling including custom logos,
+                            color schemes, typography, custom domain mapping, and branded email communications. Your LPs
+                            will interact with an experience that feels entirely yours.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        What performance metrics are available?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">The platform calculates and displays Net IRR, Gross IRR, TVPI, DPI, RVPI,
+                            MOIC, and custom KPIs. Performance can be viewed at the fund level, portfolio company level,
+                            or individual LP level — with benchmark comparisons against industry indices.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-trigger" aria-expanded="false">
+                        How long does onboarding take?
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq-content" aria-hidden="true">
+                        <p class="faq-answer">Most funds are fully onboarded within 5–10 business days. Our dedicated
+                            implementation team handles data migration, portal setup, branding configuration, and LP
+                            invite workflows — so you can focus on managing your fund.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         CTA SECTION
+         ========================================== -->
+    <section class="cta-section">
+        <div class="cta-glow"></div>
+        <div class="cta-inner">
+            <h2 class="cta-title">Ready to modernize your LP reporting?</h2>
+            <p class="cta-desc">Talk to our team about how the Reporting & LP Portal can help you deliver
+                institutional-grade transparency to your investors.</p>
+            <a href="mailto:info@neiia.gov.ng?subject=Reporting%20%26%20LP%20Portal%20Inquiry" class="cta-btn">
+                Talk to an expert
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-grid">
@@ -2758,11 +2512,11 @@
                     <h4 class="footer-col-title">Products</h4>
                     <nav>
                         <ul class="footer-nav">
-                            <li><a href="venture-funds/venturefunds.html" class="footer-link">Sub Funds</a></li>
-                            <li><a href="venture-funds/venturefunds.html" class="footer-link">Venture Funds</a></li>
-                            <li><a href="rolling-funds/rollingfunds.html" class="footer-link">Rolling Funds</a></li>
-                            <li><a href="SPVs/SPVs.html" class="footer-link">SPVs</a></li>
-                            <li><a href="scout-funds/scout.html" class="footer-link">Scout Funds</a></li>
+                            <li><a href="../venture-funds/venturefunds.html" class="footer-link">Sub Funds</a></li>
+                            <li><a href="../venture-funds/venturefunds.html" class="footer-link">Venture Funds</a></li>
+                            <li><a href="../rolling-funds/rollingfunds.html" class="footer-link">Rolling Funds</a></li>
+                            <li><a href="../SPVs/SPVs.html" class="footer-link">SPVs</a></li>
+                            <li><a href="../scout-funds/scout.html" class="footer-link">Scout Funds</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -2770,10 +2524,10 @@
                     <h4 class="footer-col-title">Administration</h4>
                     <nav>
                         <ul class="footer-nav">
-                            <li><a href="about.html" class="footer-link">About NEIIA</a></li>
-                            <li><a href="governance.html" class="footer-link">Mandate & Governance</a></li>
-                            <li><a href="construction.html" class="footer-link">Careers</a></li>
-                            <li><a href="newsletter.html" class="footer-link">News & Updates</a></li>
+                            <li><a href="../about.html" class="footer-link">About NEIIA</a></li>
+                            <li><a href="../governance.html" class="footer-link">Mandate & Governance</a></li>
+                            <li><a href="../construction.html" class="footer-link">Careers</a></li>
+                            <li><a href="../newsletter.html" class="footer-link">News & Updates</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -2781,8 +2535,8 @@
                     <h4 class="footer-col-title">Engagement</h4>
                     <nav>
                         <ul class="footer-nav">
-                            <li><a href="help-center.html" class="footer-link">Support & Enquiries</a></li>
-                            <li><a href="contact.html" class="footer-link">Contact NEIIA</a></li>
+                            <li><a href="../help-center.html" class="footer-link">Support & Enquiries</a></li>
+                            <li><a href="../contact.html" class="footer-link">Contact NEIIA</a></li>
                         </ul>
                     </nav>
                 </div>

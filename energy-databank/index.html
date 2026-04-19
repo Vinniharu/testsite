@@ -75,28 +75,15 @@
                     <a href="document/Nuclear_Safety_and_Radiation_Protection_Act.pdf" class="drop-item">NSRP Act</a>
                     <a href="document/Hydrocarbon_Oil_Refinery_Act.pdf" class="drop-item">HOR Act</a>
                     <a href="document/Petroleum_Traning_Institute_Act.pdf" class="drop-item">PTIF Act</a>
+                    <a href="#" class="drop-item">Socio Economic</a>
                 </div>
             </div>
 
+            <a href="data-point/index.html" class="nav-link">Data Point</a>
             <a href="#" class="nav-link">EnerGIS</a>
-            <a href="#" class="nav-link">Socio Economic</a>
         </div>
     </nav>
 
-    <!-- AUTH LINKS -->
-    <div class="auth-fixed">
-        <div class="user-profile-wrap">
-            <div class="user-avatar" id="userProfileBtn">
-                <img src="assets/user-avatar.png" alt="User Profile">
-            </div>
-            <div class="user-dropdown" id="userProfileMenu">
-                <a href="#" class="user-drop-item" id="settingsBtn"><i class="fas fa-cog"></i> Settings</a>
-                <div class="user-drop-divider"></div>
-                <a href="#" class="user-drop-item text-red" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>
-                    Logout</a>
-            </div>
-        </div>
-    </div>
 
     <!-- MOBILE BUTTON -->
     <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
@@ -177,23 +164,21 @@
                         <a href="document/Petroleum_Technology_Development_Fund_Act.pdf">PTDF Act</a>
                         <a href="document/Nigerian_Atomic_Energy_Commission_Act.pdf">NAEC Act</a>
                         <a href="document/Nuclear_Safety_and_Radiation_Protection_Act.pdf">NSRP Act</a>
-                        <a href="document/Hydrocarbon_Oil_Refinery_Act.pdf">HOR Act</a>
+                        <a href="document/Hydrocarbon_Oil_Refinery_Act.pdf" target="_blank">HOR Act</a>
                         <a href="document/Petroleum_Traning_Institute_Act.pdf">PTIF Act</a>
+                        <a href="#">Socio Economic</a>
                     </div>
                 </li>
 
-                <!-- Direct Links -->
+                <!-- Data Point -->
+                <li class="mobile-nav-item">
+                    <a href="data-point/index.html" class="mobile-nav-link">Data Point</a>
+                </li>
+
                 <li class="mobile-nav-item">
                     <a href="#" class="mobile-nav-link">EnerGIS</a>
                 </li>
-                <li class="mobile-nav-item">
-                    <a href="#" class="mobile-nav-link">Socio Economic</a>
-                </li>
             </ul>
-            <div class="mobile-nav-footer">
-                <a href="#" class="btn btn-black full-width" id="mobileGetAccessBtn">Get Access</a>
-                <a href="#" class="btn btn-outline full-width" id="mobileSignInBtn">Sign In</a>
-            </div>
         </div>
     </div>
 
@@ -748,46 +733,6 @@
     </footer>
 
     <script src="main.js"></script>
-    <!-- SETTINGS MODAL -->
-    <div class="modal-overlay" id="settingsModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3>User Settings</h3>
-                <button class="modal-close" id="closeSettingsBtn"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-section">
-                    <h4>Profile</h4>
-                    <div class="setting-item">
-                        <label>Name</label>
-                        <input type="text" value="User Admin" disabled>
-                    </div>
-                    <div class="setting-item">
-                        <label>Email</label>
-                        <input type="email" value="user@ecn.gov.ng" disabled>
-                    </div>
-                </div>
-                <div class="settings-section">
-                    <h4>Security</h4>
-                    <button class="btn-outline">Change Password</button>
-                </div>
-                <div class="settings-section">
-                    <h4>Preferences</h4>
-                    <div class="toggle-row">
-                        <span>Email Notifications</span>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-primary" id="saveSettingsBtn">Save Changes</button>
-            </div>
-        </div>
-    </div>
-
 </body>
 
 </html>
