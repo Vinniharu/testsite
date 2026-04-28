@@ -23,7 +23,7 @@ A secured operational dashboard located in `/intelligence-platform/` for adminis
 - **Audit Logs:** Immutable tracking of user actions and systemic changes.
 
 ### 3. Education & Intelligence Programs
-- **Fin BETA:** Access to upcoming financial intelligence tools.
+- **Apex AI BETA:** Access to upcoming financial intelligence tools.
 - **NEIIA Edu Center:** Educational tracks on fund assessment, portfolio management, TVPI metrics, and venture capital economics.
 - **eVillage:** Digital cooperative tracking.
 
