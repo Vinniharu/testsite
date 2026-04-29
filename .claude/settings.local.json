@@ -6,7 +6,12 @@
       "Bash(xargs -n1 basename)",
       "Bash(grep -v \"^/Users/aniebietpius/Downloads/testsite-main/[^/]*\\\\.html$\")",
       "Bash(xargs -I{} dirname {})",
-      "Bash(grep -v \"^/Users/aniebietpius/Downloads/testsite-main$\")"
+      "Bash(grep -v \"^/Users/aniebietpius/Downloads/testsite-main$\")",
+      "WebFetch(domain:pbatsmartnation.org.ng)",
+      "Bash(curl -sL -A \"Mozilla/5.0\" --max-time 15 -o nbte.jpg \"https://upload.wikimedia.org/wikipedia/en/1/1e/NBTE_logo.jpeg\")",
+      "Bash(curl -sL -A \"Mozilla/5.0\" --max-time 15 -o pmi.webp \"https://www.energyreforms.ng/_astro/brand.LDB5rGmD_ZIzLOw.webp\")",
+      "WebFetch(domain:climatecouncil.gov.ng)",
+      "WebFetch(domain:en.wikipedia.org)"
     ]
   }
 }

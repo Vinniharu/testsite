@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About eVillage | NEIIA</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, letterSpacing: { tightest: '-0.04em' }, colors: { ev: { green: '#008751', deep: '#006b3f', sage: '#34D399', cream: '#E8D5A3', ink: '#0B1F24', mist: '#F5F7F6' }, dark: { bg: '#0B1F24', surface: '#071518', card: '#0F2A30', border: 'rgba(255, 255, 255, 0.08)' } } } } }
+    </script>
+    <style>
+        .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; }
+        .eyebrow::before { content: ''; width: 22px; height: 1px; background: currentColor; }
+        .pillar-glow { background: radial-gradient(ellipse at 50% 0%, rgba(0, 135, 81, 0.22), transparent 65%); }
+        .pillar-orbs { background: radial-gradient(circle at 85% 15%, rgba(0, 135, 81, 0.25), transparent 45%), radial-gradient(circle at 15% 85%, rgba(232, 213, 163, 0.06), transparent 50%); }
+        section[id] { scroll-margin-top: 80px; }
+    </style>
+</head>
+
+<body class="bg-white text-slate-900 dark:bg-dark-bg dark:text-white transition-colors duration-300 font-sans antialiased selection:bg-ev-green selection:text-white">
+
+    <nav class="fixed top-0 w-full z-40 bg-white/90 dark:bg-dark-bg/90 backdrop-blur-md border-b border-slate-200 dark:border-dark-border transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <a href="evillage.html" class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-md bg-ev-green flex items-center justify-center"><i class="fas fa-leaf text-white text-xs"></i></div>
+                    <div class="font-bold text-sm tracking-tight text-slate-900 dark:text-white">eVillage</div>
+                </a>
+                <span class="text-slate-400 dark:text-slate-500 text-sm">/</span>
+                <a href="../index.html" class="font-normal text-sm text-slate-500 dark:text-slate-400 hover:text-ev-green dark:hover:text-white transition-colors">NEIIA</a>
+            </div>
+            <div class="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600 dark:text-slate-300">
+                <a href="evillage.html" class="hover:text-ev-green dark:hover:text-white transition-colors">Home</a>
+                <a href="evillage.html#strategic-pillars" class="hover:text-ev-green dark:hover:text-white transition-colors">Strategic Pillars</a>
+                <a href="evillage.html#mandate-progress" class="hover:text-ev-green dark:hover:text-white transition-colors">Mandate Progress</a>
+                <a href="evillage-about.html" class="text-ev-green dark:text-ev-sage font-semibold">About eVillage</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-slate-900 dark:text-white focus:outline-none p-2 ml-auto" aria-label="Menu"><i class="fas fa-bars text-xl"></i></button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden absolute top-16 left-0 w-full bg-white dark:bg-dark-bg border-b border-slate-200 dark:border-dark-border shadow-lg" style="max-height: calc(100vh - 64px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;">
+            <div class="flex flex-col px-6 py-5 gap-4">
+                <a href="evillage.html" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Home</a>
+                <a href="evillage.html#strategic-pillars" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Strategic Pillars</a>
+                <a href="evillage.html#mandate-progress" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Mandate Progress</a>
+                <a href="evillage-about.html" class="mobile-link text-base font-medium text-ev-green">About eVillage</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="relative bg-ev-ink text-white overflow-hidden pt-28 pb-20 sm:pt-32 sm:pb-24 md:pt-40 md:pb-32">
+        <div class="absolute inset-0 pillar-glow"></div>
+        <div class="absolute inset-0 pillar-orbs"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-6">
+            <div class="max-w-4xl">
+                <div class="inline-flex items-center gap-3 mb-6">
+                    <span class="text-[11px] font-bold tracking-widest text-ev-sage bg-ev-green/15 border border-ev-green/40 px-3 py-1.5 rounded-full">ABOUT THE PLATFORM</span>
+                    <span class="text-[11px] font-medium text-ev-cream/80">National Energy Investment &amp; Intelligence Administration</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tightest leading-[1.05] mb-6">
+                    eVillage is Nigeria's <span class="text-ev-sage">village-scale execution layer</span> for the energy transition.
+                </h1>
+                <p class="text-lg md:text-2xl text-slate-200 font-light leading-snug max-w-3xl">
+                    Built under the Renewed Hope Agenda, eVillage connects rural and peri-urban households to certified
+                    vendors, structured finance, federal subsidies, and verifiable energy assets — under the institutional
+                    oversight of the Federal Ministry of Power and the Energy Commission of Nigeria.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHAT IS EVILLAGE -->
+    <section class="py-20 md:py-28 px-6 bg-white dark:bg-dark-bg">
+        <div class="max-w-5xl mx-auto">
+            <div class="eyebrow text-ev-green dark:text-ev-sage mb-5 text-sm">What it is</div>
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white mb-8">A federated energy access and subsidy platform.</h2>
+            <div class="space-y-5 text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p>eVillage is the citizen-facing execution platform of the National Energy Investment &amp; Intelligence Administration (NEIIA). Where the broader NEIIA platform serves institutional investors, fund managers, and policy operators, eVillage is the layer that meets the household — the actual Nigerian citizen, the rural vendor installing solar kits, the community institution standing up a mini-grid.</p>
+                <p>It is built around five operational primitives: <strong class="text-slate-900 dark:text-white">verified identity</strong> (BVN/NIN-anchored), <strong class="text-slate-900 dark:text-white">structured finance</strong> (point-of-sale loans + the SHINE subsidy stream), <strong class="text-slate-900 dark:text-white">an accredited vendor marketplace</strong>, <strong class="text-slate-900 dark:text-white">distributed energy infrastructure</strong> (DERMS, IoT telemetry, smart meters), and <strong class="text-slate-900 dark:text-white">an open transparency ledger</strong> (NEMiC). Every household interaction touches each of these.</p>
+                <p>The platform is intentionally designed to be policy-aligned: every disbursement traces to a federal mandate, every subsidy claim is verifiable to an oversight body, and every kilowatt-hour delivered is reconciled against the Renewed Hope Agenda's electrification targets through 2027.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY IT EXISTS -->
+    <section class="py-20 md:py-28 px-6 bg-ev-mist dark:bg-dark-surface">
+        <div class="max-w-5xl mx-auto">
+            <div class="eyebrow text-ev-green dark:text-ev-sage mb-5 text-sm">Why it exists</div>
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white mb-8">Because energy access is the precondition for everything else.</h2>
+            <div class="space-y-5 text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p>Nigeria's energy access gap is the largest in the world: roughly <strong class="text-slate-900 dark:text-white">86 million Nigerians</strong> live without reliable electricity. The cost is not abstract — it is measured in productive hours lost, businesses unable to scale, schools unable to teach after dark, hospitals unable to refrigerate vaccines, and household income siphoned into diesel and kerosene.</p>
+                <p>The Renewed Hope Agenda's Smart Nation framework treats this gap as the binding constraint on Nigerian economic and human development. Smart Governance, Smart Economy, Smart People, Smart Infrastructure, and Smart Living are not parallel tracks — they are sequential outcomes that all depend on universal, reliable, affordable energy access.</p>
+                <p>eVillage exists to operationalize that mandate at the only scale that ultimately matters: the scale of the household. Every other intervention — fiscal, monetary, regulatory, industrial — assumes the lights are on.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="py-20 md:py-28 px-6 bg-white dark:bg-dark-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="eyebrow text-ev-green dark:text-ev-sage mb-5 text-sm">How it works</div>
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white mb-12">Three participants, one accountable platform.</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-12 h-12 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-xl flex items-center justify-center mb-5"><i class="fas fa-user text-lg"></i></div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 tracking-tight">Citizens</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">BVN/NIN-verified Nigerian households apply for solar financing, claim SHINE subsidies, and pay utility bills through a single trusted portal. Every transaction is auditable and recorded on the NEMiC ledger.</p>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-12 h-12 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-xl flex items-center justify-center mb-5"><i class="fas fa-store text-lg"></i></div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 tracking-tight">Vendors &amp; Installers</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Accredited last-mile vendors list certified equipment, manage installation workflows, submit subsidy claims, and reconcile payouts — all through a single onboarded vendor portal that brings informal energy commerce into the formal economy.</p>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-12 h-12 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-xl flex items-center justify-center mb-5"><i class="fas fa-landmark text-lg"></i></div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 tracking-tight">Institutions &amp; Financiers</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">DFIs, commercial banks, and federal agencies underwrite portfolios, deploy subsidy capital, and monitor disbursements with NEMiC-grade transparency — closing the trust gap that has historically slowed institutional capital into Nigerian energy access.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INSTITUTIONAL STRUCTURE -->
+    <section class="py-20 md:py-28 px-6 bg-ev-ink text-white relative overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-[520px] h-[520px] bg-ev-green/15 blur-[140px] rounded-full pointer-events-none"></div>
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="eyebrow text-ev-cream mb-5 text-sm">Institutional structure</div>
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] mb-8">Operated under federal mandate. Governed by national policy.</h2>
+            <div class="space-y-5 text-base md:text-lg text-slate-200 font-light leading-relaxed">
+                <p>eVillage is operated as a programme of the National Energy Investment &amp; Intelligence Administration (NEIIA), under the policy and regulatory authority of the Federal Ministry of Power and in technical coordination with the Energy Commission of Nigeria.</p>
+                <p>The platform's identity layer sits on the BVN/NIN federated identity infrastructure governed by the Federal Ministry of Communications &amp; Digital Economy. Subsidy capital is appropriated through the Federal Ministry of Finance and disbursed through a transparency framework auditable by the Office of the Auditor-General of the Federation.</p>
+                <p>Mini-grid and rural deployment activities are coordinated with the Rural Electrification Agency. Tariff oversight, interconnection, and licensing fall under the Nigerian Electricity Regulatory Commission. Climate accounting and emissions reporting align to the National Council on Climate Change and the country's Nationally Determined Contributions under the Paris Agreement.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 mb-10 sm:mb-12">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-8 h-8 rounded-md bg-ev-green flex items-center justify-center"><i class="fas fa-leaf text-white text-sm"></i></div>
+                        <div class="font-bold text-base tracking-tight text-slate-900 dark:text-white">eVillage <span class="font-normal text-slate-500 dark:text-slate-400">/ NEIIA</span></div>
+                        <img src="../assets/images/logos/coat-of-arms-nigeria.png" alt="Coat of Arms of Nigeria" class="h-9 w-auto ml-2 opacity-90">
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm">The national energy access and subsidy platform, operated under the oversight of the National Energy Investment &amp; Intelligence Administration in alignment with the Renewed Hope Agenda.</p>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">Strategic Pillars</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                        <li><a href="evillage-pillar-governance.html" class="hover:text-ev-green dark:hover:text-white">Smart Governance</a></li>
+                        <li><a href="evillage-pillar-economy.html" class="hover:text-ev-green dark:hover:text-white">Smart Economy</a></li>
+                        <li><a href="evillage-pillar-people.html" class="hover:text-ev-green dark:hover:text-white">Smart People</a></li>
+                        <li><a href="evillage-pillar-infrastructure.html" class="hover:text-ev-green dark:hover:text-white">Smart Infrastructure</a></li>
+                        <li><a href="evillage-pillar-living.html" class="hover:text-ev-green dark:hover:text-white">Smart Living</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">Platform</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                        <li><a href="evillage.html" class="hover:text-ev-green dark:hover:text-white">eVillage Home</a></li>
+                        <li><a href="evillage.html#mandate-progress" class="hover:text-ev-green dark:hover:text-white">Mandate Progress</a></li>
+                        <li><a href="evillage-about.html" class="hover:text-ev-green dark:hover:text-white">About eVillage</a></li>
+                        <li><a href="../index.html" class="hover:text-ev-green dark:hover:text-white">Return to NEIIA</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">Federal Alignment</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                        <li>The Presidency</li>
+                        <li>Federal Ministry of Power</li>
+                        <li>Energy Commission of Nigeria</li>
+                        <li>Renewed Hope &middot; 2027</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-200 dark:border-dark-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <p class="text-xs text-slate-500 dark:text-slate-400">&copy; 2026 Federal Republic of Nigeria &middot; National Energy Investment &amp; Intelligence Administration.</p>
+                <div class="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-ev-green"></span>All systems operational</span>
+                    <span>Official Government Platform</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function setBodyScrollLock(locked) { document.body.style.overflow = locked ? 'hidden' : ''; document.documentElement.style.overflow = locked ? 'hidden' : ''; }
+        mobileMenuBtn.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); const isOpen = !mobileMenu.classList.contains('hidden'); setBodyScrollLock(isOpen); const icon = mobileMenuBtn.querySelector('i'); icon.classList.toggle('fa-bars', !isOpen); icon.classList.toggle('fa-times', isOpen); });
+        document.querySelectorAll('.mobile-link').forEach(link => { link.addEventListener('click', () => { mobileMenu.classList.add('hidden'); setBodyScrollLock(false); const icon = mobileMenuBtn.querySelector('i'); icon.classList.remove('fa-times'); icon.classList.add('fa-bars'); }); });
+    </script>
+</body>
+
+</html>

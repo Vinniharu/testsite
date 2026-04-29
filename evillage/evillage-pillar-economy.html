@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Economy — Strategic Pillar 02 | eVillage</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    letterSpacing: { tightest: '-0.04em' },
+                    colors: {
+                        ev: { green: '#008751', deep: '#006b3f', sage: '#34D399', cream: '#E8D5A3', ink: '#0B1F24', mist: '#F5F7F6' },
+                        dark: { bg: '#0B1F24', surface: '#071518', card: '#0F2A30', border: 'rgba(255, 255, 255, 0.08)' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; }
+        .eyebrow::before { content: ''; width: 22px; height: 1px; background: currentColor; }
+        .pillar-glow { background: radial-gradient(ellipse at 50% 0%, rgba(0, 135, 81, 0.22), transparent 65%); }
+        .pillar-orbs { background: radial-gradient(circle at 85% 15%, rgba(0, 135, 81, 0.25), transparent 45%), radial-gradient(circle at 15% 85%, rgba(232, 213, 163, 0.06), transparent 50%); }
+    </style>
+</head>
+
+<body class="bg-white text-slate-900 dark:bg-dark-bg dark:text-white transition-colors duration-300 font-sans antialiased selection:bg-ev-green selection:text-white">
+
+    <nav class="fixed top-0 w-full z-40 bg-white/90 dark:bg-dark-bg/90 backdrop-blur-md border-b border-slate-200 dark:border-dark-border transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <a href="evillage.html" class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-md bg-ev-green flex items-center justify-center"><i class="fas fa-leaf text-white text-xs"></i></div>
+                    <div class="font-bold text-sm tracking-tight text-slate-900 dark:text-white">eVillage</div>
+                </a>
+                <span class="text-slate-400 dark:text-slate-500 text-sm">/</span>
+                <a href="../index.html" class="font-normal text-sm text-slate-500 dark:text-slate-400 hover:text-ev-green dark:hover:text-white transition-colors">NEIIA</a>
+            </div>
+            <div class="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600 dark:text-slate-300">
+                <a href="evillage.html" class="hover:text-ev-green dark:hover:text-white transition-colors">Home</a>
+                <a href="evillage.html#strategic-pillars" class="text-ev-green dark:text-ev-sage font-semibold">Strategic Pillars</a>
+                <a href="evillage.html#mandate-progress" class="hover:text-ev-green dark:hover:text-white transition-colors">Mandate Progress</a>
+                <a href="evillage-about.html" class="hover:text-ev-green dark:hover:text-white transition-colors">About eVillage</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-slate-900 dark:text-white focus:outline-none p-2 ml-auto" aria-label="Menu"><i class="fas fa-bars text-xl"></i></button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden absolute top-16 left-0 w-full bg-white dark:bg-dark-bg border-b border-slate-200 dark:border-dark-border shadow-lg" style="max-height: calc(100vh - 64px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;">
+            <div class="flex flex-col px-6 py-5 gap-4">
+                <a href="evillage.html" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Home</a>
+                <a href="evillage.html#strategic-pillars" class="mobile-link text-base font-medium text-ev-green">Strategic Pillars</a>
+                <a href="evillage.html#mandate-progress" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Mandate Progress</a>
+                <a href="evillage-about.html" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">About eVillage</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="relative bg-ev-ink text-white overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-24 md:pt-40 md:pb-32">
+        <div class="absolute inset-0 pillar-glow"></div>
+        <div class="absolute inset-0 pillar-orbs"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-3 text-ev-cream text-sm mb-6">
+                <a href="evillage.html#strategic-pillars" class="hover:text-white transition-colors">← Strategic Pillars</a>
+                <span class="text-white/30">/</span>
+                <span class="text-white/60">Smart Economy</span>
+            </div>
+            <div class="flex items-stretch justify-between">
+                <div class="max-w-3xl flex-1">
+                <div class="inline-flex items-center gap-3 mb-6">
+                    <span class="text-[11px] font-bold tracking-widest text-ev-sage bg-ev-green/15 border border-ev-green/40 px-3 py-1.5 rounded-full">PILLAR 02 OF 05</span>
+                    <span class="text-[11px] font-medium text-ev-cream/80">Smart Nation Framework</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tightest leading-[1.05] mb-6">
+                    Smart <span class="text-ev-sage">Economy</span>.
+                </h1>
+                <p class="text-lg md:text-2xl text-slate-200 font-light leading-snug mb-8 max-w-3xl">
+                    Energy as the foundation of productive economic activity — turning rural households from passive
+                    consumers into active economic agents.
+                </p>
+                    <p class="text-base md:text-lg text-slate-200 font-light leading-relaxed max-w-3xl">Smart Economy reframes the relationship between Nigerian households and the energy market. Under the legacy model, a rural family treats electricity as an unaffordable luxury and an unpredictable monthly outflow on diesel and kerosene generators. Under eVillage, that same family becomes a productive economic agent — a financed customer, a subsidy beneficiary, and a node in an aggregated demand portfolio that institutional capital can underwrite.</p>
+                    <p class="text-base md:text-lg text-slate-200 font-light leading-relaxed max-w-3xl">The mechanics are deliberate: point-of-sale loan origination compresses financing decisions from weeks to minutes, CAPEX-to-OPEX conversion turns a ₦400,000 solar kit into a manageable ₦15,000-a-month outflow that displaces ₦25,000 of diesel cost, and the SHINE subsidy stream lifts another portion of the burden. On the supply side, vendor SMEs receive working-capital lines through the Bank of Industry to scale their inventory, formalise their operations through SMEDAN registration, and service growing rural energy demand at sustainable margins.</p>
+            </div>
+                <div class="hidden lg:flex flex-col items-center shrink-0 ml-12">
+                    <div class="relative flex-1 w-96 min-h-[24rem]">
+                        <div class="absolute -inset-1 bg-gradient-to-br from-ev-sage/40 to-ev-green/0 rounded-2xl blur"></div>
+                        <img src="../assets/images/leaders/president-tinubu.jpg" alt="His Excellency, President Bola Ahmed Tinubu, GCFR" class="relative w-full h-full object-cover rounded-2xl border-2 border-ev-sage/30 shadow-2xl">
+                    </div>
+                    <div class="mt-4 text-center max-w-[24rem]">
+                        <div class="text-[10px] font-bold tracking-widest text-ev-sage uppercase mb-1">Mandate Champion</div>
+                        <div class="text-sm font-bold text-white leading-tight">President Bola Ahmed Tinubu, GCFR</div>
+                        <div class="text-[11px] text-ev-cream/70 mt-1 leading-snug">Renewed Hope Agenda &middot; Federal Republic of Nigeria</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== POLICY CONTEXT ========== -->
+    <section class="py-20 md:py-28 px-6 bg-ev-mist dark:bg-dark-surface">
+        <div class="max-w-5xl mx-auto">
+            <div class="eyebrow text-ev-green dark:text-ev-sage mb-5 text-sm">Policy Context</div>
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white mb-8">Why this pillar matters &mdash; and how eVillage delivers it.</h2>
+            <div class="space-y-5">
+                <p class="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">Smart Economy reframes a Nigerian household&apos;s relationship with energy. Under the legacy model, a rural family treats electricity as an unaffordable luxury and an unpredictable monthly outflow on diesel and kerosene. Under eVillage, that same household is a productive economic agent — a customer of a financed solar system, a beneficiary of a federal subsidy, a node in an aggregated demand portfolio that institutional capital can underwrite.</p>
+                <p class="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">The economic mechanics matter. Point-of-sale loan origination compresses the financing decision from weeks to minutes. CAPEX-to-OPEX conversion turns a ₦400,000 solar kit into an affordable ₦15,000-a-month outflow that displaces ₦25,000 of monthly diesel. The SHINE subsidy stream lifts another portion of the cost. Aggregated household demand becomes a structured offtake that DFIs and commercial banks can price. The vendor SME ecosystem on the supply side gets working-capital lines through BOI to scale inventory.</p>
+                <p class="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">The result: energy access stops being a charity programme and starts being a capital market.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-28 px-6 bg-white dark:bg-dark-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl mb-14">
+                <div class="eyebrow text-ev-green dark:text-ev-sage mb-4">How eVillage operationalizes it</div>
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white">Capabilities under this pillar.</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-5"><i class="fas fa-store"></i></div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Vendor Marketplace</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Certified solar kits, mini-grid offtake, and productive-use appliances listed by accredited vendors.</p>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-5"><i class="fas fa-hand-holding-usd"></i></div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Point-of-Sale Financing</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Loan origination embedded at checkout — financing decisions in minutes, not weeks.</p>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-5"><i class="fas fa-exchange-alt"></i></div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">CAPEX → OPEX Conversion</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Pay-as-you-go energy plans that turn upfront equipment cost into manageable monthly outflows.</p>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-5"><i class="fas fa-handshake"></i></div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Demand Aggregation</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Pool fragmented village-level demand into structured offtake institutional financiers can underwrite.</p>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-5"><i class="fas fa-id-badge"></i></div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Vendor KYC &amp; Tax</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Onboarding workflows that bring informal energy vendors into the formal economy with full tax compliance.</p>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl">
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-5"><i class="fas fa-piggy-bank"></i></div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">SME Working Capital</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Working-capital products tailored to installer SMEs and last-mile distribution partners.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-24 px-6 bg-ev-mist dark:bg-dark-surface">
+        <div class="max-w-7xl mx-auto">
+            <div class="eyebrow text-ev-green dark:text-ev-sage mb-4">Measurable outcomes</div>
+            <h2 class="text-2xl md:text-4xl font-bold tracking-tightest leading-[1.15] text-slate-900 dark:text-white mb-10 max-w-3xl">What Smart Economy looks like in production.</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-dark-border rounded-2xl overflow-hidden border border-slate-200 dark:border-dark-border">
+                <div class="p-7 bg-white dark:bg-dark-card">
+                    <div class="text-3xl md:text-4xl font-bold text-ev-green dark:text-ev-sage tracking-tightest mb-2">↓45%</div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Effective unit cost of energy</div>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card">
+                    <div class="text-3xl md:text-4xl font-bold text-ev-green dark:text-ev-sage tracking-tightest mb-2">18mo</div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Median household payback period</div>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card">
+                    <div class="text-3xl md:text-4xl font-bold text-ev-green dark:text-ev-sage tracking-tightest mb-2">3.2x</div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">MSME revenue uplift, year one</div>
+                </div>
+                <div class="p-7 bg-white dark:bg-dark-card">
+                    <div class="text-3xl md:text-4xl font-bold text-ev-green dark:text-ev-sage tracking-tightest mb-2">&lt;5min</div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Loan decision time at PoS</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FEDERAL ALIGNMENT (with real institutional logos) ========== -->
+    <section class="py-20 md:py-28 px-6 bg-white dark:bg-dark-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-10 items-start mb-12">
+                <div class="flex flex-col items-center lg:items-start">
+                    <img src="../assets/images/logos/coat-of-arms-nigeria.png" alt="Coat of Arms of the Federal Republic of Nigeria" class="w-32 md:w-40 h-auto">
+                    <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500 tracking-widest mt-3 uppercase text-center lg:text-left">Federal Republic<br>of Nigeria</span>
+                </div>
+                <div>
+                    <div class="eyebrow text-ev-green dark:text-ev-sage mb-4 text-sm">Federal Alignment</div>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white mb-5">Built in coordination with federal mandate-holders.</h2>
+                    <p class="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">Smart Economy is delivered in concert with Nigeria&apos;s fiscal, capital, and enterprise architecture. eVillage routes subsidy capital, working-capital lines, and household-finance products through this institutional stack.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
+                <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl p-6 hover:border-ev-green/40 hover:shadow-md transition-all">
+                    <div class="flex flex-col md:flex-row items-start gap-5">
+                        <div class="w-32 h-20 shrink-0 bg-white dark:bg-white rounded-lg border border-slate-200 dark:border-dark-border p-3 flex items-center justify-center">
+                            <img src="../assets/images/logos/federal-ministry-finance.png" alt="Federal Ministry of Finance logo" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight leading-tight">Federal Ministry of Finance</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Subsidy capital appropriation, budgetary alignment, and fiscal oversight on programme outflows. eVillage reports back to MoF with line-item granularity on every naira deployed through the platform.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl p-6 hover:border-ev-green/40 hover:shadow-md transition-all">
+                    <div class="flex flex-col md:flex-row items-start gap-5">
+                        <div class="w-32 h-20 shrink-0 bg-white dark:bg-white rounded-lg border border-slate-200 dark:border-dark-border p-3 flex items-center justify-center">
+                            <img src="../assets/images/logos/boi.webp" alt="Bank of Industry (BOI) logo" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight leading-tight">Bank of Industry (BOI)</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Concessional working-capital lines for installer SMEs and last-mile distribution partners — turning eVillage vendors into bankable, scaling enterprises with deeper inventory and faster payouts.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl p-6 hover:border-ev-green/40 hover:shadow-md transition-all">
+                    <div class="flex flex-col md:flex-row items-start gap-5">
+                        <div class="w-32 h-20 shrink-0 bg-white dark:bg-white rounded-lg border border-slate-200 dark:border-dark-border p-3 flex items-center justify-center">
+                            <img src="../assets/images/logos/rea.png" alt="Rural Electrification Agency logo" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight leading-tight">Rural Electrification Agency</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Counterparty alignment for rural deployment, mini-grid programmes, and the Energizing Economies initiative — eVillage operationalises REA mandates at the community and cluster level.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl p-6 hover:border-ev-green/40 hover:shadow-md transition-all">
+                    <div class="flex flex-col md:flex-row items-start gap-5">
+                        <div class="w-32 h-20 shrink-0 bg-white dark:bg-white rounded-lg border border-slate-200 dark:border-dark-border p-3 flex items-center justify-center">
+                            <img src="../assets/images/logos/smedan.png" alt="SMEDAN logo" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight leading-tight">SMEDAN</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">Micro, Small &amp; Medium Enterprise registration pathway for vendors and installer SMEs. eVillage onboarding doubles as SMEDAN registration, formalising thousands of last-mile energy entrepreneurs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-24 px-6 bg-ev-ink text-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="eyebrow text-ev-cream mb-4">Continue exploring</div>
+            <h2 class="text-2xl md:text-4xl font-bold tracking-tightest leading-[1.15] mb-10 max-w-3xl">The other four pillars of the Smart Nation framework.</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="evillage-pillar-governance.html" class="group p-6 bg-white/[0.03] border border-white/10 rounded-xl hover:bg-white/[0.06] hover:border-ev-sage/40 transition-all">
+                    <div class="text-[10px] font-bold text-ev-sage tracking-widest mb-3">PILLAR 01</div>
+                    <h3 class="text-base font-bold mb-1 tracking-tight">Smart Governance</h3>
+                    <span class="inline-flex items-center gap-2 text-xs text-ev-cream mt-3 group-hover:gap-3 transition-all">Explore <i class="fas fa-arrow-right text-[10px]"></i></span>
+                </a>
+                <a href="evillage-pillar-people.html" class="group p-6 bg-white/[0.03] border border-white/10 rounded-xl hover:bg-white/[0.06] hover:border-ev-sage/40 transition-all">
+                    <div class="text-[10px] font-bold text-ev-sage tracking-widest mb-3">PILLAR 03</div>
+                    <h3 class="text-base font-bold mb-1 tracking-tight">Smart People</h3>
+                    <span class="inline-flex items-center gap-2 text-xs text-ev-cream mt-3 group-hover:gap-3 transition-all">Explore <i class="fas fa-arrow-right text-[10px]"></i></span>
+                </a>
+                <a href="evillage-pillar-infrastructure.html" class="group p-6 bg-white/[0.03] border border-white/10 rounded-xl hover:bg-white/[0.06] hover:border-ev-sage/40 transition-all">
+                    <div class="text-[10px] font-bold text-ev-sage tracking-widest mb-3">PILLAR 04</div>
+                    <h3 class="text-base font-bold mb-1 tracking-tight">Smart Infrastructure</h3>
+                    <span class="inline-flex items-center gap-2 text-xs text-ev-cream mt-3 group-hover:gap-3 transition-all">Explore <i class="fas fa-arrow-right text-[10px]"></i></span>
+                </a>
+                <a href="evillage-pillar-living.html" class="group p-6 bg-white/[0.03] border border-white/10 rounded-xl hover:bg-white/[0.06] hover:border-ev-sage/40 transition-all">
+                    <div class="text-[10px] font-bold text-ev-sage tracking-widest mb-3">PILLAR 05</div>
+                    <h3 class="text-base font-bold mb-1 tracking-tight">Smart Living</h3>
+                    <span class="inline-flex items-center gap-2 text-xs text-ev-cream mt-3 group-hover:gap-3 transition-all">Explore <i class="fas fa-arrow-right text-[10px]"></i></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white dark:bg-dark-bg py-20 md:py-28 px-6">
+        <div class="max-w-5xl mx-auto bg-ev-green rounded-3xl p-8 sm:p-10 md:p-14 text-white relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-80 h-80 bg-white/5 rounded-full pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div class="max-w-xl">
+                    <div class="eyebrow text-white/80 mb-4">Get started</div>
+                    <h2 class="text-2xl md:text-3xl font-bold tracking-tightest leading-[1.15]">List your products on the eVillage marketplace.</h2>
+                </div>
+                <a href="evillage-signup.html" class="inline-flex items-center justify-center gap-2 bg-white text-ev-green hover:bg-slate-100 px-6 py-3.5 rounded-md font-semibold text-sm transition-colors shrink-0">Onboard as vendor <i class="fas fa-arrow-right text-[10px]"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="border-t border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 mb-10 sm:mb-12">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-8 h-8 rounded-md bg-ev-green flex items-center justify-center"><i class="fas fa-leaf text-white text-sm"></i></div>
+                        <div class="font-bold text-base tracking-tight text-slate-900 dark:text-white">eVillage <span class="font-normal text-slate-500 dark:text-slate-400">/ NEIIA</span></div>
+                        <img src="../assets/images/logos/coat-of-arms-nigeria.png" alt="Coat of Arms of Nigeria" class="h-9 w-auto ml-2 opacity-90">
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm">The national energy access and subsidy platform, operated under the oversight of the National Energy Investment &amp; Intelligence Administration in alignment with the Renewed Hope Agenda.</p>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">Strategic Pillars</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                        <li><a href="evillage-pillar-governance.html" class="hover:text-ev-green dark:hover:text-white">Smart Governance</a></li>
+                        <li><a href="evillage-pillar-economy.html" class="hover:text-ev-green dark:hover:text-white">Smart Economy</a></li>
+                        <li><a href="evillage-pillar-people.html" class="hover:text-ev-green dark:hover:text-white">Smart People</a></li>
+                        <li><a href="evillage-pillar-infrastructure.html" class="hover:text-ev-green dark:hover:text-white">Smart Infrastructure</a></li>
+                        <li><a href="evillage-pillar-living.html" class="hover:text-ev-green dark:hover:text-white">Smart Living</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">Platform</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                        <li><a href="evillage.html" class="hover:text-ev-green dark:hover:text-white">eVillage Home</a></li>
+                        <li><a href="evillage.html#mandate-progress" class="hover:text-ev-green dark:hover:text-white">Mandate Progress</a></li>
+                        <li><a href="evillage-about.html" class="hover:text-ev-green dark:hover:text-white">About eVillage</a></li>
+                        <li><a href="../index.html" class="hover:text-ev-green dark:hover:text-white">Return to NEIIA</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">Federal Alignment</h4>
+                    <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                        <li>The Presidency</li>
+                        <li>Federal Ministry of Power</li>
+                        <li>Energy Commission of Nigeria</li>
+                        <li>Renewed Hope &middot; 2027</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-200 dark:border-dark-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <p class="text-xs text-slate-500 dark:text-slate-400">&copy; 2026 Federal Republic of Nigeria &middot; National Energy Investment &amp; Intelligence Administration.</p>
+                <div class="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-ev-green"></span>All systems operational</span>
+                    <span>Official Government Platform</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function setBodyScrollLock(locked) { document.body.style.overflow = locked ? 'hidden' : ''; document.documentElement.style.overflow = locked ? 'hidden' : ''; }
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const isOpen = !mobileMenu.classList.contains('hidden');
+            setBodyScrollLock(isOpen);
+            const icon = mobileMenuBtn.querySelector('i');
+            icon.classList.toggle('fa-bars', !isOpen); icon.classList.toggle('fa-times', isOpen);
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden'); setBodyScrollLock(false);
+                const icon = mobileMenuBtn.querySelector('i'); icon.classList.remove('fa-times'); icon.classList.add('fa-bars');
+            });
+        });
+    </script>
+</body>
+
+</html>

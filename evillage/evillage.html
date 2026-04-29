@@ -129,6 +129,9 @@
                 radial-gradient(circle at 85% 15%, rgba(0, 135, 81, 0.25), transparent 45%),
                 radial-gradient(circle at 15% 85%, rgba(232, 213, 163, 0.06), transparent 50%);
         }
+
+        /* Offset anchor jumps so section headers don't hide behind the fixed 64px navbar */
+        section[id] { scroll-margin-top: 80px; }
     </style>
 </head>
 
@@ -160,10 +163,9 @@
                 <a href="../index.html" class="hover:text-ev-green dark:hover:text-white transition-colors" title="Back to NEIIA Home">
                     Home
                 </a>
-                <a href="#marketplace" class="hover:text-ev-green dark:hover:text-white transition-colors">Marketplace</a>
-                <a href="#utility" class="hover:text-ev-green dark:hover:text-white transition-colors">Utility</a>
-                <a href="#why-evillage" class="hover:text-ev-green dark:hover:text-white transition-colors">Impact</a>
-                <a href="#governance" class="hover:text-ev-green dark:hover:text-white transition-colors">Governance</a>
+                <a href="#strategic-pillars" class="hover:text-ev-green dark:hover:text-white transition-colors">Strategic Pillars</a>
+                <a href="#mandate-progress" class="hover:text-ev-green dark:hover:text-white transition-colors">Mandate Progress</a>
+                <a href="evillage-about.html" class="hover:text-ev-green dark:hover:text-white transition-colors">About eVillage</a>
             </div>
 
             <div class="hidden md:flex items-center gap-1">
@@ -184,10 +186,9 @@
                     NEIIA Home
                 </a>
                 <hr class="border-slate-200 dark:border-dark-border my-1">
-                <a href="#marketplace" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Marketplace</a>
-                <a href="#utility" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Utility</a>
-                <a href="#why-evillage" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Impact</a>
-                <a href="#governance" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Governance</a>
+                <a href="#strategic-pillars" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Strategic Pillars</a>
+                <a href="#mandate-progress" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Mandate Progress</a>
+                <a href="evillage-about.html" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">About eVillage</a>
                 <hr class="border-slate-200 dark:border-dark-border my-1">
                 <a href="evillage-signin.html" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Sign in</a>
                 <a href="evillage-signup.html" class="bg-ev-ink dark:bg-white text-white dark:text-ev-ink px-4 py-3 rounded-md font-medium text-center text-sm">Join now</a>
@@ -219,7 +220,7 @@
                     <a href="evillage-signup.html" class="inline-flex items-center justify-center gap-2 bg-ev-green hover:bg-ev-deep text-white px-6 py-3.5 rounded-md font-semibold text-sm transition-colors">
                         Create an account <i class="fas fa-arrow-right text-xs"></i>
                     </a>
-                    <a href="#marketplace" class="inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/15 text-white px-6 py-3.5 rounded-md font-semibold text-sm transition-colors">
+                    <a href="#strategic-pillars" class="inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/15 text-white px-6 py-3.5 rounded-md font-semibold text-sm transition-colors">
                         Explore the ecosystem
                     </a>
                 </div>
@@ -242,109 +243,533 @@
         </div>
     </section>
 
-    <section id="marketplace" class="py-24 md:py-32 px-6 bg-ev-mist dark:bg-dark-surface transition-colors duration-300">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
-                <div class="max-w-2xl">
-                    <div class="eyebrow text-ev-green dark:text-ev-sage mb-4">Platform modules</div>
-                    <h2 class="text-3xl md:text-5xl font-bold tracking-tightest text-slate-900 dark:text-white leading-[1.1]">An energy services ecosystem, built for scale.</h2>
-                </div>
-                <p class="text-slate-600 dark:text-slate-300 md:max-w-sm font-light leading-relaxed">Four integrated modules covering procurement, finance, operations, and oversight—each audit-ready and BVN-verified.</p>
+    <!-- ========== STRATEGIC PILLARS ========== -->
+    <section id="strategic-pillars" class="py-24 md:py-32 px-6 bg-white dark:bg-dark-bg transition-colors duration-300 relative overflow-hidden">
+        <div class="absolute -top-40 right-0 w-[500px] h-[500px] bg-ev-green/[0.04] dark:bg-ev-green/10 blur-[140px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+
+            <!-- Section header -->
+            <div class="max-w-3xl mb-14">
+                <div class="eyebrow text-ev-green dark:text-ev-sage mb-4">Strategic Pillars</div>
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white">
+                    Anchored in the Smart Nation framework.
+                </h2>
+                <p class="text-slate-600 dark:text-slate-300 mt-6 leading-relaxed font-light max-w-2xl">
+                    eVillage operationalizes the five strategic pillars of the Federal Government's Smart Nation agenda — translating
+                    presidential policy into measurable household, community, and institutional outcomes across Nigeria's
+                    energy sector.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                <div class="lg:col-span-8 flex flex-col md:flex-row bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl overflow-hidden">
-                    <div class="flex-1 p-8 md:p-10 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-10 h-10 bg-ev-green/10 text-ev-green dark:bg-ev-green/20 dark:text-ev-sage rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-store text-sm"></i>
-                                </div>
-                                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Module 01</span>
-                            </div>
-                            <h3 class="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-slate-900 dark:text-white">Energy Marketplace</h3>
-                            <p class="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">Browse certified solar equipment, apply for financing, and track SHINE subsidy applications—each transaction verified against BVN/NIN records.</p>
-                        </div>
-                        <ul class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-slate-700 dark:text-slate-200">
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>Flexible loan terms</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>Certified vendor kits</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>SHINE subsidies</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>Real-time tracking</li>
-                        </ul>
+            <!-- 5 pillar cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+
+                <!-- Pillar 1: Smart Governance -->
+                <a href="evillage-pillar-governance.html" class="group flex flex-col p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl hover:border-ev-green dark:hover:border-ev-sage hover:shadow-lg dark:hover:shadow-ev-green/10 transition-all">
+                    <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-4">PILLAR 01</div>
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-balance-scale"></i>
                     </div>
-                    <div class="flex-1 min-h-[280px] md:min-h-0 relative">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-ev-ink/50 via-transparent to-transparent z-10"></div>
-                        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&q=80')] bg-cover bg-center bg-no-repeat"></div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Smart Governance</h3>
+                    <p class="text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-light flex-1">
+                        BVN/NIN-verified identity, NEMiC ledger transparency, and policy-aligned audit logs across every
+                        subsidy, transaction, and disbursement.
+                    </p>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-ev-green dark:text-ev-sage mt-5 group-hover:gap-3 transition-all">
+                        Explore <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </a>
+
+                <!-- Pillar 2: Smart Economy -->
+                <a href="evillage-pillar-economy.html" class="group flex flex-col p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl hover:border-ev-green dark:hover:border-ev-sage hover:shadow-lg dark:hover:shadow-ev-green/10 transition-all">
+                    <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-4">PILLAR 02</div>
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Smart Economy</h3>
+                    <p class="text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-light flex-1">
+                        Aggregated demand, point-of-sale financing, and CAPEX-to-OPEX conversion that turn rural
+                        households into productive economic agents.
+                    </p>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-ev-green dark:text-ev-sage mt-5 group-hover:gap-3 transition-all">
+                        Explore <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </a>
+
+                <!-- Pillar 3: Smart People -->
+                <a href="evillage-pillar-people.html" class="group flex flex-col p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl hover:border-ev-green dark:hover:border-ev-sage hover:shadow-lg dark:hover:shadow-ev-green/10 transition-all">
+                    <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-4">PILLAR 03</div>
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Smart People</h3>
+                    <p class="text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-light flex-1">
+                        Vendor certification, installer training pipelines, and community ambassadors driving digital and
+                        energy literacy from the ground up.
+                    </p>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-ev-green dark:text-ev-sage mt-5 group-hover:gap-3 transition-all">
+                        Explore <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </a>
+
+                <!-- Pillar 4: Smart Infrastructure -->
+                <a href="evillage-pillar-infrastructure.html" class="group flex flex-col p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl hover:border-ev-green dark:hover:border-ev-sage hover:shadow-lg dark:hover:shadow-ev-green/10 transition-all">
+                    <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-4">PILLAR 04</div>
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Smart Infrastructure</h3>
+                    <p class="text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-light flex-1">
+                        Distributed energy resources, IoT-instrumented mini-grids, and smart-meter telemetry feeding a
+                        national asset performance layer.
+                    </p>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-ev-green dark:text-ev-sage mt-5 group-hover:gap-3 transition-all">
+                        Explore <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </a>
+
+                <!-- Pillar 5: Smart Living -->
+                <a href="evillage-pillar-living.html" class="group flex flex-col p-7 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl hover:border-ev-green dark:hover:border-ev-sage hover:shadow-lg dark:hover:shadow-ev-green/10 transition-all">
+                    <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-4">PILLAR 05</div>
+                    <div class="w-11 h-11 bg-ev-green/10 dark:bg-ev-green/20 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Smart Living</h3>
+                    <p class="text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-light flex-1">
+                        Clean-energy displacement of diesel and kerosene, verified emissions accounting, and household
+                        reliability SLAs that improve quality of life.
+                    </p>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-ev-green dark:text-ev-sage mt-5 group-hover:gap-3 transition-all">
+                        Explore <i class="fas fa-arrow-right text-[10px]"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== NATIONAL ALIGNMENT ========== -->
+    <section id="national-alignment" class="py-24 md:py-32 px-6 bg-ev-mist dark:bg-dark-surface relative overflow-hidden">
+        <div class="absolute -top-40 -left-32 w-[480px] h-[480px] bg-ev-green/[0.05] dark:bg-ev-green/10 blur-[140px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+
+            <div class="max-w-3xl mb-14">
+                <div class="eyebrow text-ev-green dark:text-ev-sage mb-4">National Alignment · Renewed Hope Agenda</div>
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tightest leading-[1.1] text-slate-900 dark:text-white">
+                    Built in lockstep with the Presidency, the Federal Ministry of Power, and the Energy Commission of Nigeria.
+                </h2>
+                <p class="text-slate-600 dark:text-slate-300 mt-6 leading-relaxed font-light max-w-2xl">
+                    eVillage is the village-scale execution layer of the <span class="font-medium text-slate-900 dark:text-white">Renewed Hope Agenda</span> —
+                    the policy mandate at the heart of President Bola Ahmed Tinubu's election commitment to the Federal Republic of Nigeria.
+                    Every disbursement, every kilowatt-hour delivered, and every subsidy claimed is accountable to a federal mandate
+                    and the PBAT Smart Nation framework.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                <!-- President -->
+                <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl overflow-hidden flex flex-col">
+                    <div class="aspect-[4/5] bg-gradient-to-br from-ev-green/15 to-ev-ink/30 dark:from-ev-green/30 dark:to-ev-ink/80 flex items-center justify-center relative overflow-hidden">
+                        <!-- Photo source: Wikipedia (Bola Tinubu portrait by Nosa Asemota / Wiki Commons). Production: download to /assets/images/leaders/ -->
+                        <img src="../assets/images/leaders/president-tinubu.jpg" alt="His Excellency, President Bola Ahmed Tinubu, GCFR" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="absolute inset-0 hidden items-center justify-center text-ev-green dark:text-ev-sage text-5xl"><i class="fas fa-user-tie"></i></div>
+                    </div>
+                    <div class="p-7 flex-1 flex flex-col">
+                        <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-2">THE PRESIDENCY</div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1 tracking-tight">President Bola Ahmed Tinubu, GCFR</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium">President &amp; Commander-in-Chief, Federal Republic of Nigeria</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">
+                            The Renewed Hope Agenda's Smart Nation framework — Smart Governance, Economy, People, Infrastructure
+                            and Living — is the policy spine eVillage is built to operationalize at the village level. Mr. President's
+                            executive mandate sets the tempo for every household kilowatt-hour we deliver.
+                        </p>
                     </div>
                 </div>
 
-                <div id="utility" class="lg:col-span-4 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl overflow-hidden flex flex-col">
-                    <div class="h-48 relative">
-                        <div class="absolute inset-0 bg-gradient-to-t from-ev-ink/50 to-transparent z-10"></div>
-                        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80')] bg-cover bg-center bg-no-repeat"></div>
+                <!-- Minister of Power -->
+                <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl overflow-hidden flex flex-col">
+                    <div class="aspect-[4/5] bg-gradient-to-br from-ev-green/15 to-ev-ink/30 dark:from-ev-green/30 dark:to-ev-ink/80 flex items-center justify-center relative overflow-hidden">
+                        <!-- Photo source: Wikipedia (Adebayo Adelabu). Production: download official portrait from Federal Ministry of Power -->
+                        <img src="../assets/images/leaders/minister-adelabu.jpg" alt="Chief Adebayo Adelabu, Honourable Minister of Power" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="absolute inset-0 hidden items-center justify-center text-ev-green dark:text-ev-sage text-5xl"><i class="fas fa-bolt"></i></div>
                     </div>
-                    <div class="p-8 flex-1 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 bg-ev-green/10 text-ev-green dark:bg-ev-green/20 dark:text-ev-sage rounded-lg flex items-center justify-center">
-                                <i class="fas fa-file-invoice-dollar text-sm"></i>
-                            </div>
-                            <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Module 02</span>
-                        </div>
-                        <h3 class="text-xl font-bold tracking-tight mb-3 text-slate-900 dark:text-white">Utility &amp; Loans</h3>
-                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">Pay utility bills, track loan repayments, and audit your complete energy payment history.</p>
-                    </div>
-                </div>
-
-                <div id="projects" class="lg:col-span-4 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl overflow-hidden flex flex-col">
-                    <div class="h-48 relative">
-                        <div class="absolute inset-0 bg-gradient-to-t from-ev-ink/50 to-transparent z-10"></div>
-                        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=1200&q=80')] bg-cover bg-center bg-no-repeat"></div>
-                    </div>
-                    <div class="p-8 flex-1 flex flex-col">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 bg-ev-green/10 text-ev-green dark:bg-ev-green/20 dark:text-ev-sage rounded-lg flex items-center justify-center">
-                                <i class="fas fa-project-diagram text-sm"></i>
-                            </div>
-                            <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Module 03</span>
-                        </div>
-                        <h3 class="text-xl font-bold tracking-tight mb-3 text-slate-900 dark:text-white">Energy Projects</h3>
-                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">Track mini-grid installations, solar deployments, and vote on community priorities.</p>
+                    <div class="p-7 flex-1 flex flex-col">
+                        <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-2">FEDERAL MINISTRY OF POWER</div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Chief Adebayo Adelabu</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium">Honourable Minister of Power, Federal Republic of Nigeria</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">
+                            Policy oversight on grid expansion, the Presidential Metering Initiative, and the federal electrification
+                            mandate eVillage executes against — measured per household, per kilowatt-hour, per state. The Ministry's
+                            push for a Coordinating Minister for Energy further integrates this stack.
+                        </p>
                     </div>
                 </div>
 
-                <div id="transparency" class="lg:col-span-8 flex flex-col-reverse md:flex-row bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl overflow-hidden">
-                    <div class="flex-1 min-h-[280px] md:min-h-0 relative">
-                        <div class="absolute inset-0 bg-gradient-to-tl from-ev-ink/50 via-transparent to-transparent z-10"></div>
-                        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80')] bg-cover bg-center bg-no-repeat"></div>
+                <!-- DG, ECN -->
+                <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl overflow-hidden flex flex-col">
+                    <div class="aspect-[4/5] bg-gradient-to-br from-ev-green/15 to-ev-ink/30 dark:from-ev-green/30 dark:to-ev-ink/80 flex items-center justify-center relative overflow-hidden">
+                        <!-- Photo source: Energy Commission of Nigeria official team page (energy.gov.ng/team.html). -->
+                        <img src="../assets/images/leaders/dg-ecn-abdullahi.jpg" alt="Dr. Mustapha Abdullahi, Director-General, Energy Commission of Nigeria" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="absolute inset-0 hidden items-center justify-center text-ev-green dark:text-ev-sage text-5xl"><i class="fas fa-landmark"></i></div>
                     </div>
-                    <div class="flex-1 p-8 md:p-10 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-10 h-10 bg-ev-green/10 text-ev-green dark:bg-ev-green/20 dark:text-ev-sage rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-shield-halved text-sm"></i>
-                                </div>
-                                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Module 04</span>
-                            </div>
-                            <h3 class="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-slate-900 dark:text-white">NEMiC Controls</h3>
-                            <p class="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">Immutable oversight of subsidy disbursements, vendor payments, and energy transaction ledgers—each action logged to an audit trail.</p>
-                        </div>
-                        <ul class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-slate-700 dark:text-slate-200">
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>Disbursement tracking</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>Collection stats</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>Vendor audit trail</li>
-                            <li class="flex items-center gap-2"><i class="fas fa-check text-ev-green dark:text-ev-sage text-xs"></i>Compliance reports</li>
-                        </ul>
+                    <div class="p-7 flex-1 flex flex-col">
+                        <div class="text-[10px] font-bold text-ev-green dark:text-ev-sage tracking-widest mb-2">ENERGY COMMISSION OF NIGERIA</div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Dr. Mustapha Abdullahi</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium">Director-General &amp; CEO, Energy Commission of Nigeria</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">
+                            National energy strategy, planning, and inter-agency coordination — providing the regulatory and data
+                            backbone that lets eVillage operate at federal, sub-national, and community scale. Appointed by Mr.
+                            President in October 2023 to deliver clean-energy reforms through 2027 and beyond.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2027 Election Mandate callout -->
+            <div class="mt-12 p-8 md:p-10 bg-ev-ink text-white rounded-2xl border border-ev-green/30 relative overflow-hidden">
+                <div class="absolute -top-20 -right-20 w-72 h-72 bg-ev-green/15 blur-[100px] rounded-full pointer-events-none"></div>
+                <div class="absolute -bottom-16 -left-16 w-64 h-64 bg-ev-cream/[0.04] blur-[100px] rounded-full pointer-events-none"></div>
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-6 md:gap-10 items-center">
+                    <div class="shrink-0 w-14 h-14 bg-ev-green/20 border border-ev-green/40 rounded-xl flex items-center justify-center text-ev-sage">
+                        <i class="fas fa-flag text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold text-ev-sage tracking-widest mb-2">2027 ELECTION MANDATE</div>
+                        <p class="text-base md:text-lg font-light leading-relaxed text-slate-100">
+                            <span class="text-white font-medium">"</span>eVillage is the village-scale execution layer for the Smart Nation framework —
+                            converting Renewed Hope policy into household reliability, vendor revenue, and verified ESG impact
+                            ahead of the 2027 cycle.<span class="text-white font-medium">"</span>
+                        </p>
+                    </div>
+                    <div class="hidden md:flex flex-col items-end shrink-0 border-l border-white/15 pl-8">
+                        <div class="text-3xl font-bold text-ev-sage tracking-tightest">2027</div>
+                        <div class="text-[10px] font-bold text-ev-cream/80 tracking-widest uppercase">Mandate Horizon</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="why-evillage" class="py-24 md:py-32 px-6 bg-white dark:bg-dark-bg">
+    <!-- ========== MANDATE PROGRESS — Power BI-style dashboard ========== -->
+    <section id="mandate-progress" class="py-24 md:py-32 px-6 bg-gradient-to-b from-ev-mist via-white to-ev-mist dark:from-dark-surface dark:via-dark-bg dark:to-dark-surface relative overflow-hidden border-y-4 border-ev-green/30">
+        <div class="absolute -top-32 -right-32 w-[420px] h-[420px] bg-ev-green/[0.08] dark:bg-ev-green/15 blur-[140px] rounded-full pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-32 w-[420px] h-[420px] bg-ev-cream/10 blur-[140px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+                <div class="max-w-3xl">
+                    <div class="eyebrow text-ev-green dark:text-ev-sage mb-5 text-sm">Mandate Progress · Live Dashboard</div>
+                    <h2 class="text-4xl md:text-6xl font-bold tracking-tightest leading-[1.05] text-slate-900 dark:text-white">
+                        Renewed Hope, <span class="text-ev-green dark:text-ev-sage">in numbers</span>.
+                    </h2>
+                    <p class="text-base md:text-lg text-slate-600 dark:text-slate-300 mt-6 leading-relaxed">
+                        A federated executive view of how eVillage is delivering against the Smart Nation pillars — refreshed
+                        from the NEMiC ledger and DERMS telemetry. The same data your Federal and State stakeholders see in
+                        their oversight dashboards.
+                    </p>
+                </div>
+                <div class="inline-flex items-center gap-3 px-5 py-3 bg-ev-green/10 dark:bg-ev-green/20 border-2 border-ev-green/40 rounded-lg shrink-0">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ev-green animate-pulse"></span>
+                    <span class="text-sm font-bold text-ev-green dark:text-ev-sage tracking-wide">LIVE · synced 2 min ago</span>
+                </div>
+            </div>
+
+            <!-- Dashboard chrome label -->
+            <div class="flex items-center gap-3 mb-4 pb-4 border-b-2 border-slate-200 dark:border-dark-border">
+                <div class="w-9 h-9 bg-ev-green/15 dark:bg-ev-green/25 text-ev-green dark:text-ev-sage rounded-lg flex items-center justify-center"><i class="fas fa-chart-bar text-base"></i></div>
+                <div>
+                    <div class="text-base font-bold text-slate-900 dark:text-white tracking-tight">eVillage Executive Report</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">FY2026 Q2 · Renewed Hope Mandate Tracking</div>
+                </div>
+                <div class="ml-auto flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <i class="fas fa-filter"></i><span>All states</span>
+                    <span class="text-slate-300 dark:text-slate-600">|</span>
+                    <i class="fas fa-calendar"></i><span>YTD 2026</span>
+                </div>
+            </div>
+
+            <!-- KPI tiles row (Power BI top strip) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-dark-border rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-widest mb-3 uppercase">Households Reached</div>
+                    <div class="flex items-baseline justify-between gap-2">
+                        <div class="text-4xl font-bold text-slate-900 dark:text-white tracking-tightest">412,830</div>
+                        <div class="text-sm font-bold text-ev-green dark:text-ev-sage flex items-center gap-1 bg-ev-green/10 px-2 py-1 rounded"><i class="fas fa-arrow-up text-[10px]"></i>18.4%</div>
+                    </div>
+                    <svg viewBox="0 0 120 36" class="mt-4 w-full h-10 overflow-visible">
+                        <polyline fill="none" stroke="#008751" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+                            points="2,28 14,26 26,23 38,22 50,19 62,17 74,14 86,11 98,8 110,5 118,3"/>
+                        <polyline fill="rgba(0,135,81,0.15)" stroke="none"
+                            points="2,28 14,26 26,23 38,22 50,19 62,17 74,14 86,11 98,8 110,5 118,3 118,36 2,36"/>
+                    </svg>
+                </div>
+
+                <div class="bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-dark-border rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-widest mb-3 uppercase">MWh Delivered (YTD)</div>
+                    <div class="flex items-baseline justify-between gap-2">
+                        <div class="text-4xl font-bold text-slate-900 dark:text-white tracking-tightest">94,217</div>
+                        <div class="text-sm font-bold text-ev-green dark:text-ev-sage flex items-center gap-1 bg-ev-green/10 px-2 py-1 rounded"><i class="fas fa-arrow-up text-[10px]"></i>22.1%</div>
+                    </div>
+                    <svg viewBox="0 0 120 36" class="mt-4 w-full h-10 overflow-visible">
+                        <polyline fill="none" stroke="#008751" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+                            points="2,30 14,26 26,28 38,22 50,19 62,21 74,15 86,12 98,9 110,7 118,5"/>
+                        <polyline fill="rgba(0,135,81,0.15)" stroke="none"
+                            points="2,30 14,26 26,28 38,22 50,19 62,21 74,15 86,12 98,9 110,7 118,5 118,36 2,36"/>
+                    </svg>
+                </div>
+
+                <div class="bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-dark-border rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-widest mb-3 uppercase">tCO₂e Displaced</div>
+                    <div class="flex items-baseline justify-between gap-2">
+                        <div class="text-4xl font-bold text-slate-900 dark:text-white tracking-tightest">2.81M</div>
+                        <div class="text-sm font-bold text-ev-green dark:text-ev-sage flex items-center gap-1 bg-ev-green/10 px-2 py-1 rounded"><i class="fas fa-arrow-up text-[10px]"></i>14.7%</div>
+                    </div>
+                    <svg viewBox="0 0 120 36" class="mt-4 w-full h-10 overflow-visible">
+                        <polyline fill="none" stroke="#008751" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+                            points="2,29 14,26 26,23 38,25 50,19 62,17 74,15 86,13 98,10 110,7 118,5"/>
+                        <polyline fill="rgba(0,135,81,0.15)" stroke="none"
+                            points="2,29 14,26 26,23 38,25 50,19 62,17 74,15 86,13 98,10 110,7 118,5 118,36 2,36"/>
+                    </svg>
+                </div>
+
+                <div class="bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-dark-border rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-widest mb-3 uppercase">Subsidy Disbursed (₦B)</div>
+                    <div class="flex items-baseline justify-between gap-2">
+                        <div class="text-4xl font-bold text-slate-900 dark:text-white tracking-tightest">₦47.2</div>
+                        <div class="text-sm font-bold text-ev-green dark:text-ev-sage flex items-center gap-1 bg-ev-green/10 px-2 py-1 rounded"><i class="fas fa-arrow-up text-[10px]"></i>9.3%</div>
+                    </div>
+                    <svg viewBox="0 0 120 36" class="mt-4 w-full h-10 overflow-visible">
+                        <polyline fill="none" stroke="#008751" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+                            points="2,26 14,23 26,25 38,20 50,22 62,16 74,15 86,13 98,11 110,9 118,7"/>
+                        <polyline fill="rgba(0,135,81,0.15)" stroke="none"
+                            points="2,26 14,23 26,25 38,20 50,22 62,16 74,15 86,13 98,11 110,9 118,7 118,36 2,36"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Charts row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+                <!-- Bar chart: Households by zone -->
+                <div class="lg:col-span-2 bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-dark-border rounded-xl p-6 md:p-8 shadow-md">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Households reached, by geopolitical zone</h4>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Cumulative · YTD 2026 · NEMiC ledger</p>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1.5 bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 rounded">CUMULATIVE</span>
+                    </div>
+
+                    <svg viewBox="0 0 480 240" class="w-full h-72 mt-6">
+                        <!-- Gridlines -->
+                        <g stroke="#cbd5e1" stroke-width="1" class="dark:stroke-white/15">
+                            <line x1="60" y1="20" x2="470" y2="20" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="60" x2="470" y2="60" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="100" x2="470" y2="100" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="140" x2="470" y2="140" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="180" x2="470" y2="180" stroke-width="1.5"/>
+                        </g>
+                        <!-- Y-axis labels -->
+                        <g font-family="Inter, sans-serif" font-size="13" fill="#475569" text-anchor="end" font-weight="600" class="dark:fill-slate-400">
+                            <text x="54" y="24">100k</text>
+                            <text x="54" y="64">75k</text>
+                            <text x="54" y="104">50k</text>
+                            <text x="54" y="144">25k</text>
+                            <text x="54" y="184">0</text>
+                        </g>
+                        <!-- Bars -->
+                        <g>
+                            <!-- North-Central -->
+                            <rect x="80" y="68" width="46" height="112" rx="3" fill="#008751"/>
+                            <text x="103" y="60" font-family="Inter" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle" class="dark:fill-white">72k</text>
+                            <text x="103" y="208" font-family="Inter" font-size="13" fill="#475569" text-anchor="middle" font-weight="600" class="dark:fill-slate-400">N-Central</text>
+
+                            <!-- North-East -->
+                            <rect x="135" y="92" width="46" height="88" rx="3" fill="#34D399"/>
+                            <text x="158" y="84" font-family="Inter" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle" class="dark:fill-white">57k</text>
+                            <text x="158" y="208" font-family="Inter" font-size="13" fill="#475569" text-anchor="middle" font-weight="600" class="dark:fill-slate-400">N-East</text>
+
+                            <!-- North-West -->
+                            <rect x="190" y="48" width="46" height="132" rx="3" fill="#008751"/>
+                            <text x="213" y="40" font-family="Inter" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle" class="dark:fill-white">88k</text>
+                            <text x="213" y="208" font-family="Inter" font-size="13" fill="#475569" text-anchor="middle" font-weight="600" class="dark:fill-slate-400">N-West</text>
+
+                            <!-- South-East -->
+                            <rect x="245" y="116" width="46" height="64" rx="3" fill="#34D399"/>
+                            <text x="268" y="108" font-family="Inter" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle" class="dark:fill-white">41k</text>
+                            <text x="268" y="208" font-family="Inter" font-size="13" fill="#475569" text-anchor="middle" font-weight="600" class="dark:fill-slate-400">S-East</text>
+
+                            <!-- South-South -->
+                            <rect x="300" y="100" width="46" height="80" rx="3" fill="#008751"/>
+                            <text x="323" y="92" font-family="Inter" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle" class="dark:fill-white">53k</text>
+                            <text x="323" y="208" font-family="Inter" font-size="13" fill="#475569" text-anchor="middle" font-weight="600" class="dark:fill-slate-400">S-South</text>
+
+                            <!-- South-West -->
+                            <rect x="355" y="36" width="46" height="144" rx="3" fill="#008751"/>
+                            <text x="378" y="28" font-family="Inter" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle" class="dark:fill-white">96k</text>
+                            <text x="378" y="208" font-family="Inter" font-size="13" fill="#475569" text-anchor="middle" font-weight="600" class="dark:fill-slate-400">S-West</text>
+                        </g>
+                        <!-- Avg line -->
+                        <line x1="60" y1="92" x2="470" y2="92" stroke="#E8D5A3" stroke-width="2" stroke-dasharray="6,5"/>
+                        <text x="465" y="89" font-family="Inter" font-size="12" fill="#a47d3a" text-anchor="end" font-weight="700">avg 67.8k</text>
+                    </svg>
+
+                    <div class="mt-5 pt-4 border-t-2 border-slate-100 dark:border-white/10 flex items-center justify-between text-sm flex-wrap gap-3">
+                        <div class="flex items-center gap-5">
+                            <span class="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-medium"><span class="w-3 h-3 bg-ev-green rounded-sm"></span>Above national avg</span>
+                            <span class="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-medium"><span class="w-3 h-3 bg-ev-sage rounded-sm"></span>Below national avg</span>
+                        </div>
+                        <span class="text-slate-500 dark:text-slate-400 font-semibold">n = 412,830</span>
+                    </div>
+                </div>
+
+                <!-- Donut: subsidy allocation by pillar -->
+                <div class="bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-dark-border rounded-xl p-6 md:p-8 shadow-md">
+                    <div>
+                        <h4 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Subsidy allocation, by pillar</h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">₦47.2B disbursed · YTD</p>
+                    </div>
+
+                    <div class="relative flex items-center justify-center mt-6">
+                        <svg viewBox="0 0 200 200" class="w-56 h-56 -rotate-90">
+                            <!-- Donut segments -->
+                            <circle cx="100" cy="100" r="70" fill="none" stroke="#E2E8F0" stroke-width="22" class="dark:stroke-white/5"/>
+                            <!-- Smart Infrastructure 38% -->
+                            <circle cx="100" cy="100" r="70" fill="none" stroke="#008751" stroke-width="22" stroke-dasharray="167.16 439.82" stroke-dashoffset="0"/>
+                            <!-- Smart Economy 25% -->
+                            <circle cx="100" cy="100" r="70" fill="none" stroke="#34D399" stroke-width="22" stroke-dasharray="109.96 439.82" stroke-dashoffset="-167.16"/>
+                            <!-- Smart People 18% -->
+                            <circle cx="100" cy="100" r="70" fill="none" stroke="#006b3f" stroke-width="22" stroke-dasharray="79.17 439.82" stroke-dashoffset="-277.12"/>
+                            <!-- Smart Living 12% -->
+                            <circle cx="100" cy="100" r="70" fill="none" stroke="#E8D5A3" stroke-width="22" stroke-dasharray="52.78 439.82" stroke-dashoffset="-356.29"/>
+                            <!-- Smart Governance 7% -->
+                            <circle cx="100" cy="100" r="70" fill="none" stroke="#0B1F24" stroke-width="22" stroke-dasharray="30.79 439.82" stroke-dashoffset="-409.07" class="dark:stroke-slate-300"/>
+                        </svg>
+                        <div class="absolute text-center pointer-events-none -translate-y-1">
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white tracking-tightest">₦47.2B</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold mt-1">Disbursed</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-2.5 text-sm">
+                        <div class="flex items-center justify-between"><span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-medium"><span class="w-3.5 h-3.5 rounded-sm bg-ev-green"></span>Infrastructure</span><span class="font-bold text-slate-900 dark:text-white">38%</span></div>
+                        <div class="flex items-center justify-between"><span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-medium"><span class="w-3.5 h-3.5 rounded-sm bg-ev-sage"></span>Economy</span><span class="font-bold text-slate-900 dark:text-white">25%</span></div>
+                        <div class="flex items-center justify-between"><span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-medium"><span class="w-3.5 h-3.5 rounded-sm bg-ev-deep"></span>People</span><span class="font-bold text-slate-900 dark:text-white">18%</span></div>
+                        <div class="flex items-center justify-between"><span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-medium"><span class="w-3.5 h-3.5 rounded-sm" style="background:#E8D5A3"></span>Living</span><span class="font-bold text-slate-900 dark:text-white">12%</span></div>
+                        <div class="flex items-center justify-between"><span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300 font-medium"><span class="w-3.5 h-3.5 rounded-sm bg-ev-ink dark:bg-slate-300"></span>Governance</span><span class="font-bold text-slate-900 dark:text-white">7%</span></div>
+                    </div>
+                </div>
+
+                <!-- Line chart: cumulative households 2023→2027 -->
+                <div class="lg:col-span-3 bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-dark-border rounded-xl p-6 md:p-8 shadow-md">
+                    <div class="flex items-start justify-between mb-3 flex-wrap gap-3">
+                        <div>
+                            <h4 class="text-lg md:text-xl font-bold text-slate-900 dark:text-white tracking-tight">Cumulative households electrified vs. 2027 mandate target</h4>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">2023 baseline → 2027 mandate horizon · Renewed Hope Agenda</p>
+                        </div>
+                        <div class="flex items-center gap-4 text-sm">
+                            <span class="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-medium"><span class="w-4 h-1 bg-ev-green rounded"></span>Actual delivery</span>
+                            <span class="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-medium"><span class="w-4 h-1" style="background:repeating-linear-gradient(90deg,#94a3b8 0 5px,transparent 5px 8px)"></span>Mandate target</span>
+                        </div>
+                    </div>
+
+                    <svg viewBox="0 0 800 260" class="w-full h-80 mt-6">
+                        <!-- Gridlines -->
+                        <g stroke="#cbd5e1" stroke-width="1" class="dark:stroke-white/15">
+                            <line x1="60" y1="30" x2="780" y2="30" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="80" x2="780" y2="80" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="130" x2="780" y2="130" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="180" x2="780" y2="180" stroke-dasharray="3,4"/>
+                            <line x1="60" y1="200" x2="780" y2="200" stroke-width="1.5"/>
+                        </g>
+                        <!-- Y axis labels -->
+                        <g font-family="Inter, sans-serif" font-size="13" fill="#475569" text-anchor="end" font-weight="600" class="dark:fill-slate-400">
+                            <text x="54" y="34">1.5M</text>
+                            <text x="54" y="84">1.0M</text>
+                            <text x="54" y="134">500k</text>
+                            <text x="54" y="184">100k</text>
+                            <text x="54" y="204">0</text>
+                        </g>
+                        <!-- Target line (dashed) -->
+                        <polyline fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6,5" stroke-linejoin="round"
+                            points="80,195 200,170 320,128 440,82 560,48 680,30 770,18"/>
+                        <!-- Actual area -->
+                        <polyline fill="rgba(0,135,81,0.18)" stroke="none"
+                            points="80,196 200,180 320,150 440,118 560,90 680,68 770,52 770,200 80,200"/>
+                        <!-- Actual line -->
+                        <polyline fill="none" stroke="#008751" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
+                            points="80,196 200,180 320,150 440,118 560,90 680,68 770,52"/>
+                        <!-- Data points -->
+                        <g fill="#008751">
+                            <circle cx="80" cy="196" r="5" stroke="#fff" stroke-width="2.5" class="dark:stroke-dark-card"/>
+                            <circle cx="200" cy="180" r="5" stroke="#fff" stroke-width="2.5" class="dark:stroke-dark-card"/>
+                            <circle cx="320" cy="150" r="5" stroke="#fff" stroke-width="2.5" class="dark:stroke-dark-card"/>
+                            <circle cx="440" cy="118" r="5" stroke="#fff" stroke-width="2.5" class="dark:stroke-dark-card"/>
+                            <circle cx="560" cy="90" r="5" stroke="#fff" stroke-width="2.5" class="dark:stroke-dark-card"/>
+                            <circle cx="680" cy="68" r="7" stroke="#fff" stroke-width="3" class="dark:stroke-dark-card"/>
+                            <circle cx="770" cy="52" r="5" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="2,2"/>
+                        </g>
+                        <!-- "Today" indicator at 2026 -->
+                        <g>
+                            <line x1="680" y1="20" x2="680" y2="200" stroke="#a47d3a" stroke-width="1.5" stroke-dasharray="4,4"/>
+                            <rect x="634" y="4" width="92" height="20" rx="4" fill="#E8D5A3"/>
+                            <text x="680" y="18" font-family="Inter" font-size="12" font-weight="700" fill="#0B1F24" text-anchor="middle">TODAY · 2026</text>
+                        </g>
+                        <!-- X axis labels -->
+                        <g font-family="Inter, sans-serif" font-size="13" fill="#475569" text-anchor="middle" font-weight="600" class="dark:fill-slate-400">
+                            <text x="80" y="225">Q1 2023</text>
+                            <text x="200" y="225">Q1 2024</text>
+                            <text x="320" y="225">Q1 2025</text>
+                            <text x="440" y="225">Q3 2025</text>
+                            <text x="560" y="225">Q1 2026</text>
+                            <text x="680" y="225" font-weight="700" fill="#a47d3a">Q2 2026</text>
+                            <text x="770" y="225">2027 Mandate</text>
+                        </g>
+                    </svg>
+
+                    <div class="mt-6 pt-5 border-t-2 border-slate-100 dark:border-white/10 grid grid-cols-2 md:grid-cols-4 gap-5 text-sm">
+                        <div>
+                            <div class="text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold mb-2 text-xs">Baseline 2023</div>
+                            <div class="text-slate-900 dark:text-white font-bold text-2xl tracking-tightest">12,400</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold mb-2 text-xs">Today (Q2 2026)</div>
+                            <div class="text-ev-green dark:text-ev-sage font-bold text-2xl tracking-tightest">412,830</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold mb-2 text-xs">2027 Target</div>
+                            <div class="text-slate-900 dark:text-white font-bold text-2xl tracking-tightest">1,500,000</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold mb-2 text-xs">On track</div>
+                            <div class="text-ev-green dark:text-ev-sage font-bold text-2xl inline-flex items-center gap-2">Yes <i class="fas fa-check-circle text-lg"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Caption -->
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-8 leading-relaxed max-w-3xl">
+                Indicative metrics shown for design preview. Production figures are computed from the live NEMiC ledger
+                and DERMS telemetry, refreshed every 60 seconds and reconciled nightly with the Federal Ministry of Power
+                and the Energy Commission of Nigeria reporting feeds.
+            </p>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 md:py-32 px-6 bg-white dark:bg-dark-bg">
         <div class="max-w-7xl mx-auto">
             <div class="max-w-3xl mb-16">
-                <div class="eyebrow text-ev-green dark:text-ev-sage mb-4">Why eVillage</div>
-                <h2 class="text-3xl md:text-5xl font-bold tracking-tightest text-slate-900 dark:text-white leading-[1.1]">Bridging the energy gap through infrastructure and oversight.</h2>
+                <div class="eyebrow text-ev-green dark:text-ev-sage mb-4">About eVillage</div>
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tightest text-slate-900 dark:text-white leading-[1.1]">A federal energy access platform — engineered for citizens, built for the Renewed Hope mandate.</h2>
+                <p class="text-base md:text-lg text-slate-600 dark:text-slate-300 mt-6 leading-relaxed">
+                    eVillage is the citizen-facing execution platform of the National Energy Investment &amp; Intelligence Administration (NEIIA). It connects rural and peri-urban households to certified vendors, structured finance, federal subsidies, and verifiable energy assets — under the policy oversight of the Federal Ministry of Power and the Energy Commission of Nigeria.
+                </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:gap-px lg:bg-slate-200 dark:lg:bg-dark-border rounded-2xl overflow-hidden border border-slate-200 dark:border-dark-border">
@@ -494,10 +919,9 @@
                 <div>
                     <h4 class="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4">Platform</h4>
                     <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
-                        <li><a href="#marketplace" class="hover:text-ev-green dark:hover:text-white">Marketplace</a></li>
-                        <li><a href="#utility" class="hover:text-ev-green dark:hover:text-white">Utility</a></li>
-                        <li><a href="#why-evillage" class="hover:text-ev-green dark:hover:text-white">Impact</a></li>
-                        <li><a href="#governance" class="hover:text-ev-green dark:hover:text-white">Governance</a></li>
+                        <li><a href="#strategic-pillars" class="hover:text-ev-green dark:hover:text-white">Strategic Pillars</a></li>
+                        <li><a href="#mandate-progress" class="hover:text-ev-green dark:hover:text-white">Mandate Progress</a></li>
+                        <li><a href="evillage-about.html" class="hover:text-ev-green dark:hover:text-white">About eVillage</a></li>
                     </ul>
                 </div>
                 <div>
