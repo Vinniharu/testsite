@@ -36,6 +36,20 @@
                 <a href="evillage.html" class="hover:text-ev-green dark:hover:text-white transition-colors">Home</a>
                 <a href="evillage.html#strategic-pillars" class="text-ev-green dark:text-ev-sage font-semibold">Strategic Pillars</a>
                 <a href="evillage.html#mandate-progress" class="hover:text-ev-green dark:hover:text-white transition-colors">Mandate Progress</a>
+                <div class="relative group">
+                    <button class="hover:text-ev-green dark:hover:text-white transition-colors flex items-center gap-1.5">
+                        Implementation
+                        <svg class="w-3 h-3 transition-transform group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 pt-3 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl shadow-xl py-2 overflow-hidden">
+                            <a href="evillage-implementation-ongoing.html" class="block px-5 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:text-ev-green dark:hover:text-ev-sage hover:bg-ev-green/5">Ongoing Projects</a>
+                            <a href="evillage-implementation-state-level.html" class="block px-5 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:text-ev-green dark:hover:text-ev-sage hover:bg-ev-green/5">State-Level Activities</a>
+                            <a href="evillage-implementation-pilot.html" class="block px-5 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:text-ev-green dark:hover:text-ev-sage hover:bg-ev-green/5">Pilot Programs</a>
+                            <a href="evillage-implementation-partnership.html" class="block px-5 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:text-ev-green dark:hover:text-ev-sage hover:bg-ev-green/5">Partnership Framework</a>
+                        </div>
+                    </div>
+                </div>
                 <a href="evillage-about.html" class="hover:text-ev-green dark:hover:text-white transition-colors">About eVillage</a>
             </div>
             <button id="mobile-menu-btn" class="md:hidden text-slate-900 dark:text-white focus:outline-none p-2 ml-auto" aria-label="Menu"><i class="fas fa-bars text-xl"></i></button>
@@ -45,6 +59,18 @@
                 <a href="evillage.html" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Home</a>
                 <a href="evillage.html#strategic-pillars" class="mobile-link text-base font-medium text-ev-green">Strategic Pillars</a>
                 <a href="evillage.html#mandate-progress" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">Mandate Progress</a>
+                <div>
+                    <button id="impl-toggle" class="mobile-link w-full flex items-center justify-between text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">
+                        <span>Implementation &amp; Programs</span>
+                        <svg class="w-4 h-4 transition-transform" id="impl-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div id="impl-submenu" class="hidden mt-3 ml-4 flex-col gap-3 border-l-2 border-ev-green/20 pl-4">
+                        <a href="evillage-implementation-ongoing.html" class="mobile-link text-sm text-slate-700 dark:text-slate-200 hover:text-ev-green">Ongoing Projects</a>
+                        <a href="evillage-implementation-state-level.html" class="mobile-link text-sm text-slate-700 dark:text-slate-200 hover:text-ev-green">State-Level Activities</a>
+                        <a href="evillage-implementation-pilot.html" class="mobile-link text-sm text-slate-700 dark:text-slate-200 hover:text-ev-green">Pilot Programs</a>
+                        <a href="evillage-implementation-partnership.html" class="mobile-link text-sm text-slate-700 dark:text-slate-200 hover:text-ev-green">Partnership Framework</a>
+                    </div>
+                </div>
                 <a href="evillage-about.html" class="mobile-link text-base font-medium text-slate-700 dark:text-slate-200 hover:text-ev-green">About eVillage</a>
             </div>
         </div>
@@ -299,8 +325,7 @@
                 </div>
             </div>
             <div class="pt-8 border-t border-slate-200 dark:border-dark-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <p class="text-xs text-slate-500 dark:text-slate-400">&copy; 2026 Federal Republic of Nigeria &middot; National Energy Investment &amp; Intelligence Administration.</p>
-                <div class="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
+                <div class="flex flex-col gap-1.5"><p class="text-xs text-slate-500 dark:text-slate-400">&copy; 2026 Federal Republic of Nigeria &middot; National Energy Investment &amp; Intelligence Administration.</p><p class="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1.5">Powered by <span class="font-bold text-slate-700 dark:text-slate-300 tracking-tight">NOR Group Limited</span><span class="w-1 h-1 rounded-full bg-ev-green/60"></span><span class="text-slate-400 dark:text-slate-500">Technology Partner</span></p></div><div class="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
                     <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-ev-green"></span>All systems operational</span>
                     <span>Official Government Platform</span>
                 </div>
@@ -314,7 +339,10 @@
         const mobileMenu = document.getElementById('mobile-menu');
         function setBodyScrollLock(locked) { document.body.style.overflow = locked ? 'hidden' : ''; document.documentElement.style.overflow = locked ? 'hidden' : ''; }
         mobileMenuBtn.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); const isOpen = !mobileMenu.classList.contains('hidden'); setBodyScrollLock(isOpen); const icon = mobileMenuBtn.querySelector('i'); icon.classList.toggle('fa-bars', !isOpen); icon.classList.toggle('fa-times', isOpen); });
-        document.querySelectorAll('.mobile-link').forEach(link => { link.addEventListener('click', () => { mobileMenu.classList.add('hidden'); setBodyScrollLock(false); const icon = mobileMenuBtn.querySelector('i'); icon.classList.remove('fa-times'); icon.classList.add('fa-bars'); }); });
+        document.querySelectorAll('.mobile-link').forEach(link => { link.addEventListener('click', () => { if (link.id !== 'impl-toggle') { mobileMenu.classList.add('hidden'); setBodyScrollLock(false); const icon = mobileMenuBtn.querySelector('i'); icon.classList.remove('fa-times'); icon.classList.add('fa-bars'); } }); });
+    
+        const implToggle = document.getElementById('impl-toggle'); const implSubmenu = document.getElementById('impl-submenu'); const implChevron = document.getElementById('impl-chevron');
+        if (implToggle) { implToggle.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); implSubmenu.classList.toggle('hidden'); implSubmenu.classList.toggle('flex'); implChevron.classList.toggle('rotate-180'); }); }
     </script>
 </body>
 
