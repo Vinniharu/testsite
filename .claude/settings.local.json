@@ -11,7 +11,19 @@
       "Bash(curl -sL -A \"Mozilla/5.0\" --max-time 15 -o nbte.jpg \"https://upload.wikimedia.org/wikipedia/en/1/1e/NBTE_logo.jpeg\")",
       "Bash(curl -sL -A \"Mozilla/5.0\" --max-time 15 -o pmi.webp \"https://www.energyreforms.ng/_astro/brand.LDB5rGmD_ZIzLOw.webp\")",
       "WebFetch(domain:climatecouncil.gov.ng)",
-      "WebFetch(domain:en.wikipedia.org)"
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebSearch",
+      "WebFetch(domain:nuprc.gov.ng)",
+      "WebFetch(domain:nigerianstat.gov.ng)",
+      "WebFetch(domain:nerc.gov.ng)",
+      "WebFetch(domain:nmdpra.gov.ng)",
+      "WebFetch(domain:opec.org)",
+      "WebFetch(domain:iea.org)",
+      "WebFetch(domain:data.worldbank.org)",
+      "WebFetch(domain:worldbank.org)",
+      "WebFetch(domain:eia.gov)",
+      "WebFetch(domain:fao.org)",
+      "WebFetch(domain:faostat.org)"
     ]
   }
 }

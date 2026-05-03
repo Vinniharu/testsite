@@ -151,81 +151,118 @@ function initMobileAccordion() {
 }
 
 
-/* ---------- 8. CRUDE OIL PAGE FILTERS ---------- */
+/* ---------- 8. DATA-TABLE FILTERS (Product + Year range) ---------- */
 function initCrudeOilFilters() {
     const filterBtn = document.getElementById('filterBtn');
-    if (!filterBtn) return;
-
-    // Get filter elements
     const productEl = document.getElementById('filterProduct');
     const yearFromEl = document.getElementById('filterYearFrom');
     const yearToEl = document.getElementById('filterYearTo');
+    const tbody = document.querySelector('.data-table tbody');
+    if (!filterBtn || !productEl || !yearFromEl || !yearToEl || !tbody) return;
 
-    if (!productEl || !yearFromEl || !yearToEl) {
-        console.error('Missing filter elements for Crude Oil page');
-        return;
+    // ---- Step 1: scan the table once and build sets of descriptions + years ----
+    const descSet = new Set();
+    const yearSet = new Set();
+    tbody.querySelectorAll('tr').forEach(row => {
+        if (row.id === 'no-data-row') return;
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 5) return;
+        const desc = cells[1].textContent.trim();
+        const yearText = cells[2].textContent.trim();
+        if (desc) descSet.add(desc);
+        // capture every 4-digit year token in the year cell (handles "2023", "2014–2023", "1 Jan 2024")
+        (yearText.match(/\d{4}/g) || []).forEach(y => yearSet.add(parseInt(y, 10)));
+    });
+
+    // ---- Step 2: replace the placeholder Product dropdown with the actual descriptions ----
+    const sortedDescs = [...descSet].sort((a, b) => a.localeCompare(b));
+    productEl.innerHTML =
+        '<option value="all">All Descriptions (' + sortedDescs.length + ')</option>' +
+        sortedDescs.map(d => `<option value="${d.replace(/"/g, '&quot;')}">${d}</option>`).join('');
+
+    // ---- Step 3: replace the year dropdowns with only years that exist in the data ----
+    if (yearSet.size > 0) {
+        const sortedYears = [...yearSet].sort((a, b) => b - a); // newest first
+        const yearOpts = sortedYears.map(y => `<option value="${y}">${y}</option>`).join('');
+        yearFromEl.innerHTML = yearOpts;
+        yearToEl.innerHTML = yearOpts;
+        // sensible defaults: From = oldest, To = newest
+        yearFromEl.value = sortedYears[sortedYears.length - 1];
+        yearToEl.value = sortedYears[0];
     }
 
-    filterBtn.addEventListener('click', () => {
-        const productEl = document.getElementById('filterProduct');
-        const yearFromEl = document.getElementById('filterYearFrom');
-        const yearToEl = document.getElementById('filterYearTo');
+    // ---- Step 4: ensure a "no results" row exists ----
+    let noDataRow = document.getElementById('no-data-row');
+    if (!noDataRow) {
+        noDataRow = document.createElement('tr');
+        noDataRow.id = 'no-data-row';
+        noDataRow.style.display = 'none';
+        noDataRow.innerHTML = '<td colspan="5" style="text-align:center; padding: 20px; color: #666; font-style: italic;">No records match your filter — try widening the year range or selecting "All Descriptions".</td>';
+        tbody.appendChild(noDataRow);
+    }
 
+    // ---- Step 4b: insert a "Showing X of Y rows" counter just above the table ----
+    const totalRows = tbody.querySelectorAll('tr').length - 1; // minus the no-data row
+    const tableContainer = document.querySelector('.table-container');
+    let counterEl = document.getElementById('filter-count');
+    if (!counterEl && tableContainer) {
+        counterEl = document.createElement('div');
+        counterEl.id = 'filter-count';
+        counterEl.className = 'filter-count';
+        tableContainer.parentElement.insertBefore(counterEl, tableContainer);
+    }
+    function renderCount(visible) {
+        if (!counterEl) return;
+        counterEl.innerHTML = visible === totalRows
+            ? `Showing all <strong>${totalRows}</strong> records.`
+            : `Showing <strong>${visible}</strong> of <strong>${totalRows}</strong> records.`;
+    }
+
+    // ---- Step 5: filter routine (runs on click + on any select change for live filtering) ----
+    function applyFilter() {
         const product = productEl.value;
-        const yearFrom = parseInt(yearFromEl.value);
-        const yearTo = parseInt(yearToEl.value);
+        const yearFrom = parseInt(yearFromEl.value, 10);
+        const yearTo = parseInt(yearToEl.value, 10);
+        const lo = Math.min(yearFrom, yearTo);
+        const hi = Math.max(yearFrom, yearTo);
 
-        if (isNaN(yearFrom) || isNaN(yearTo)) {
-            console.error('Invalid year range');
-            return;
-        }
-
-        const rows = document.querySelectorAll('.data-table tbody tr');
         let visibleCount = 0;
-        // Create No Data Row if it doesn't exist - ensuring we get it even if not in variable
-        noDataRow = document.getElementById('no-data-row');
-        if (!noDataRow) {
-            const tbody = document.querySelector('.data-table tbody');
-            noDataRow = document.createElement('tr');
-            noDataRow.id = 'no-data-row';
-            noDataRow.style.display = 'none'; // Hidden by default
-            noDataRow.innerHTML = '<td colspan="5" style="text-align:center; padding: 20px; color: #666; font-style: italic;">No records found matching your criteria.</td>';
-            tbody.appendChild(noDataRow);
-        }
-
-        rows.forEach(row => {
-            if (row.id === 'no-data-row') return; // Skip the no-data row itself
-
+        tbody.querySelectorAll('tr').forEach(row => {
+            if (row.id === 'no-data-row') return;
             const cells = row.querySelectorAll('td');
             if (cells.length < 5) return;
-
             const desc = cells[1].textContent.trim();
             const yearText = cells[2].textContent.trim();
-            const year = parseInt(yearText);
+            const yearMatches = yearText.match(/\d{4}/g);
 
-            if (isNaN(year)) return;
-
-            // Check Product
             const matchProduct = (product === 'all') || (desc === product);
-
-            // Check Year
-            const matchYear = (year >= yearFrom) && (year <= yearTo);
+            // a row matches the year filter if ANY 4-digit year in its year cell falls in range
+            // (this handles ranges like "2014–2023" and aggregates like "1 Jan 2024")
+            const matchYear = !yearMatches || yearMatches.length === 0 ||
+                yearMatches.some(y => {
+                    const yi = parseInt(y, 10);
+                    return yi >= lo && yi <= hi;
+                });
 
             if (matchProduct && matchYear) {
-                row.style.display = ''; // Reset to default (table-row)
+                row.style.display = '';
                 visibleCount++;
             } else {
                 row.style.display = 'none';
             }
         });
+        noDataRow.style.display = visibleCount === 0 ? 'table-row' : 'none';
+        renderCount(visibleCount);
+    }
 
-        // Toggle No Data Row
-        if (visibleCount === 0) {
-            noDataRow.style.display = 'table-row'; // Explicitly show as table-row
-        } else {
-            noDataRow.style.display = 'none';
-        }
-    });
+    // Wire up: button click + live filtering on any change (no need to click "Filter" each time)
+    filterBtn.addEventListener('click', applyFilter);
+    productEl.addEventListener('change', applyFilter);
+    yearFromEl.addEventListener('change', applyFilter);
+    yearToEl.addEventListener('change', applyFilter);
+
+    // Initial render — show count for the unfiltered table
+    renderCount(totalRows);
 }
 
 /* ---------- 9. EXPORT REPORT FUNCTIONALITY ---------- */

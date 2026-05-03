@@ -1671,7 +1671,22 @@ img {
     background-color: #fff;
     cursor: pointer;
     min-width: 120px;
+    max-width: 100%;
 }
+
+/* Make the Product Description dropdown wider so long labels (e.g. "Crude Oil & Condensate Production (Total)") aren't truncated */
+#filterProduct {
+    min-width: 340px;
+}
+
+.filter-count {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #6b7280);
+    padding: 8px 0;
+    margin-top: -8px;
+    margin-bottom: 12px;
+}
+.filter-count strong { color: var(--text-primary, #111827); }
 
 .table-container {
     overflow-x: auto;
