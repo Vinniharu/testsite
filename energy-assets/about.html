@@ -4,60 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account | Energy Assets | NEIIA</title>
-    <meta name="description" content="Register as an individual or organisation to trade energy assets on NEIIA's marketplace.">
+    <title>About | Energy Assets | NEIIA</title>
+    <meta name="description" content="Energy Assets is the national exchange for tradable electricity, gas, and carbon credits — built and regulated by NEIIA, the National Energy Investment & Intelligence Administration.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .auth-page { display: flex; align-items: center; justify-content: center; padding: 48px 20px 60px; position: relative; }
-        .auth-page::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 30% 50%, rgba(0,99,65,0.1) 0%, transparent 50%), radial-gradient(ellipse at 70% 20%, rgba(163,230,53,0.06) 0%, transparent 50%); pointer-events: none; }
-        .auth-card { position: relative; z-index: 1; width: 100%; max-width: 600px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px 32px; margin: 0 auto; }
-        .auth-card h1 { font-size: 24px; font-weight: 700; color: var(--text-white); margin-bottom: 4px; text-align: center; }
-        .auth-card .auth-sub { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 20px; }
-
-        /* Toggle tabs */
-        .signup-toggle { display: flex; background: var(--bg-input); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
-        .toggle-btn { flex: 1; padding: 8px; text-align: center; border-radius: 8px; font-weight: 600; font-size: 13px; color: var(--text-dim); background: transparent; cursor: pointer; transition: var(--transition); border: none; font-family: var(--font-family); }
-        .toggle-btn.active { background: var(--green-accent); color: var(--bg-dark); }
-
-        /* Form styles */
-        .form-group { margin-bottom: 12px; }
-        .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.3px; }
-        .form-input { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 14px; transition: var(--transition); font-family: var(--font-family); }
-        .form-input:focus { outline: none; border-color: var(--green-accent); box-shadow: 0 0 0 3px rgba(163,230,53,0.1); }
-        .form-input::placeholder { color: var(--text-dim); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-select { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 14px; transition: var(--transition); font-family: var(--font-family); appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
-        .form-select:focus { outline: none; border-color: var(--green-accent); }
-        .form-select option { background: var(--bg-card); color: var(--text-white); }
-
-        /* Checkboxes */
-        .checkbox-group { margin-bottom: 16px; }
-        .checkbox-group .form-label { margin-bottom: 8px; }
-        .checkbox-row { display: flex; flex-wrap: wrap; gap: 8px; }
-        .checkbox-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; transition: var(--transition); }
-        .checkbox-pill:hover { border-color: var(--border-hover); }
-        .checkbox-pill input[type="checkbox"] { display: none; }
-        .checkbox-pill.checked { border-color: var(--green-accent); background: rgba(163,230,53,0.08); }
-        .checkbox-pill span { font-size: 13px; color: var(--text-muted); }
-        .checkbox-pill.checked span { color: var(--green-accent); }
-
-        .btn-submit { width: 100%; padding: 12px; background: var(--green-accent); color: var(--bg-dark); border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: var(--font-family); margin-top: 4px; }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(163,230,53,0.25); }
-
-        .auth-footer { text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-dim); }
-        .auth-footer a { color: var(--green-accent); font-weight: 600; }
-
-        .form-section { display: none; }
-        .form-section.active { display: block; }
-
-        .form-hint { font-size: 11px; color: var(--text-dim); margin-top: 3px; position: absolute; }
-
-        @media (max-width: 480px) {
-            .auth-card { padding: 24px 20px; }
-            .form-row { grid-template-columns: 1fr; }
-        }
-    </style>
     <link rel="icon" type="image/svg+xml" href="../assets/images/Coat_of_arms_of_Nigeria.svg" sizes="50x50">
 </head>
 
@@ -98,7 +48,7 @@
                     </div>
                 </div>
 
-                <a href="about.html" class="ea-nav-link">About</a>
+                <a href="about.html" class="ea-nav-link is-active">About</a>
                 <a href="contact.html" class="ea-nav-link">Contact</a>
             </nav>
 
@@ -162,203 +112,160 @@
         </div>
     </aside>
 
-    <section class="auth-page">
-        <div class="auth-card">
-            <h1>Create your account</h1>
-            <p class="auth-sub">Choose your account type to start trading energy assets</p>
 
-            <!-- Toggle -->
-            <div class="signup-toggle">
-                <button class="toggle-btn active" data-target="personal-form" type="button">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Individual
-                </button>
-                <button class="toggle-btn" data-target="org-form" type="button">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v3"/></svg>
-                    Organisation
-                </button>
-            </div>
+<main class="ea-page">
+    <header class="ea-page-head">
+        <span class="eyebrow">About Energy Assets</span>
+        <h1>The national exchange for <span>tradable energy</span>.</h1>
+        <p>Energy Assets is a regulated marketplace for electricity, natural gas, and carbon credits — built and operated under the National Energy Investment &amp; Intelligence Administration (NEIIA). We connect generators, refiners, IPPs, DisCos, industrial off-takers, and verified offset projects through standardised contracts and transparent price discovery.</p>
+    </header>
 
-            <!-- Personal Form -->
-            <form class="form-section active" id="personal-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">First Name</label>
-                        <input type="text" class="form-input" placeholder="John" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" class="form-input" placeholder="Doe" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" placeholder="john@example.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-input" placeholder="+234 800 000 0000" required>
-                    </div>
-                </div>
-                <div class="form-row" style="margin-bottom: 8px;">
-                    <div class="form-group">
-                        <label class="form-label">NIN (National ID)</label>
-                        <input type="text" class="form-input" placeholder="12345678901" required>
-                        <p class="form-hint">11-digit NIN</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">BVN</label>
-                        <input type="text" class="form-input" placeholder="22345678901" required>
-                        <p class="form-hint">Bank Verification Number</p>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 20px;">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" placeholder="Min. 8 characters" required>
-                </div>
+    <!-- Stats strip -->
+    <div class="ea-stats">
+        <div>
+            <div class="stat-label">Founded</div>
+            <div class="stat-value">2024</div>
+            <div class="stat-sub">Operationalised under NEIIA Beta</div>
+        </div>
+        <div>
+            <div class="stat-label">Asset Classes</div>
+            <div class="stat-value"><span>3</span></div>
+            <div class="stat-sub">Electricity · Gas · Carbon</div>
+        </div>
+        <div>
+            <div class="stat-label">Regulator</div>
+            <div class="stat-value">NEIIA</div>
+            <div class="stat-sub">Federal Republic of Nigeria</div>
+        </div>
+        <div>
+            <div class="stat-label">Coverage</div>
+            <div class="stat-value">Federal</div>
+            <div class="stat-sub">All 36 states + FCT</div>
+        </div>
+    </div>
 
-                <div class="form-row">
-                    <div class="checkbox-group">
-                        <label class="form-label">Trading Interests</label>
-                        <div class="checkbox-row">
-                            <label class="checkbox-pill"><input type="checkbox" value="electricity"><span>Electricity</span></label>
-                            <label class="checkbox-pill"><input type="checkbox" value="gas"><span>Natural Gas</span></label>
-                            <label class="checkbox-pill"><input type="checkbox" value="carbon"><span>Carbon</span></label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Trading Pair</label>
-                        <select class="form-select">
-                            <option value="USD">USD (US Dollar)</option>
-                            <option value="NGN">NGN (Naira)</option>
-                        </select>
-                    </div>
+    <!-- Mission -->
+    <section class="ea-section">
+        <h2>Why we exist</h2>
+        <p class="sub">Nigeria's energy economy is fragmented across regulators, distribution companies, IPPs, gas processors, and offset registries. Buyers and sellers struggle to discover fair prices and verify counterparties. Energy Assets fixes that with one venue, one settlement layer, and one compliance framework.</p>
+        <div class="ea-grid cols-3">
+            <article class="ea-card">
+                <div class="card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
-
-                <button type="submit" class="btn-submit">Create Account</button>
-            </form>
-
-            <!-- Organisation Form -->
-            <form class="form-section" id="org-form">
-                <div class="form-row" style="margin-bottom: 8px;">
-                    <div class="form-group">
-                        <label class="form-label">Organisation Name</label>
-                        <input type="text" class="form-input" placeholder="Acme Energy Ltd" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">CAC Registration</label>
-                        <input type="text" class="form-input" placeholder="RC-123456" required>
-                        <p class="form-hint">CAC number</p>
-                    </div>
+                <h3>Standardised Contracts</h3>
+                <p>Every listing settles against a NEIIA-defined contract with vetted units (kWh, MMBtu, tCO₂), delivery windows, and dispute mechanisms.</p>
+            </article>
+            <article class="ea-card">
+                <div class="card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
-                <div class="form-row" style="margin-top: 20px;">
-                    <div class="form-group">
-                        <label class="form-label">Representative Name</label>
-                        <input type="text" class="form-input" placeholder="Full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Position / Title</label>
-                        <input type="text" class="form-input" placeholder="CEO, Director, etc." required>
-                    </div>
+                <h3>Verified Counterparties</h3>
+                <p>KYC-checked sellers (gencos, IPPs, DisCos, project developers) and KYB-verified industrial buyers — no anonymous capital.</p>
+            </article>
+            <article class="ea-card">
+                <div class="card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" placeholder="info@company.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-input" placeholder="+234 800 000 0000" required>
-                    </div>
+                <h3>Transparent Price Discovery</h3>
+                <p>Open order books, anonymous bidding, and a published mid-price feed — so buyers don't pay above market and sellers aren't haircut.</p>
+            </article>
+            <article class="ea-card">
+                <div class="card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.01"/></svg>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" placeholder="Min. 8 characters" required>
+                <h3>Regulatory Audit Trail</h3>
+                <p>Every trade is logged on the NEIIA compliance ledger. Settlement, tariff metering, and tax allocation flow into existing federal systems.</p>
+            </article>
+            <article class="ea-card">
+                <div class="card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>
                 </div>
-
-                <div class="form-row">
-                    <div class="checkbox-group">
-                        <label class="form-label">Trading Interests</label>
-                        <div class="checkbox-row">
-                            <label class="checkbox-pill"><input type="checkbox" value="electricity"><span>Electricity</span></label>
-                            <label class="checkbox-pill"><input type="checkbox" value="gas"><span>Natural Gas</span></label>
-                            <label class="checkbox-pill"><input type="checkbox" value="carbon"><span>Carbon</span></label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Trading Pair</label>
-                        <select class="form-select">
-                            <option value="USD">USD (US Dollar)</option>
-                            <option value="NGN">NGN (Naira)</option>
-                        </select>
-                    </div>
+                <h3>Carbon-First Design</h3>
+                <p>Carbon credits sit beside electricity in the same orderbook — making it economic for renewable IPPs to monetise both kWh and tCO₂ simultaneously.</p>
+            </article>
+            <article class="ea-card">
+                <div class="card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>
                 </div>
-
-                <button type="submit" class="btn-submit">Create Organisation Account</button>
-            </form>
-
-            <div class="auth-footer">
-                Already have an account? <a href="login.html">Sign in</a>
-            </div>
+                <h3>Built for Scale</h3>
+                <p>Architecture mirrors Bybit-grade exchange patterns — sub-second order matching, 99.9% uptime SLO, and resilient settlement.</p>
+            </article>
         </div>
     </section>
 
-    <script src="app.js"></script>
-    <script>
-        // Toggle buttons
-        document.querySelectorAll('.toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.target).classList.add('active');
-            });
-        });
+    <!-- How it works -->
+    <section class="ea-section">
+        <h2>How it works</h2>
+        <p class="sub">Four steps from sign-up to settlement.</p>
+        <div class="ea-grid cols-2">
+            <article class="ea-card">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                    <span style="width:28px; height:28px; border-radius:8px; background:rgba(163,230,53,0.12); color:var(--green-accent); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">1</span>
+                    <h3 style="margin:0;">Onboard &amp; verify</h3>
+                </div>
+                <p>Sign up as a Producer (sell) or Consumer (buy). Upload regulator IDs (NERC licence, NUPRC OPL, registry CRS, NMDPRA permit). Compliance review typically completes within 48 hours.</p>
+            </article>
+            <article class="ea-card">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                    <span style="width:28px; height:28px; border-radius:8px; background:rgba(163,230,53,0.12); color:var(--green-accent); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">2</span>
+                    <h3 style="margin:0;">List or browse</h3>
+                </div>
+                <p>Sellers list assets with quantity, unit price, delivery window, and proof of capacity. Buyers browse the marketplace, filter by asset class, and watch the live order book.</p>
+            </article>
+            <article class="ea-card">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                    <span style="width:28px; height:28px; border-radius:8px; background:rgba(163,230,53,0.12); color:var(--green-accent); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">3</span>
+                    <h3 style="margin:0;">Bid &amp; match</h3>
+                </div>
+                <p>Place anonymous bids against any listing. The order book aggregates depth in real time. Sellers can accept, counter, or hold for the next price tick.</p>
+            </article>
+            <article class="ea-card">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                    <span style="width:28px; height:28px; border-radius:8px; background:rgba(163,230,53,0.12); color:var(--green-accent); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">4</span>
+                    <h3 style="margin:0;">Settle &amp; deliver</h3>
+                </div>
+                <p>Cleared trades flow into NEIIA's settlement layer — escrow, tariff routing, and physical delivery scheduling all handled by API integration with TCN, NIPC, and registry partners.</p>
+            </article>
+        </div>
+    </section>
 
-        // Checkbox pills
-        document.querySelectorAll('.checkbox-pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                const cb = pill.querySelector('input[type="checkbox"]');
-                cb.checked = !cb.checked;
-                pill.classList.toggle('checked', cb.checked);
-            });
-        });
+    <!-- Governance / regulator note -->
+    <section class="ea-section">
+        <h2>Governance &amp; oversight</h2>
+        <p class="sub">Energy Assets operates under enabling federal frameworks.</p>
+        <div class="ea-grid cols-3">
+            <article class="ea-card">
+                <h3 style="font-size:14px; color:var(--green-accent);">Petroleum Industry Act 2021</h3>
+                <p>Upstream petroleum production licensing &amp; midstream gas commercialisation — supplied by NUPRC and NMDPRA data feeds.</p>
+            </article>
+            <article class="ea-card">
+                <h3 style="font-size:14px; color:var(--green-accent);">Electricity Act 2023</h3>
+                <p>State-level electricity market reforms enabling distributed wholesale trading. NERC oversight retained for federally licensed assets.</p>
+            </article>
+            <article class="ea-card">
+                <h3 style="font-size:14px; color:var(--green-accent);">National Climate Council</h3>
+                <p>Carbon credit standards and offset registry reciprocity per Nigeria's Energy Transition Plan.</p>
+            </article>
+        </div>
+    </section>
 
-        // Form submissions
-        document.querySelectorAll('.form-section').forEach(form => {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const isOrg = form.id === 'org-form';
-                const formData = new FormData(form);
-                const inputs = form.querySelectorAll('.form-input');
-                const userData = {};
-                inputs.forEach(input => {
-                    const label = input.closest('.form-group').querySelector('.form-label').textContent;
-                    userData[label] = input.value;
-                });
-                userData.type = isOrg ? 'organisation' : 'personal';
-                userData.status = 'pending';
-                userData.id = Date.now().toString(36);
-                userData.createdAt = new Date().toISOString();
+    <!-- CTA -->
+    <div class="ea-cta-banner">
+        <div>
+            <h3>Ready to trade?</h3>
+            <p>Sign up for early access. Onboarding takes about 5 minutes.</p>
+        </div>
+        <div class="ea-cta-actions">
+            <a href="signup.html" class="btn-primary">Get Started
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+            <a href="marketplace.html" class="btn-secondary">Browse Marketplace</a>
+        </div>
+    </div>
+</main>
 
-                // Get trading interests
-                const interests = [];
-                form.querySelectorAll('.checkbox-pill.checked span').forEach(s => interests.push(s.textContent));
-                userData.interests = interests;
-                userData.pair = form.querySelector('.form-select').value;
-
-                // Save to localStorage
-                const users = JSON.parse(localStorage.getItem('ea_users') || '[]');
-                users.push(userData);
-                localStorage.setItem('ea_users', JSON.stringify(users));
-                localStorage.setItem('ea_current_user', JSON.stringify(userData));
-
-                alert('Account created! Your application is pending admin approval.');
-                window.location.href = 'login.html';
-            });
-        });
-    </script>
+<script src="app.js"></script>
 
     <!-- ===== EA FOOTER ===== -->
     <footer class="ea-footer">

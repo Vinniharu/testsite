@@ -14,301 +14,959 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        .details-wrapper { padding: 100px 20px 60px; max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
-        
-        .main-column { display: flex; flex-direction: column; gap: 24px; }
-        .side-column { display: flex; flex-direction: column; gap: 24px; }
-
-        .details-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .details-header h1 { font-size: 32px; font-weight: 700; color: var(--text-white); margin-bottom: 8px; }
-        .breadcrumb { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
-        .breadcrumb a { color: var(--green-accent); transition: var(--transition); }
-        .breadcrumb a:hover { text-decoration: underline; }
-
-        .tag-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-        .type-tag { padding: 6px 14px; border-radius: 100px; font-size: 13px; font-weight: 600; text-transform: capitalize; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-white); }
-        .type-tag i { margin-right: 6px; }
-
-        /* Chart section */
-        .chart-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 24px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .chart-header h3 { font-size: 18px; font-weight: 600; color: var(--text-white); }
-        .chart-controls { display: flex; gap: 8px; }
-        .chart-btn { background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); }
-        .chart-btn.active { background: rgba(163,230,53,0.1); color: var(--green-accent); border-color: rgba(163,230,53,0.3); }
-
-        /* Info Section */
-        .info-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 32px 24px; }
-        .info-card h3 { font-size: 20px; font-weight: 600; color: var(--text-white); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .info-card h3 i { color: var(--green-accent); }
-        .info-card p { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; white-space: pre-wrap; }
-        
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid var(--border-color); padding-top: 24px; }
-        .info-block span { display: block; font-size: 12px; color: var(--text-dim); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .info-block strong { display: block; font-size: 15px; color: var(--text-white); font-weight: 500; }
-
-        /* Action Card (Sidebar) */
-        .action-card { background: var(--bg-darker); border: 1px solid var(--green-accent); border-radius: var(--radius); padding: 32px 24px; text-align: center; position: sticky; top: 100px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-        .price-huge { font-size: 40px; font-weight: 800; color: var(--green-accent); font-family: var(--font-display); line-height: 1; margin-bottom: 8px; }
-        .price-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
-        
-        .btn-bid { width: 100%; padding: 16px; background: var(--green-accent); color: var(--bg-dark); border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: var(--transition); margin-bottom: 16px; }
-        .btn-bid:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(163,230,53,0.25); }
-        
-        .action-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-dim); border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 16px; }
-
-        @media (max-width: 992px) {
-            .details-wrapper { grid-template-columns: 1fr; }
-            .action-card { position: static; }
+        /* ===== Page container ===== */
+        .details-wrapper {
+            padding: 32px 32px 80px;
+            max-width: var(--container-max);
+            margin: 0 auto;
         }
+        @media (max-width: 768px) { .details-wrapper { padding: 24px 20px 60px; } }
+
+        /* ===== Header ===== */
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 18px; flex-wrap: wrap; }
+        .breadcrumb a { color: rgba(255,255,255,0.65); text-decoration: none; transition: color 0.15s; }
+        .breadcrumb a:hover { color: var(--green-accent); }
+        .breadcrumb svg { opacity: 0.4; }
+        .breadcrumb .current { color: rgba(255,255,255,0.9); }
+
+        .ld-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+        .ld-title { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+        .ld-title h1 {
+            font-size: clamp(24px, 3.4vw, 36px);
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+        }
+        .ld-tags { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .ld-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 100px;
+            font-size: 12.5px; font-weight: 600;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.85);
+        }
+        .ld-tag.elec { background: rgba(250,204,21,0.1); color: #facc15; border-color: rgba(250,204,21,0.25); }
+        .ld-tag.gas { background: rgba(59,130,246,0.1); color: #3b82f6; border-color: rgba(59,130,246,0.25); }
+        .ld-tag.carbon { background: rgba(34,197,94,0.1); color: #22c55e; border-color: rgba(34,197,94,0.25); }
+        .ld-tag.verified { background: rgba(163,230,53,0.1); color: var(--green-accent); border-color: rgba(163,230,53,0.3); }
+
+        .ld-back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 16px; border-radius: 10px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.85); font-size: 13.5px; font-weight: 500;
+            text-decoration: none; transition: all 0.15s ease; flex-shrink: 0;
+        }
+        .ld-back-btn:hover { background: rgba(255,255,255,0.08); color: #fff; transform: translateX(-2px); }
+
+        /* ===== Layout grid ===== */
+        .ld-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+            gap: 24px;
+            align-items: start;
+        }
+        .ld-main { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .ld-side { display: flex; flex-direction: column; gap: 20px; }
+        @media (max-width: 992px) {
+            .ld-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ===== Cards ===== */
+        .ld-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 22px 24px;
+        }
+        .ld-card h3 {
+            font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.95);
+            margin: 0 0 14px;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ld-card h3 svg { color: var(--green-accent); opacity: 0.9; }
+
+        /* ===== Price card (sticky sidebar) ===== */
+        .price-card {
+            background: linear-gradient(180deg, #14171d 0%, #0e1115 100%);
+            border: 1px solid rgba(163,230,53,0.25);
+            border-radius: 14px; padding: 26px 24px;
+            position: sticky; top: 116px;
+            box-shadow: 0 24px 60px -20px rgba(0,0,0,0.55);
+        }
+        .price-card .label {
+            font-size: 11px; color: rgba(255,255,255,0.55);
+            text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
+        }
+        .price-card .price-big {
+            font-size: 36px; font-weight: 800; color: var(--green-accent);
+            font-family: var(--font-display); line-height: 1; margin: 6px 0 4px;
+            letter-spacing: -0.02em;
+        }
+        .price-card .price-unit { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 18px; }
+        .price-card .btn-bid-primary {
+            width: 100%; padding: 14px;
+            background: var(--green-accent); color: #0b0e11;
+            border: none; border-radius: 10px;
+            font-size: 14.5px; font-weight: 700;
+            cursor: pointer; transition: all 0.15s;
+            font-family: inherit;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .price-card .btn-bid-primary:hover { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 8px 24px -4px rgba(163,230,53,0.35); }
+        .price-card .btn-bid-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .price-card .btn-secondary {
+            width: 100%; padding: 11px; margin-top: 8px;
+            background: transparent; color: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            text-decoration: none; text-align: center; display: block;
+            transition: all 0.15s;
+        }
+        .price-card .btn-secondary:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.24); }
+        .price-card-meta {
+            margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .price-card-meta .row {
+            display: flex; justify-content: space-between; align-items: baseline;
+            font-size: 12.5px;
+        }
+        .price-card-meta .row span:first-child { color: rgba(255,255,255,0.55); }
+        .price-card-meta .row span:last-child { color: #fff; font-weight: 600; }
+
+        /* ===== Order book ===== */
+        .ob-rows { display: flex; flex-direction: column; gap: 0; }
+        .ob-head { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 0 0 8px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 6px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.4); }
+        .ob-head span:nth-child(2), .ob-head span:nth-child(3) { text-align: right; }
+        .ob-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 5px 0; font-size: 12.5px; }
+        .ob-row .ob-qty, .ob-row .ob-total { text-align: right; }
+        .ob-row.ask .ob-price { color: var(--red, #ef4444); font-weight: 600; }
+        .ob-row.bid .ob-price { color: var(--green-accent); font-weight: 600; }
+        .ob-row .ob-qty { color: rgba(255,255,255,0.7); }
+        .ob-row .ob-total { color: rgba(255,255,255,0.5); }
+        .ob-spread {
+            text-align: center; padding: 10px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin: 8px 0;
+            font-family: var(--font-display);
+        }
+        .ob-spread .mid { font-size: 16px; font-weight: 700; color: #fff; }
+        .ob-spread .spread { display: block; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+        .ob-empty { padding: 6px 0; font-size: 12px; color: rgba(255,255,255,0.4); text-align: center; font-style: italic; }
+
+        /* ===== Chart ===== */
+        .chart-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+        .chart-controls { display: flex; gap: 4px; background: rgba(255,255,255,0.03); padding: 3px; border-radius: 8px; }
+        .chart-btn { padding: 5px 11px; font-size: 11.5px; font-weight: 600; background: none; border: none; color: rgba(255,255,255,0.55); cursor: pointer; border-radius: 5px; font-family: inherit; transition: all 0.15s; }
+        .chart-btn.active { background: rgba(163,230,53,0.12); color: var(--green-accent); }
+        .chart-canvas-wrap { position: relative; height: 220px; }
+
+        /* ===== Description / specs ===== */
+        .ld-description {
+            font-size: 14.5px; line-height: 1.65; color: rgba(255,255,255,0.75);
+            margin: 0 0 18px;
+            white-space: pre-wrap;
+        }
+        .specs-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .spec {
+            display: flex; flex-direction: column; gap: 3px;
+        }
+        .spec .lbl {
+            font-size: 10.5px; color: rgba(255,255,255,0.45);
+            text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600;
+        }
+        .spec .val {
+            font-size: 14px; color: #fff; font-weight: 500;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .spec .val.verified { color: var(--green-accent); }
+        .spec .val.muted { color: rgba(255,255,255,0.5); }
+
+        /* ===== Recent bids list ===== */
+        .bids-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
+        .bids-list::-webkit-scrollbar { width: 6px; }
+        .bids-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+        .bid-row {
+            display: grid; grid-template-columns: 1fr auto auto;
+            gap: 12px; align-items: center;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 8px;
+        }
+        .bid-row .bidder {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; color: rgba(255,255,255,0.85);
+        }
+        .bid-row .bidder svg { opacity: 0.5; }
+        .bid-row .bid-price { font-size: 13px; color: var(--green-accent); font-weight: 600; font-family: var(--font-display); }
+        .bid-row .bid-qty { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+        .empty-card {
+            text-align: center; padding: 30px 20px;
+            color: rgba(255,255,255,0.5); font-size: 13.5px;
+        }
+        .empty-card .empty-icon {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255,255,255,0.04); margin: 0 auto 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* ===== Not-found state ===== */
+        .ld-notfound {
+            text-align: center; padding: 80px 24px;
+            background: var(--bg-card); border: 1px dashed rgba(255,255,255,0.12);
+            border-radius: 16px;
+        }
+        .ld-notfound .icon {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: rgba(239,68,68,0.08); color: var(--red, #ef4444);
+            margin: 0 auto 18px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ld-notfound h2 { color: #fff; margin: 0 0 8px; font-size: 22px; }
+        .ld-notfound p { color: rgba(255,255,255,0.6); margin: 0 0 22px; font-size: 14.5px; }
+        .ld-notfound a {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 11px 20px; border-radius: 10px;
+            background: var(--green-accent); color: #0b0e11;
+            text-decoration: none; font-weight: 700; font-size: 14px;
+        }
+
+        /* ===== Bid modal — proper ===== */
+        .ld-modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 9000; padding: 20px;
+        }
+        .ld-modal-overlay.is-open { display: flex; }
+        .ld-modal {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 28px;
+            width: 100%; max-width: 460px;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.6);
+            position: relative;
+        }
+        .ld-modal h3 { color: #fff; font-size: 20px; font-weight: 700; margin: 0 0 4px; }
+        .ld-modal .sub { color: rgba(255,255,255,0.55); font-size: 13.5px; margin: 0 0 20px; }
+        .ld-modal-close {
+            position: absolute; top: 14px; right: 14px;
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(255,255,255,0.04); border: none; color: #fff;
+            cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .ld-modal-close:hover { background: rgba(255,255,255,0.08); }
+        .ld-modal label {
+            display: block; font-size: 12px; font-weight: 600;
+            color: rgba(255,255,255,0.7); margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .ld-modal input {
+            width: 100%; padding: 12px 14px;
+            background: var(--bg-input, #0d1014);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            color: #fff; font-size: 14.5px; font-family: inherit;
+        }
+        .ld-modal input:focus { outline: none; border-color: var(--green-accent); }
+        .ld-modal .field { margin-bottom: 14px; }
+        .ld-modal .field-hint { font-size: 11.5px; color: rgba(255,255,255,0.4); margin-top: 5px; display: block; }
+        .ld-modal .btn-submit {
+            width: 100%; padding: 13px;
+            background: var(--green-accent); color: #0b0e11;
+            border: none; border-radius: 10px;
+            font-weight: 700; font-size: 14.5px; cursor: pointer;
+            margin-top: 6px; font-family: inherit;
+        }
+        .ld-modal .btn-submit:hover { filter: brightness(1.05); }
+        .ld-modal .anonymous-note {
+            margin-top: 14px; padding: 10px 12px; border-radius: 8px;
+            background: rgba(163,230,53,0.06); border: 1px solid rgba(163,230,53,0.15);
+            font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.5;
+            display: flex; gap: 8px; align-items: flex-start;
+        }
+        .ld-modal .anonymous-note svg { color: var(--green-accent); flex-shrink: 0; margin-top: 2px; }
+
+        /* ===== Toast ===== */
+        .ld-toast-container {
+            position: fixed; bottom: 24px; right: 24px;
+            display: flex; flex-direction: column; gap: 10px;
+            z-index: 10000;
+        }
+        .ld-toast {
+            background: var(--bg-card); border: 1px solid var(--green-accent);
+            border-radius: 10px; padding: 14px 18px;
+            display: flex; align-items: center; gap: 10px;
+            color: #fff; font-size: 13.5px; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateX(110%);
+            transition: transform 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        .ld-toast.show { transform: translateX(0); }
+        .ld-toast.error { border-color: var(--red, #ef4444); }
+        .ld-toast .toast-icon {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: rgba(163,230,53,0.18); color: var(--green-accent);
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .ld-toast.error .toast-icon { background: rgba(239,68,68,0.18); color: var(--red, #ef4444); }
     </style>
     <link rel="icon" type="image/svg+xml" href="../assets/images/Coat_of_arms_of_Nigeria.svg" sizes="50x50">
 </head>
 
 <body>
-    <!-- Logo -->
-    <a href="index.html" class="logo-fixed">
-        <div class="logo-wrapper">
-            <img src="../assets/images/neiis-logo-green.png" alt="NEIIA Logo" class="brand-logo light-mode-logo" style="max-width: 120px;">
-            <img src="../assets/images/neiih_logo_white.png" alt="NEIIA Logo" class="brand-logo dark-mode-logo" style="max-width: 120px;">
-            <!-- <div class="brand-text">NATIONAL ENERGY INVESTMENT & INTELLIGENCE ADMINISTRATION</div> -->
-        </div>
-    </a>
+    <!-- ===== EA NAVBAR ===== -->
+    <header class="ea-nav">
+        <div class="ea-nav-inner">
+            <a href="index.html" class="ea-brand" aria-label="Energy Assets home">
+                <img src="../assets/images/neiih_logo_white.png" alt="NEIIA">
+                <span class="ea-brand-text">Energy Assets <span class="pill">Beta</span></span>
+            </a>
 
-    <!-- Pill Navbar -->
-    <nav class="navbar pill-nav">
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="marketplace.html" style="color:#fff;">Marketplace</a>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="#" id="auth-state">Sign In</a>
-        </div>
-    </nav>
+            <nav class="ea-nav-main" aria-label="Primary">
+                <a href="../index.html" class="ea-nav-link" title="Back to NEIIA Home">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+                    Home
+                </a>
+                <div class="ea-nav-item">
+                    <a href="marketplace.html" class="ea-nav-link is-active">Markets
+                        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="ea-dropdown">
+                        <a href="marketplace.html"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span><span class="dd-text"><span class="dd-title">All Listings</span><span class="dd-sub">Every active asset on the marketplace</span></span></a>
+                        <a href="marketplace.html?type=electricity"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span class="dd-text"><span class="dd-title">Electricity</span><span class="dd-sub">Grid and IPP power contracts</span></span></a>
+                        <a href="marketplace.html?type=gas"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c0 0-8 7.5-8 13a8 8 0 0016 0c0-5.5-8-13-8-13z"/></svg></span><span class="dd-text"><span class="dd-title">Natural Gas</span><span class="dd-sub">LNG, pipeline gas &amp; CNG forwards</span></span></a>
+                        <a href="marketplace.html?type=carbon"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg></span><span class="dd-text"><span class="dd-title">Carbon Credits</span><span class="dd-sub">VERs and afforestation offsets</span></span></a>
+                    </div>
+                </div>
 
-    <!-- Content -->
-    <div class="details-wrapper" id="details-content">
-        <!-- Content injected by JS -->
-    </div>
+                <div class="ea-nav-item">
+                    <a href="dashboard.html" class="ea-nav-link">Trade
+                        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="ea-dropdown">
+                        <a href="dashboard.html"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span class="dd-text"><span class="dd-title">My Dashboard</span><span class="dd-sub">Portfolio, listings, bids</span></span></a>
+                        <a href="dashboard.html#new-listing"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span class="dd-text"><span class="dd-title">List an Asset</span><span class="dd-sub">Sell electricity, gas or carbon</span></span></a>
+                        <a href="marketplace.html"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg></span><span class="dd-text"><span class="dd-title">Place a Bid</span><span class="dd-sub">Browse listings &amp; bid live</span></span></a>
+                    </div>
+                </div>
 
-    <!-- Bid Modal -->
-    <div id="bid-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9000; align-items:center; justify-content:center;">
-        <div class="modal-content" style="background:var(--bg-card); width:90%; max-width:400px; padding:32px; border-radius:16px; border:1px solid var(--border-color);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h3 style="font-size:20px; color:#fff;">Place Bid</h3>
-                <button onclick="closeBidModal()" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer;"><i class="fas fa-times"></i></button>
+                <a href="about.html" class="ea-nav-link">About</a>
+                <a href="contact.html" class="ea-nav-link">Contact</a>
+            </nav>
+
+            <div class="ea-nav-actions">
+                <div class="ea-cur-toggle" role="tablist" aria-label="Currency">
+                    <button type="button" data-cur="USD" class="active">USD</button>
+                    <button type="button" data-cur="NGN">NGN</button>
+                </div>
+                <a href="login.html" class="ea-nav-signin">Log In</a>
+                <a href="signup.html" class="ea-nav-cta">Get Started
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                </a>
+                <button class="ea-mobile-toggle" id="ea-mobile-toggle" aria-label="Open menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
             </div>
-            
+        </div>
+    </header>
+
+    <!-- ===== Mobile Drawer ===== -->
+    <div class="ea-mobile-overlay" id="ea-mobile-overlay"></div>
+    <aside class="ea-mobile-drawer" id="ea-mobile-drawer" aria-label="Mobile menu">
+        <div class="ea-drawer-head">
+            <a href="index.html" class="ea-brand">
+                <img src="../assets/images/neiih_logo_white.png" alt="NEIIA">
+                <span class="ea-brand-text">Energy Assets</span>
+            </a>
+            <button class="ea-drawer-close" id="ea-drawer-close" aria-label="Close menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="ea-drawer-section">
+            <h6>Markets</h6>
+            <a href="marketplace.html">All Listings <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="marketplace.html?type=electricity">Electricity <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="marketplace.html?type=gas">Natural Gas <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="marketplace.html?type=carbon">Carbon Credits <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="ea-drawer-section">
+            <h6>Trade</h6>
+            <a href="dashboard.html">Dashboard <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="dashboard.html#new-listing">List an Asset <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="ea-drawer-section">
+            <h6>Company</h6>
+            <a href="../index.html">Home (NEIIA) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg></a>
+            <a href="about.html">About <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="contact.html">Contact <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="../index.html">Back to NEIIA <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="ea-drawer-section">
+            <h6>Display</h6>
+            <div class="ea-cur-toggle" style="margin-top:6px;">
+                <button type="button" data-cur="USD" class="active">USD</button>
+                <button type="button" data-cur="NGN">NGN</button>
+            </div>
+        </div>
+        <div class="ea-drawer-actions">
+            <a href="login.html" class="ea-nav-signin">Log In</a>
+            <a href="signup.html" class="ea-nav-cta">Get Started</a>
+        </div>
+    </aside>
+
+    <!-- ===== Page content ===== -->
+    <main class="details-wrapper" id="details-content">
+        <!-- rendered by JS -->
+    </main>
+
+    <!-- ===== Bid Modal ===== -->
+    <div class="ld-modal-overlay" id="bid-modal-overlay">
+        <div class="ld-modal" role="dialog" aria-modal="true" aria-labelledby="bid-modal-title">
+            <button class="ld-modal-close" id="bid-modal-close" aria-label="Close">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <h3 id="bid-modal-title">Place a bid</h3>
+            <p class="sub" id="bid-modal-sub">Bid on this listing — your identity stays anonymous to the seller until accepted.</p>
             <form id="bid-form">
-                <input type="hidden" id="bid-listing-id">
-                <div style="margin-bottom:16px;">
-                    <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:8px;">Bid Amount (USD)</label>
-                    <input type="number" step="0.0001" id="bid-amount" style="width:100%; padding:12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:15px;" required>
+                <div class="field">
+                    <label for="bid-amount">Bid price (per unit, USD)</label>
+                    <input type="number" step="0.0001" id="bid-amount" required>
+                    <span class="field-hint" id="bid-amount-hint">Asking: <strong></strong></span>
                 </div>
-                <div style="margin-bottom:24px;">
-                    <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:8px;">Quantity Required</label>
-                    <input type="number" id="bid-qty" style="width:100%; padding:12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:15px;" required>
+                <div class="field">
+                    <label for="bid-qty">Quantity</label>
+                    <input type="number" step="any" id="bid-qty" required>
+                    <span class="field-hint" id="bid-qty-hint">Available: <strong></strong></span>
                 </div>
-                <button type="submit" class="btn-bid" style="margin:0;">Submit Bid Anonymously</button>
-                <p style="font-size:12px; color:var(--text-dim); text-align:center; margin-top:12px;">Your identity will remain hidden from the seller until the bid is accepted.</p>
+                <button type="submit" class="btn-submit" id="bid-submit">Submit Bid</button>
+                <div class="anonymous-note">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Your identity is hidden from the seller until they accept the bid. Settlement runs through NEIIA escrow.</span>
+                </div>
             </form>
         </div>
     </div>
 
+    <!-- ===== Toast ===== -->
+    <div class="ld-toast-container" id="ld-toast-container"></div>
+
     <script src="app.js"></script>
     <script>
-        // Update nav state
-        if(EA.isLoggedIn()) {
-            document.getElementById('auth-state').textContent = 'Dashboard';
-            document.getElementById('auth-state').href = 'dashboard.html';
-        } else {
-            document.getElementById('auth-state').textContent = 'Sign In';
-            document.getElementById('auth-state').href = 'login.html';
+        // ===== Helpers =====
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
+        function fmtDate(iso) {
+            if (!iso) return '—';
+            const d = new Date(iso);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+        function showToast(message, isError) {
+            const container = document.getElementById('ld-toast-container');
+            const t = document.createElement('div');
+            t.className = 'ld-toast' + (isError ? ' error' : '');
+            t.innerHTML = '<span class="toast-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">'
+                + (isError ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' : '<polyline points="20 6 9 17 4 12"/>')
+                + '</svg></span><span>' + escapeHtml(message) + '</span>';
+            container.appendChild(t);
+            requestAnimationFrame(() => setTimeout(() => t.classList.add('show'), 10));
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 380); }, 3200);
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const listingId = urlParams.get('id');
-        let currentListing = null;
+        // ===== State =====
+        const params = new URLSearchParams(window.location.search);
+        const listingId = params.get('id');
+        let listing = null;
+        let priceChart = null;
 
-        function renderPage() {
-            if(!listingId) {
-                document.getElementById('details-content').innerHTML = `<h2>Listing not found.</h2><a href="marketplace.html" style="color:var(--green-accent)">Return to Marketplace</a>`;
-                return;
-            }
+        // ===== Render: Not found =====
+        function renderNotFound() {
+            document.getElementById('details-content').innerHTML = `
+                <div class="ld-notfound">
+                    <div class="icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.01"/></svg>
+                    </div>
+                    <h2>Listing not found</h2>
+                    <p>${listingId ? `We couldn't find listing <code>${escapeHtml(listingId)}</code>. It may have been delisted or never existed.` : 'No listing ID was provided in the URL.'}</p>
+                    <a href="marketplace.html">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        Back to Marketplace
+                    </a>
+                </div>`;
+        }
 
-            const listings = EA.getListings();
-            currentListing = listings.find(l => l.id === listingId);
+        // ===== Render: full listing =====
+        function render() {
+            if (!listingId) return renderNotFound();
+            listing = EA.getListing(listingId);
+            if (!listing) return renderNotFound();
 
-            if(!currentListing) {
-                document.getElementById('details-content').innerHTML = `<h2>Listing not found.</h2><a href="marketplace.html" style="color:var(--green-accent)">Return to Marketplace</a>`;
-                return;
-            }
+            const typeClass = listing.type === 'electricity' ? 'elec' : listing.type;
+            const typeIcon = ({
+                electricity: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+                gas:         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2c0 0-8 7.5-8 13a8 8 0 0016 0c0-5.5-8-13-8-13z"/></svg>',
+                carbon:      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>'
+            })[listing.type] || '';
 
-            // Icons & formatting
-            let icon = 'fa-bolt'; let color = '#facc15';
-            if (currentListing.type === 'gas') { icon = 'fa-fire'; color = '#3b82f6'; }
-            if (currentListing.type === 'carbon') { icon = 'fa-leaf'; color = '#22c55e'; }
+            const origin = listing.origin || 'Regulated Grid Zone';
+            const proof = listing.proofOfCapacity || 'Verified with NEIIA';
+            const desc = listing.desc || 'No detailed description provided by the seller.';
+            const ownerName = listing.ownerName || 'Anonymous Seller';
 
-            const origin = currentListing.origin || 'Regulated Grid Zone';
-            const proof = currentListing.proofOfCapacity || 'Verified with NEIIA';
-            const desc = currentListing.desc || 'No detailed description provided by the seller.';
+            const ob = EA.getOrderBookForListing(listingId);
+            const bidsForListing = EA.getBidsForListing(listingId).filter(b => b.status === 'open')
+                .sort((a, b) => b.amount - a.amount);
 
             const html = `
-                <div class="main-column">
-                    <div class="breadcrumb">
-                        <a href="index.html">Home</a> &nbsp;/&nbsp; <a href="marketplace.html">Marketplace</a> &nbsp;/&nbsp; <span>${currentListing.title}</span>
-                    </div>
-
-                    <div class="details-header">
-                        <div>
-                            <h1>${currentListing.title}</h1>
-                            <div class="tag-row">
-                                <span class="type-tag" style="color:${color}; border-color:${color};"><i class="fas ${icon}"></i> ${currentListing.type}</span>
-                                <span class="type-tag" style="color:var(--text-white);"><i class="fas fa-map-marker-alt"></i> ${origin}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3>Market Price History (Estimated)</h3>
-                            <div class="chart-controls">
-                                <button class="chart-btn">1H</button>
-                                <button class="chart-btn active">1D</button>
-                                <button class="chart-btn">1W</button>
-                                <button class="chart-btn">1M</button>
-                            </div>
-                        </div>
-                        <canvas id="priceChart" height="100"></canvas>
-                    </div>
-
-                    <!-- Detailed Info Block -->
-                    <div class="info-card">
-                        <h3><i class="fas fa-info-circle"></i> Asset Information & Delivery Terms</h3>
-                        <p>${desc}</p>
-                        
-                        <div class="info-grid">
-                            <div class="info-block">
-                                <span>Total Volume Available</span>
-                                <strong>${EA.formatNumber(currentListing.qty)} ${currentListing.unit}</strong>
-                            </div>
-                            <div class="info-block">
-                                <span>Verification Status</span>
-                                <strong style="color:var(--green-accent)"><i class="fas fa-check-circle"></i> Compliance Verified</strong>
-                            </div>
-                            <div class="info-block">
-                                <span>Proof of Asset capacity</span>
-                                <strong>${proof}</strong>
-                            </div>
-                            <div class="info-block">
-                                <span>Seller Identity</span>
-                                <strong style="color:var(--text-dim)"><i class="fas fa-user-secret"></i> Anonymous Organization</strong>
-                            </div>
-                        </div>
-                    </div>
+                <!-- breadcrumb -->
+                <div class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="marketplace.html">Marketplace</a>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span class="current">${escapeHtml(listing.title)}</span>
                 </div>
 
-                <div class="side-column">
-                    <div class="action-card">
-                        <div class="price-sub">Current Asking Price</div>
-                        <div class="price-huge">$${currentListing.priceUSD.toFixed(4)}</div>
-                        <div style="font-size:14px; color:var(--text-white); margin-bottom:24px;">per ${currentListing.unit}</div>
+                <!-- header -->
+                <div class="ld-header">
+                    <div class="ld-title">
+                        <h1>${escapeHtml(listing.title)}</h1>
+                        <div class="ld-tags">
+                            <span class="ld-tag ${typeClass}">${typeIcon} ${escapeHtml(listing.type)}</span>
+                            <span class="ld-tag">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                ${escapeHtml(origin)}
+                            </span>
+                            <span class="ld-tag verified">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg>
+                                Compliance Verified
+                            </span>
+                        </div>
+                    </div>
+                    <a href="marketplace.html" class="ld-back-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        Back
+                    </a>
+                </div>
 
-                        <button class="btn-bid" onclick="openBidModal()">Place Bid</button>
-                        
-                        <div class="action-meta">
-                            <span>Listed on</span>
-                            <span style="color:var(--text-white); font-weight:600;">${new Date(currentListing.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <div class="action-meta">
-                            <span>Trading Pair</span>
-                            <span style="color:var(--text-white); font-weight:600;">${currentListing.pair} / USD</span>
-                        </div>
-                        <div class="action-meta">
-                            <span>Active Bids</span>
-                            <span style="color:var(--text-white); font-weight:600;">${currentListing.bids || 0}</span>
-                        </div>
+                <!-- main grid -->
+                <div class="ld-grid">
+                    <div class="ld-main">
+                        <!-- Price chart -->
+                        <section class="ld-card">
+                            <div class="chart-head">
+                                <h3>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+                                    Price Trend
+                                </h3>
+                                <div class="chart-controls">
+                                    <button class="chart-btn" data-range="1H">1H</button>
+                                    <button class="chart-btn active" data-range="1D">1D</button>
+                                    <button class="chart-btn" data-range="1W">1W</button>
+                                    <button class="chart-btn" data-range="1M">1M</button>
+                                </div>
+                            </div>
+                            <div class="chart-canvas-wrap"><canvas id="priceChart"></canvas></div>
+                            <p style="margin: 12px 0 0; font-size: 11.5px; color: rgba(255,255,255,0.4);">
+                                Indicative trend — derived from the current asking price as no executed-trade history exists yet for this listing.
+                            </p>
+                        </section>
+
+                        <!-- Description / specs -->
+                        <section class="ld-card">
+                            <h3>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8.01"/></svg>
+                                Asset details
+                            </h3>
+                            <p class="ld-description">${escapeHtml(desc)}</p>
+                            <div class="specs-grid">
+                                <div class="spec">
+                                    <span class="lbl">Volume available</span>
+                                    <span class="val">${EA.formatNumber(listing.qty)} ${escapeHtml(listing.unit)}</span>
+                                </div>
+                                <div class="spec">
+                                    <span class="lbl">Trading pair</span>
+                                    <span class="val">${escapeHtml(listing.pair || 'USD')} / USD</span>
+                                </div>
+                                <div class="spec">
+                                    <span class="lbl">Proof of capacity</span>
+                                    <span class="val">${escapeHtml(proof)}</span>
+                                </div>
+                                <div class="spec">
+                                    <span class="lbl">Listed on</span>
+                                    <span class="val">${fmtDate(listing.createdAt)}</span>
+                                </div>
+                                <div class="spec">
+                                    <span class="lbl">Listing ID</span>
+                                    <span class="val muted">${escapeHtml(listing.id)}</span>
+                                </div>
+                                <div class="spec">
+                                    <span class="lbl">Status</span>
+                                    <span class="val verified">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg>
+                                        ${escapeHtml(listing.status || 'active')}
+                                    </span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Recent bids -->
+                        <section class="ld-card">
+                            <h3>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><polyline points="7 14 11 10 15 14 21 8"/></svg>
+                                Active bids
+                                <span style="margin-left:auto; font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 500; text-transform: none; letter-spacing: 0;">${bidsForListing.length} open</span>
+                            </h3>
+                            ${bidsForListing.length === 0 ? `
+                                <div class="empty-card">
+                                    <div class="empty-icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    </div>
+                                    No bids yet — be the first to bid on this asset.
+                                </div>` :
+                                `<div class="bids-list">${bidsForListing.map(b => `
+                                    <div class="bid-row">
+                                        <span class="bidder">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                            Anonymous bidder
+                                        </span>
+                                        <span class="bid-price">${EA.formatPrice(b.amount)}</span>
+                                        <span class="bid-qty">${EA.formatNumber(b.qty)} ${escapeHtml(listing.unit)}</span>
+                                    </div>`).join('')}</div>`
+                            }
+                        </section>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="ld-side">
+                        <aside class="price-card">
+                            <div class="label">Current asking price</div>
+                            <div class="price-big">${EA.formatPrice(listing.priceUSD)}</div>
+                            <div class="price-unit">per ${escapeHtml(listing.unit)}</div>
+                            <button class="btn-bid-primary" id="btn-place-bid">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="23 4 17 10 13 6 7 12 1 6"/></svg>
+                                Place Bid
+                            </button>
+                            <a href="marketplace.html" class="btn-secondary">View all listings</a>
+                            <div class="price-card-meta">
+                                <div class="row"><span>Volume</span><span>${EA.formatNumber(listing.qty)} ${escapeHtml(listing.unit)}</span></div>
+                                <div class="row"><span>Notional</span><span>${EA.formatNotional(listing.priceUSD * listing.qty)}</span></div>
+                                <div class="row"><span>Active bids</span><span>${bidsForListing.length}</span></div>
+                                <div class="row"><span>Seller</span><span style="font-weight:500; color:rgba(255,255,255,0.7); font-size:12px;">${escapeHtml(ownerName)}</span></div>
+                            </div>
+                        </aside>
+
+                        <!-- Order book -->
+                        <section class="ld-card">
+                            <h3>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                Order Book
+                            </h3>
+                            <div class="ob-rows">
+                                <div class="ob-head">
+                                    <span>Price</span>
+                                    <span>Quantity</span>
+                                    <span>Total</span>
+                                </div>
+                                ${ob.asks.length === 0
+                                    ? '<div class="ob-empty">No asks</div>'
+                                    : ob.asks.slice(0, 5).reverse().map(a => `
+                                        <div class="ob-row ask">
+                                            <span class="ob-price">${EA.formatPrice(a.price)}</span>
+                                            <span class="ob-qty">${EA.formatNumber(a.qty)}</span>
+                                            <span class="ob-total">${EA.formatNotional(a.total)}</span>
+                                        </div>`).join('')
+                                }
+                                <div class="ob-spread">
+                                    ${(ob.asks.length && ob.bids.length) ? `
+                                        <span class="mid">${EA.formatPrice((ob.asks[0].price + ob.bids[0].price) / 2)}</span>
+                                        <span class="spread">Spread: ${EA.formatPrice(ob.asks[0].price - ob.bids[0].price)}</span>
+                                    ` : `
+                                        <span class="mid">${EA.formatPrice(listing.priceUSD)}</span>
+                                        <span class="spread">${ob.bids.length === 0 ? 'No bids yet' : 'Awaiting depth'}</span>
+                                    `}
+                                </div>
+                                ${ob.bids.length === 0
+                                    ? '<div class="ob-empty">No bids yet</div>'
+                                    : ob.bids.slice(0, 5).map(b => `
+                                        <div class="ob-row bid">
+                                            <span class="ob-price">${EA.formatPrice(b.price)}</span>
+                                            <span class="ob-qty">${EA.formatNumber(b.qty)}</span>
+                                            <span class="ob-total">${EA.formatNotional(b.total)}</span>
+                                        </div>`).join('')
+                                }
+                            </div>
+                        </section>
                     </div>
                 </div>
             `;
 
             document.getElementById('details-content').innerHTML = html;
-            initChart();
+            document.title = listing.title + ' | Energy Assets | NEIIA';
+
+            // Wire bid button
+            const placeBtn = document.getElementById('btn-place-bid');
+            if (placeBtn) placeBtn.addEventListener('click', openBidModal);
+
+            // Chart range buttons
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    initChart(btn.dataset.range);
+                });
+            });
+
+            initChart('1D');
         }
 
-        function initChart() {
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            
-            // Generate some fake volatile data based on the current price
-            const basePrice = currentListing.priceUSD;
-            const labels = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
-            const data = labels.map((_, i) => basePrice * (1 + (Math.random() * 0.1 - 0.05)));
-            // Ensure the last point is the current price
-            data[data.length - 1] = basePrice;
+        // ===== Chart =====
+        function initChart(range) {
+            const canvas = document.getElementById('priceChart');
+            if (!canvas || !listing) return;
+            const ctx = canvas.getContext('2d');
+            const base = listing.priceUSD;
 
-            new Chart(ctx, {
+            // synthetic series — clearly indicative, mean-reverts to base
+            const config = {
+                '1H': { points: 12, label: i => `${i*5}m`, vol: 0.015 },
+                '1D': { points: 9,  label: i => `${10 + i}:00`, vol: 0.04 },
+                '1W': { points: 7,  label: i => ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i], vol: 0.07 },
+                '1M': { points: 8,  label: i => `W${i+1}`, vol: 0.12 }
+            }[range || '1D'];
+
+            const labels = Array.from({length: config.points}, (_, i) => config.label(i));
+            // Deterministic series so the chart doesn't jump on re-render
+            let seed = listing.id.split('').reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 1000, 7);
+            function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+            const data = labels.map(() => base * (1 + (rnd() * 2 - 1) * config.vol));
+            data[data.length - 1] = base; // anchor latest to current asking
+
+            // Currency-aware: convert all points to displayed currency for the chart
+            const displayed = data.map(v => EA.convertFromUSD(v));
+            const cur = EA.getCurrency();
+
+            if (priceChart) priceChart.destroy();
+            priceChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [{
-                        label: 'Price USD',
-                        data: data,
+                        data: displayed,
                         borderColor: '#A3E635',
-                        backgroundColor: 'rgba(163,230,53,0.1)',
+                        backgroundColor: 'rgba(163,230,53,0.08)',
                         borderWidth: 2,
                         fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#011d21',
+                        tension: 0.35,
+                        pointBackgroundColor: '#0b0e11',
                         pointBorderColor: '#A3E635',
-                        pointHoverBackgroundColor: '#A3E635',
                         pointBorderWidth: 2,
+                        pointRadius: 3,
                         pointHoverRadius: 6
                     }]
                 },
                 options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#14171d',
+                            borderColor: 'rgba(163,230,53,0.4)', borderWidth: 1,
+                            titleColor: '#fff', bodyColor: '#a3e635',
+                            padding: 10, cornerRadius: 8,
+                            callbacks: { label: c => (cur === 'USD' ? '$' : '₦') + c.parsed.y.toFixed(cur === 'USD' ? 4 : 2) }
+                        }
+                    },
                     scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }
+                        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 11 } } }
                     },
                     interaction: { mode: 'index', intersect: false }
                 }
             });
         }
 
+        // ===== Bid modal =====
         function openBidModal() {
-            if(!EA.isLoggedIn()) {
-                window.location.href = 'login.html';
+            if (!EA.isLoggedIn()) {
+                showToast('Please sign in to place a bid', true);
+                setTimeout(() => { window.location.href = 'login.html'; }, 900);
                 return;
             }
-            if(EA.getCurrentUser().id === currentListing.ownerId) {
-                alert("You cannot bid on your own listing.");
+            const user = EA.getCurrentUser();
+            if (user && user.id && user.id === listing.ownerId) {
+                showToast('You cannot bid on your own listing', true);
                 return;
             }
-            document.getElementById('bid-listing-id').value = currentListing.id;
-            document.getElementById('bid-amount').value = currentListing.priceUSD.toFixed(4);
-            document.getElementById('bid-qty').max = currentListing.qty;
-            document.getElementById('bid-modal').style.display = 'flex';
+            const overlay = document.getElementById('bid-modal-overlay');
+            document.getElementById('bid-modal-sub').textContent = 'Bidding on: ' + listing.title;
+            document.querySelector('#bid-amount-hint strong').textContent = EA.formatPrice(listing.priceUSD) + ' / ' + listing.unit;
+            document.querySelector('#bid-qty-hint strong').textContent = EA.formatNumber(listing.qty) + ' ' + listing.unit;
+            document.getElementById('bid-amount').value = listing.priceUSD.toFixed(4);
+            document.getElementById('bid-amount').max = '';
+            document.getElementById('bid-qty').value = '';
+            document.getElementById('bid-qty').max = listing.qty;
+            overlay.classList.add('is-open');
+            setTimeout(() => document.getElementById('bid-amount').focus(), 80);
         }
-
         function closeBidModal() {
-            document.getElementById('bid-modal').style.display = 'none';
+            document.getElementById('bid-modal-overlay').classList.remove('is-open');
         }
+        document.getElementById('bid-modal-close').addEventListener('click', closeBidModal);
+        document.getElementById('bid-modal-overlay').addEventListener('click', e => {
+            if (e.target.id === 'bid-modal-overlay') closeBidModal();
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeBidModal(); });
 
-        document.getElementById('bid-form').addEventListener('submit', (e) => {
+        document.getElementById('bid-form').addEventListener('submit', e => {
             e.preventDefault();
-            const amt = parseFloat(document.getElementById('bid-amount').value);
-            const qty = parseFloat(document.getElementById('bid-qty').value);
-            
-            EA.placeBid(currentListing.id, amt, qty);
-            closeBidModal();
-            alert('Your anonymous bid has been placed securely!');
-            renderPage(); // Refresh bids count
+            try {
+                const amt = parseFloat(document.getElementById('bid-amount').value);
+                const qty = parseFloat(document.getElementById('bid-qty').value);
+                if (!amt || amt <= 0) throw new Error('Bid amount must be greater than zero.');
+                if (!qty || qty <= 0) throw new Error('Quantity must be greater than zero.');
+                if (qty > listing.qty) throw new Error('Quantity exceeds available volume.');
+                const user = EA.getCurrentUser();
+                EA.placeBid({
+                    listingId: listing.id,
+                    bidderId: (user && user.id) || 'ANON',
+                    amount: amt,
+                    qty: qty
+                });
+                closeBidModal();
+                showToast('Bid placed — your identity stays anonymous until accepted.');
+                render(); // refresh order book + bids list
+            } catch (err) {
+                showToast('Bid failed: ' + (err.message || 'unknown error'), true);
+            }
         });
 
-        // Initialize
-        renderPage();
+        // Re-render when currency toggles in the navbar
+        document.addEventListener('ea:currency-change', render);
+
+        // ===== Init =====
+        render();
+    </script>
+
+    <!-- ===== EA FOOTER ===== -->
+    <footer class="ea-footer">
+        <div class="ea-footer-inner">
+            <div class="ea-footer-grid">
+                <div class="ea-footer-brand">
+                    <img src="../assets/images/neiih_logo_white.png" alt="NEIIA">
+                    <p>The national marketplace for tradable energy assets. Electricity, gas, and carbon — settled with regulator-grade compliance.</p>
+                    <div class="ea-footer-socials">
+                        <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                        <a href="#" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                        <a href="#" aria-label="GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+                    </div>
+                </div>
+                <div class="ea-footer-col">
+                    <h6>Markets</h6>
+                    <ul>
+                        <li><a href="marketplace.html">All Listings</a></li>
+                        <li><a href="marketplace.html?type=electricity">Electricity</a></li>
+                        <li><a href="marketplace.html?type=gas">Natural Gas</a></li>
+                        <li><a href="marketplace.html?type=carbon">Carbon</a></li>
+                    </ul>
+                </div>
+                <div class="ea-footer-col">
+                    <h6>Trade</h6>
+                    <ul>
+                        <li><a href="dashboard.html">My Dashboard</a></li>
+                        <li><a href="dashboard.html#new-listing">List an Asset</a></li>
+                        <li><a href="login.html">Log In</a></li>
+                        <li><a href="signup.html">Get Started</a></li>
+                    </ul>
+                </div>
+                <div class="ea-footer-col">
+                    <h6>Company</h6>
+                    <ul>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="../index.html">NEIIA Home</a></li>
+                        <li><a href="#" id="ea-print">Print</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ea-footer-bottom">
+                <div>&copy; 2026 NEIIA · Energy Assets Marketplace · A national exchange for tradable energy.</div>
+                <div>
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Compliance</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== Shared nav JS ===== -->
+    <script>
+    (function() {
+        // Mobile drawer
+        var toggle = document.getElementById('ea-mobile-toggle');
+        var drawer = document.getElementById('ea-mobile-drawer');
+        var overlay = document.getElementById('ea-mobile-overlay');
+        var closer = document.getElementById('ea-drawer-close');
+        function openDrawer() { drawer.classList.add('is-open'); overlay.classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+        function closeDrawer() { drawer.classList.remove('is-open'); overlay.classList.remove('is-open'); document.body.style.overflow = ''; }
+        if (toggle) toggle.addEventListener('click', openDrawer);
+        if (overlay) overlay.addEventListener('click', closeDrawer);
+        if (closer) closer.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
+
+        // Currency toggle (works only if EA helper is loaded)
+        function syncCur() {
+            if (!window.EA) return;
+            var cur = EA.getCurrency();
+            document.querySelectorAll('.ea-cur-toggle button').forEach(function(b){
+                b.classList.toggle('active', b.dataset.cur === cur);
+            });
+        }
+        document.querySelectorAll('.ea-cur-toggle button').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                if (!window.EA) return;
+                EA.setCurrency(btn.dataset.cur);
+                syncCur();
+                // Page-specific re-renders subscribe via this event
+                document.dispatchEvent(new CustomEvent('ea:currency-change', { detail: { currency: btn.dataset.cur }}));
+            });
+        });
+        syncCur();
+
+        // Replace logged-in user's auth area
+        if (window.EA && EA.isLoggedIn && EA.isLoggedIn()) {
+            var user = EA.getCurrentUser();
+            var initial = (user && user.name ? user.name[0] : 'U').toUpperCase();
+            var actions = document.querySelector('.ea-nav-actions');
+            if (actions) {
+                var signin = actions.querySelector('.ea-nav-signin');
+                var cta = actions.querySelector('.ea-nav-cta');
+                if (signin) signin.outerHTML = '<a href="dashboard.html" class="ea-user-btn"><span class="ea-user-avatar">' + initial + '</span><span>' + (user.name || 'Account') + '</span></a>';
+                if (cta) cta.outerHTML = '<button class="ea-nav-signin" onclick="EA.logout()">Log out</button>';
+            }
+        }
+
+        // Print link in footer
+        var printer = document.getElementById('ea-print');
+        if (printer) printer.addEventListener('click', function(e){ e.preventDefault(); window.print(); });
+    })();
     </script>
 </body>
 </html>

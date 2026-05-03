@@ -12,112 +12,107 @@
 </head>
 
 <body>
-    <!-- Logo -->
-    <a href="../index.html" class="logo-fixed">
-        <div class="logo-wrapper">
-            <img src="../assets/images/neiis-logo-green.png" alt="NEIIA Logo" class="brand-logo light-mode-logo" style="max-width: 120px;">
-            <img src="../assets/images/neiih_logo_white.png" alt="NEIIA Logo" class="brand-logo dark-mode-logo" style="max-width: 120px;">
-            <!-- <div class="brand-text">NATIONAL ENERGY INVESTMENT & INTELLIGENCE ADMINISTRATION</div> -->
-        </div>
-    </a>
+    <!-- ===== EA NAVBAR ===== -->
+    <header class="ea-nav">
+        <div class="ea-nav-inner">
+            <a href="index.html" class="ea-brand" aria-label="Energy Assets home">
+                <img src="../assets/images/neiih_logo_white.png" alt="NEIIA">
+                <span class="ea-brand-text">Energy Assets <span class="pill">Beta</span></span>
+            </a>
 
-    <!-- Pill Navbar -->
-    <nav class="navbar pill-nav">
-        <div class="nav-links">
-            <div class="nav-item dropdown">
-                <span class="nav-link dropdown-toggle">NEFUND <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 6px; transition: transform 0.2s;"></i></span>
-                <div class="mega-menu">
-                    <div class="mm-left-columns">
-                        <div class="mm-column">
-                            <h4>Fund Administration</h4>
-                            <ul class="mm-list">
-                                <li><a href="../sub-funds/subfunds.html">Sub Funds</a></li>
-                                <li><a href="../venture-funds/venturefunds.html">Venture Funds</a></li>
-                                <li><a href="../rolling-funds/rollingfunds.html">Rolling Funds</a></li>
-                                <li><a href="../scout-funds/scout.html">Scout Funds</a></li>
-                                <li><a href="../SPVs/SPVs.html">SPVs</a></li>
-                                <li><a href="../roll-up-vehicles/rollup.html">Roll Up Vehicles</a></li>
-                            </ul>
-                        </div>
-                        <div class="mm-column">
-                            <h4>Investor Management</h4>
-                            <ul class="mm-list">
-                                <li><a href="../government-site/digital.html">Digital Subscriptions</a></li>
-                                <li><a href="../databank.html">Data Bank</a></li>
-                            </ul>
-                            <div style="margin-top: 24px;">
-                                <h4>Intelligence</h4>
-                                <ul class="mm-list">
-                                    <li><a href="../apex/apex.html">Apex AI <span style="font-size: 10px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">BETA</span></a></li>
-                                    <li><a href="../edu-center/educenter.html">Edu Center</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mm-right-panel">
-                        <div class="mm-column">
-                            <h4>Product Suites</h4>
-                            <a href="../fund-administration/fund-administration.html" class="mm-card">
-                                <div class="mm-icon"><img src="../assets/images/fund_administration.png" alt="Fund Administration"></div>
-                                <div class="mm-content">
-                                    <h5>Fund Administration</h5>
-                                    <p>All-in-one partner to launch an investment vehicle</p>
-                                </div>
-                            </a>
-                            <a href="../investor-management.html" class="mm-card">
-                                <div class="mm-icon"><img src="../assets/images/investor_management.png" alt="Investor Management"></div>
-                                <div class="mm-content">
-                                    <h5>Investor Management</h5>
-                                    <p>Explore all offerings to streamline the investor experience.</p>
-                                </div>
-                            </a>
-                        </div>
+            <nav class="ea-nav-main" aria-label="Primary">
+                <a href="../index.html" class="ea-nav-link" title="Back to NEIIA Home">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+                    Home
+                </a>
+                <div class="ea-nav-item">
+                    <a href="marketplace.html" class="ea-nav-link">Markets
+                        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="ea-dropdown">
+                        <a href="marketplace.html"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span><span class="dd-text"><span class="dd-title">All Listings</span><span class="dd-sub">Every active asset on the marketplace</span></span></a>
+                        <a href="marketplace.html?type=electricity"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span class="dd-text"><span class="dd-title">Electricity</span><span class="dd-sub">Grid and IPP power contracts</span></span></a>
+                        <a href="marketplace.html?type=gas"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c0 0-8 7.5-8 13a8 8 0 0016 0c0-5.5-8-13-8-13z"/></svg></span><span class="dd-text"><span class="dd-title">Natural Gas</span><span class="dd-sub">LNG, pipeline gas &amp; CNG forwards</span></span></a>
+                        <a href="marketplace.html?type=carbon"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg></span><span class="dd-text"><span class="dd-title">Carbon Credits</span><span class="dd-sub">VERs and afforestation offsets</span></span></a>
                     </div>
                 </div>
+
+                <div class="ea-nav-item">
+                    <a href="dashboard.html" class="ea-nav-link">Trade
+                        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="ea-dropdown">
+                        <a href="dashboard.html"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span class="dd-text"><span class="dd-title">My Dashboard</span><span class="dd-sub">Portfolio, listings, bids</span></span></a>
+                        <a href="dashboard.html#new-listing"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span class="dd-text"><span class="dd-title">List an Asset</span><span class="dd-sub">Sell electricity, gas or carbon</span></span></a>
+                        <a href="marketplace.html"><span class="dd-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg></span><span class="dd-text"><span class="dd-title">Place a Bid</span><span class="dd-sub">Browse listings &amp; bid live</span></span></a>
+                    </div>
+                </div>
+
+                <a href="about.html" class="ea-nav-link">About</a>
+                <a href="contact.html" class="ea-nav-link">Contact</a>
+            </nav>
+
+            <div class="ea-nav-actions">
+                <div class="ea-cur-toggle" role="tablist" aria-label="Currency">
+                    <button type="button" data-cur="USD" class="active">USD</button>
+                    <button type="button" data-cur="NGN">NGN</button>
+                </div>
+                <a href="login.html" class="ea-nav-signin">Log In</a>
+                <a href="signup.html" class="ea-nav-cta">Get Started
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                </a>
+                <button class="ea-mobile-toggle" id="ea-mobile-toggle" aria-label="Open menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
             </div>
-            <a href="../finance.html">Energy Finance & Capital</a>
-            <a href="../dashboard.html">Energy Ecosystem</a>
-            <a href="../citibim.html">Energy Atlas</a>
         </div>
-    </nav>
+    </header>
 
-    <!-- Auth Links -->
-    <div class="auth-fixed">
-        <a href="login.html" class="nav-link">Sign In</a>
-        <a href="signup.html" class="btn-accent">Get Started</a>
-    </div>
-
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" aria-label="Menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-    </button>
-
-    <!-- Mobile Navigation Overlay -->
-    <div class="mobile-nav-overlay">
-        <div class="mobile-nav-header">
-            <a href="../index.html">
-                <img src="../assets/images/neiis-logo-green.png" alt="NEIIA" style="max-height: 40px;">
+    <!-- ===== Mobile Drawer ===== -->
+    <div class="ea-mobile-overlay" id="ea-mobile-overlay"></div>
+    <aside class="ea-mobile-drawer" id="ea-mobile-drawer" aria-label="Mobile menu">
+        <div class="ea-drawer-head">
+            <a href="index.html" class="ea-brand">
+                <img src="../assets/images/neiih_logo_white.png" alt="NEIIA">
+                <span class="ea-brand-text">Energy Assets</span>
             </a>
-            <button class="mobile-close-btn"><i class="fas fa-times"></i></button>
+            <button class="ea-drawer-close" id="ea-drawer-close" aria-label="Close menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
         </div>
-        <div class="mobile-nav-content">
-            <ul class="mobile-nav-list">
-                <li><a href="../finance.html">Energy Finance & Capital <i class="fas fa-arrow-right"></i></a></li>
-                <li><a href="../dashboard.html">Energy Ecosystem <i class="fas fa-arrow-right"></i></a></li>
-                <li><a href="../citibim.html">Energy Atlas <i class="fas fa-arrow-right"></i></a></li>
-                <li><a href="../nefund.html" id="mobile-resources-link">NEFUND <i class="fas fa-chevron-right"></i></a></li>
-            </ul>
-            <div class="mobile-nav-footer">
-                <a href="signup.html" class="btn btn-primary full-width">Get Started</a>
-                <a href="login.html" class="btn btn-secondary full-width">Sign in</a>
+        <div class="ea-drawer-section">
+            <h6>Markets</h6>
+            <a href="marketplace.html">All Listings <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="marketplace.html?type=electricity">Electricity <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="marketplace.html?type=gas">Natural Gas <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="marketplace.html?type=carbon">Carbon Credits <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="ea-drawer-section">
+            <h6>Trade</h6>
+            <a href="dashboard.html">Dashboard <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="dashboard.html#new-listing">List an Asset <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="ea-drawer-section">
+            <h6>Company</h6>
+            <a href="../index.html">Home (NEIIA) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg></a>
+            <a href="about.html">About <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="contact.html">Contact <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+            <a href="../index.html">Back to NEIIA <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="ea-drawer-section">
+            <h6>Display</h6>
+            <div class="ea-cur-toggle" style="margin-top:6px;">
+                <button type="button" data-cur="USD" class="active">USD</button>
+                <button type="button" data-cur="NGN">NGN</button>
             </div>
         </div>
+        <div class="ea-drawer-actions">
+            <a href="login.html" class="ea-nav-signin">Log In</a>
+            <a href="signup.html" class="ea-nav-cta">Get Started</a>
+        </div>
+    </aside>
 
-        <!-- Resources Submenu -->
+    <!-- Resources Submenu -->
         <div class="mobile-submenu" id="resources-submenu">
             <div class="submenu-header">
                 <button class="submenu-back-btn" id="submenu-back-btn"><i class="fas fa-arrow-left"></i> Back</button>
@@ -494,42 +489,6 @@
         </div>
     </section>
 
-    <!-- ==========================================
-         FOOTER
-         ========================================== -->
-    <footer class="site-footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>Marketplace</h4>
-                <ul>
-                    <li><a href="marketplace.html">Browse Market</a></li>
-                    <li><a href="marketplace.html">Electricity</a></li>
-                    <li><a href="marketplace.html">Natural Gas</a></li>
-                    <li><a href="marketplace.html">Carbon Credits</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="signup.html">Create Account</a></li>
-                    <li><a href="login.html">Sign In</a></li>
-                    <li><a href="../about.html">About NEIIA</a></li>
-                    <li><a href="../governance.html">Governance</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="../contact.html">Contact Us</a></li>
-                    <li><a href="../construction.html">Help Centre</a></li>
-                    <li><a href="../construction.html">API Documentation</a></li>
-                    <li><a href="../terms-service.html">Terms of Service</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">&copy; 2026 NEIIA — National Energy Investment & Intelligence Administration</div>
-    </footer>
-
     <!-- JS -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -575,6 +534,111 @@
                 });
             }, 3000);
         });
+    </script>
+
+    <!-- ===== EA FOOTER ===== -->
+    <footer class="ea-footer">
+        <div class="ea-footer-inner">
+            <div class="ea-footer-grid">
+                <div class="ea-footer-brand">
+                    <img src="../assets/images/neiih_logo_white.png" alt="NEIIA">
+                    <p>The national marketplace for tradable energy assets. Electricity, gas, and carbon — settled with regulator-grade compliance.</p>
+                    <div class="ea-footer-socials">
+                        <a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                        <a href="#" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                        <a href="#" aria-label="GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+                    </div>
+                </div>
+                <div class="ea-footer-col">
+                    <h6>Markets</h6>
+                    <ul>
+                        <li><a href="marketplace.html">All Listings</a></li>
+                        <li><a href="marketplace.html?type=electricity">Electricity</a></li>
+                        <li><a href="marketplace.html?type=gas">Natural Gas</a></li>
+                        <li><a href="marketplace.html?type=carbon">Carbon</a></li>
+                    </ul>
+                </div>
+                <div class="ea-footer-col">
+                    <h6>Trade</h6>
+                    <ul>
+                        <li><a href="dashboard.html">My Dashboard</a></li>
+                        <li><a href="dashboard.html#new-listing">List an Asset</a></li>
+                        <li><a href="login.html">Log In</a></li>
+                        <li><a href="signup.html">Get Started</a></li>
+                    </ul>
+                </div>
+                <div class="ea-footer-col">
+                    <h6>Company</h6>
+                    <ul>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="../index.html">NEIIA Home</a></li>
+                        <li><a href="#" id="ea-print">Print</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ea-footer-bottom">
+                <div>&copy; 2026 NEIIA · Energy Assets Marketplace · A national exchange for tradable energy.</div>
+                <div>
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Compliance</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== Shared nav JS ===== -->
+    <script>
+    (function() {
+        // Mobile drawer
+        var toggle = document.getElementById('ea-mobile-toggle');
+        var drawer = document.getElementById('ea-mobile-drawer');
+        var overlay = document.getElementById('ea-mobile-overlay');
+        var closer = document.getElementById('ea-drawer-close');
+        function openDrawer() { drawer.classList.add('is-open'); overlay.classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+        function closeDrawer() { drawer.classList.remove('is-open'); overlay.classList.remove('is-open'); document.body.style.overflow = ''; }
+        if (toggle) toggle.addEventListener('click', openDrawer);
+        if (overlay) overlay.addEventListener('click', closeDrawer);
+        if (closer) closer.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
+
+        // Currency toggle (works only if EA helper is loaded)
+        function syncCur() {
+            if (!window.EA) return;
+            var cur = EA.getCurrency();
+            document.querySelectorAll('.ea-cur-toggle button').forEach(function(b){
+                b.classList.toggle('active', b.dataset.cur === cur);
+            });
+        }
+        document.querySelectorAll('.ea-cur-toggle button').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                if (!window.EA) return;
+                EA.setCurrency(btn.dataset.cur);
+                syncCur();
+                // Page-specific re-renders subscribe via this event
+                document.dispatchEvent(new CustomEvent('ea:currency-change', { detail: { currency: btn.dataset.cur }}));
+            });
+        });
+        syncCur();
+
+        // Replace logged-in user's auth area
+        if (window.EA && EA.isLoggedIn && EA.isLoggedIn()) {
+            var user = EA.getCurrentUser();
+            var initial = (user && user.name ? user.name[0] : 'U').toUpperCase();
+            var actions = document.querySelector('.ea-nav-actions');
+            if (actions) {
+                var signin = actions.querySelector('.ea-nav-signin');
+                var cta = actions.querySelector('.ea-nav-cta');
+                if (signin) signin.outerHTML = '<a href="dashboard.html" class="ea-user-btn"><span class="ea-user-avatar">' + initial + '</span><span>' + (user.name || 'Account') + '</span></a>';
+                if (cta) cta.outerHTML = '<button class="ea-nav-signin" onclick="EA.logout()">Log out</button>';
+            }
+        }
+
+        // Print link in footer
+        var printer = document.getElementById('ea-print');
+        if (printer) printer.addEventListener('click', function(e){ e.preventDefault(); window.print(); });
+    })();
     </script>
 </body>
 </html>

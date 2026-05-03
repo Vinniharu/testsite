@@ -186,6 +186,76 @@ const EA = (() => {
         return { asks, bids: bidEntries };
     }
 
+    // ── Per-listing order book — depth specific to ONE asset ──
+    function getOrderBookForListing(listingId) {
+        const l = getListing(listingId);
+        if (!l) return { asks: [], bids: [], listing: null };
+        // The listing itself is the only ask (one seller, one price)
+        const asks = [{ price: l.priceUSD, qty: l.qty, total: l.priceUSD * l.qty }];
+        // Bids on this listing become the bid side
+        const bidEntries = getBidsForListing(listingId)
+            .filter(b => b.status === 'open')
+            .map(b => ({ price: b.amount, qty: b.qty, total: b.amount * b.qty }))
+            .sort((a, b) => b.price - a.price);
+        return { asks, bids: bidEntries, listing: l };
+    }
+
+    // ── Market metrics ──
+    function getAvgPriceByType(type) {
+        const ls = getActiveListings().filter(l => l.type === type);
+        if (ls.length === 0) return 0;
+        return ls.reduce((s, l) => s + l.priceUSD, 0) / ls.length;
+    }
+
+    function getTopMover() {
+        // The asset with the most open bids in the last window
+        const ls = getActiveListings();
+        if (ls.length === 0) return null;
+        return ls.slice().sort((a, b) => (b.bids || 0) - (a.bids || 0))[0];
+    }
+
+    function getMarketDepth() {
+        // Total ask-side notional across all active listings
+        const ls = getActiveListings();
+        return ls.reduce((s, l) => s + (l.priceUSD * l.qty), 0);
+    }
+
+    // ── Currency conversion ──
+    // Single fixed display rate. Real implementations would pull live FX from CBN or third-party.
+    const FX_RATES = { USD: 1, NGN: 1500 };
+    function getCurrency() {
+        return sessionStorage.getItem('ea_currency') || 'USD';
+    }
+    function setCurrency(code) {
+        if (code === 'USD' || code === 'NGN') {
+            sessionStorage.setItem('ea_currency', code);
+        }
+    }
+    function convertFromUSD(amountUSD, toCode) {
+        const rate = FX_RATES[toCode || getCurrency()] || 1;
+        return amountUSD * rate;
+    }
+    function formatPrice(amountUSD, decimals) {
+        const code = getCurrency();
+        const value = convertFromUSD(amountUSD, code);
+        const dec = (decimals !== undefined) ? decimals : (code === 'USD' ? 4 : 2);
+        const formatted = value.toLocaleString('en-US', {
+            minimumFractionDigits: dec,
+            maximumFractionDigits: dec
+        });
+        return code === 'USD' ? '$' + formatted : '₦' + formatted;
+    }
+    function formatNotional(amountUSD) {
+        // Compact display for big totals (volume, market cap)
+        const code = getCurrency();
+        const value = convertFromUSD(amountUSD, code);
+        const sym = code === 'USD' ? '$' : '₦';
+        if (value >= 1e9) return sym + (value / 1e9).toFixed(1) + 'B';
+        if (value >= 1e6) return sym + (value / 1e6).toFixed(1) + 'M';
+        if (value >= 1e3) return sym + (value / 1e3).toFixed(1) + 'K';
+        return sym + value.toFixed(2);
+    }
+
     // ── Initialize on load ──
     init();
 
@@ -195,6 +265,9 @@ const EA = (() => {
         getListings, getActiveListings, getListingsByType, getListing, createListing,
         getBids, getBidsForListing, getBidRange, placeBid,
         calculateNetWorth, formatUSD, formatNumber, get24hVolume,
-        getOrderBook, genId
+        getOrderBook, getOrderBookForListing, genId,
+        // New: market metrics + currency
+        getAvgPriceByType, getTopMover, getMarketDepth,
+        getCurrency, setCurrency, convertFromUSD, formatPrice, formatNotional
     };
 })();
