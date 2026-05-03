@@ -231,6 +231,20 @@ const EA = (() => {
             sessionStorage.setItem('ea_currency', code);
         }
     }
+
+    // Global window-level toggle handler — bulletproof.
+    // Buttons can call this directly via onclick="window.eaSwitchCurrency('NGN')".
+    // It handles: state save, UI sync, event dispatch, and re-render fallback.
+    window.eaSwitchCurrency = function(code) {
+        if (code !== 'USD' && code !== 'NGN') return;
+        setCurrency(code);
+        // Sync every visible toggle button on the page (navbar + drawer + any extras)
+        document.querySelectorAll('.ea-cur-toggle button').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.cur === code);
+        });
+        // Dispatch the event for pages that subscribe
+        document.dispatchEvent(new CustomEvent('ea:currency-change', { detail: { currency: code } }));
+    };
     function convertFromUSD(amountUSD, toCode) {
         const rate = FX_RATES[toCode || getCurrency()] || 1;
         return amountUSD * rate;
