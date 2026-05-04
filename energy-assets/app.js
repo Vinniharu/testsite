@@ -285,3 +285,5 @@ const EA = (() => {
         getCurrency, setCurrency, convertFromUSD, formatPrice, formatNotional
     };
 })();
+
+window.EA = EA;
