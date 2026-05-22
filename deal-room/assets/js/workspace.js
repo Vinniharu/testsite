@@ -150,36 +150,44 @@
     } catch (_) {}
 
     // v3 account-aware sidebar. Individual = investor-only; Corporate = both lenses.
-    // Unverified users see fewer items — they get locked out of deal data and Vault.
+    // All items show; gated items render with a padlock + intercept clicks to the right gate.
     const sbAcc = (window.DataBank && window.DataBank.accountApi) ? window.DataBank.accountApi().get() : { accountType: "individual", verified: false };
     const isCorp = sbAcc.accountType === "corporate";
     const isVerified = !!sbAcc.verified;
 
-    const allItems = [
-      { key: "home",       href: "index.html",      label: "Home",              icon: "dashboard",                                                                  show: true },
-      { key: "deals",      href: "deals.html",      label: "Deal room",         icon: "company",                                                                    show: true },
-      { key: "portfolio",  href: "portfolio.html",  label: "Portfolio",         icon: "watchlist",                                                                  show: true },
-      { key: "watchlist",  href: "watchlist.html",  label: "Watchlist",         icon: "watchlist",                                                                  show: true },
-      { key: "vault",      href: "vault.html",      label: "Data Vault",        icon: "datacell",                                                                   show: isVerified, lens: "Investor" },
-      { key: "datacell",   href: "datacell.html",   label: "Data Cell",         icon: "datacell",                                                                   show: isCorp,     lens: "Publisher" },
-      { key: "investors",  href: "investors.html",  label: "Investors",         icon: "deals",                                                                      show: isCorp,     lens: "Publisher" },
-      { key: "compliance", href: "compliance.html", label: "Compliance review", icon: "deals",                                                                      show: true,       lens: "Compliance" },
-      { key: "messages",   href: "messages.html",   label: "Messages",          icon: "messages", badge: unreadMsgs,                                                show: isVerified },
-      { key: "alerts",     href: "#",               label: "Alerts",            icon: "alerts",   dataAction: "open-alerts", badge: aCount,                         show: true },
-      { key: "reports",    href: "#",               label: "Reports",           icon: "reports",  dataAction: "open-reports",                                       show: isCorp },
-      { key: "settings",   href: "settings.html",   label: "Settings",          icon: "settings",                                                                   show: true }
+    const items = [
+      { key: "home",       href: "index.html",      label: "Home",              icon: "dashboard" },
+      { key: "deals",      href: "deals.html",      label: "Deal room",         icon: "company" },
+      { key: "portfolio",  href: "portfolio.html",  label: "Portfolio",         icon: "watchlist" },
+      { key: "watchlist",  href: "watchlist.html",  label: "Watchlist",         icon: "watchlist" },
+      { key: "vault",      href: "vault.html",      label: "Data Vault",        icon: "datacell",  lockReason: isVerified ? null : "verify",  lensTag: "Investor" },
+      { key: "datacell",   href: "datacell.html",   label: "Data Cell",         icon: "datacell",  lockReason: isCorp ? null : "corporate",   lensTag: "Publisher" },
+      { key: "investors",  href: "investors.html",  label: "Investors",         icon: "deals",     lockReason: isCorp ? null : "corporate",   lensTag: "Publisher" },
+      { key: "compliance", href: "compliance.html", label: "Compliance review", icon: "deals",     lensTag: "Compliance" },
+      { key: "messages",   href: "messages.html",   label: "Messages",          icon: "messages",  badge: unreadMsgs, lockReason: isVerified ? null : "verify" },
+      { key: "alerts",     href: "#",               label: "Alerts",            icon: "alerts",    dataAction: "open-alerts", badge: aCount },
+      { key: "reports",    href: "#",               label: "Reports",           icon: "reports",   dataAction: "open-reports", lockReason: isCorp ? null : "corporate" },
+      { key: "settings",   href: "settings.html",   label: "Settings",          icon: "settings" }
     ];
-    const items = allItems.filter(function (i) { return i.show; });
 
+    const LOCK_SVG = '<svg class="nav-lock" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
     const nav = items.map(function (it) {
       const isActive = it.key === activeKey;
       const badge = it.badge && it.badge > 0 ? '<span class="nav-badge">' + it.badge + '</span>' : '';
-      const dataAttr = it.dataAction ? ' data-action="' + it.dataAction + '"' : '';
+      const locked = !!it.lockReason;
+      // Locked items intercept click via data-nav-lock; unlocked items use normal data-action / href.
+      const dataAttr = locked
+        ? ' data-nav-lock="' + it.lockReason + '"'
+        : (it.dataAction ? ' data-action="' + it.dataAction + '"' : '');
+      const href = locked ? "#" : it.href;
+      const lock = locked ? LOCK_SVG : '';
+      const cls = (isActive ? "is-active " : "") + (locked ? "is-locked" : "");
       return (
-        '<a href="' + it.href + '"' + dataAttr + ' class="' + (isActive ? "is-active" : "") + '">' +
+        '<a href="' + href + '"' + dataAttr + ' class="' + cls.trim() + '"' + (locked ? ' title="' + (it.lockReason === "verify" ? "Verify your account to access" : "Corporate account required") + '"' : '') + '>' +
         icon(it.icon) +
         '<span>' + it.label + '</span>' +
         badge +
+        lock +
         '</a>'
       );
     }).join("");

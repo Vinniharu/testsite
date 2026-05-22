@@ -43,7 +43,7 @@
         </div>
         <select id="laneFilter" class="t-input" aria-label="Filter by lane">
           <option value="">All lanes</option>
-          <option value="lane-a">Lane A · Crowdfund</option>
+          <option value="lane-a">Lane A · Growth Capital</option>
           <option value="lane-b">Lane B · Private</option>
           <option value="fund">Fund vehicle</option>
         </select>
@@ -192,7 +192,7 @@
 
       // ---- v3 tooltip + label helpers ----
       const LANE_TIPS = {
-        'lane-a': 'Lane A · Crowdfund — SEC-regulated retail. Open to KYC Tier 1+. Wrappers: CSAFE, Convertible Note, Equity Subscription. Lane auto-routed by issuer SMEDAN caliber.',
+        'lane-a': 'Lane A · Growth Capital — SEC-regulated retail. Open to KYC Tier 1+. Wrappers: CSAFE, Convertible Note, Equity Subscription. Lane auto-routed by issuer SMEDAN caliber.',
         'lane-b': 'Lane B · Private Placement — Qualified investors only (KYC Tier 3). No public solicitation. Wrappers: PPM, Commercial Paper, Bonds, Revenue Share.',
         'fund':   'Fund Vehicle — Off-platform GP/LP raise (SPV, Sub-Fund, Rolling, Venture, Co-Invest, Roll-Up, Scout). Not a regulated issuance lane.'
       };
@@ -426,7 +426,7 @@
                         (isFinite(caps.annualMaxNGN) ? ' · ' + fmtNgn(caps.annualMaxNGN) + ' annual aggregate' : '') + '.';
         const tierWarning = d.lane === 'lane-b'
           ? '<div class="sub-callout warn"><strong>KYC Tier 3 required.</strong> Lane B private placements are restricted to qualified investors (₦100m+ net worth, ₦20m+ income, or SEC-registered institutional). ' + tierLine + '</div>' + annualBlock
-          : '<div class="sub-callout ok"><strong>Lane A · Crowdfund.</strong> ' + tierLine + '</div>' + annualBlock;
+          : '<div class="sub-callout ok"><strong>Lane A · Growth Capital.</strong> ' + tierLine + '</div>' + annualBlock;
 
         // "What you're funding" — surfaces the deal brief and use of proceeds.
         // Lane A deals carry full UoP table + milestones + whyNow; Lane B uses the lighter line from the PPM.
@@ -620,47 +620,105 @@
             '<button type="button" class="t-btn t-btn-primary" id="agr-file">File to Data Vault &amp; submit →</button>'
         });
         document.getElementById('agr-file').addEventListener('click', function () {
-          const inv = window.DataBank.investmentsApi().add({
-            dealId: d.id,
-            ticker: d.ticker,
-            legalName: d.legalName || d.company,
-            tradingName: d.tradingName || d.company,
-            wrapper: d.wrapper,
-            lane: d.lane,
-            laneLabel: d.laneLabel,
-            sector: d.sector,
-            ticketNGN: ticketNGN,
-            sourceOfFunds: sourceOfFunds,
-            dealStatus: d.status === 'Closed' ? 'Active' : d.status,
-            valuationCapNGN: Math.round((d.raiseNGN || 50000000) * 5),
-            kycTierAtSign: d.lane === 'lane-b' ? 3 : 2
-          });
-          // v3 Part 10 — Bilateral Subscription Agreement filed to the Data Vault.
-          if (window.DataBank.vaultApi) {
-            window.DataBank.vaultApi().add({
-              kind: 'agreement',
-              title: 'Bilateral Subscription Agreement · ' + d.ticker,
-              subtitle: d.legalName + ' · ' + d.wrapper + ' · ' + fmtNgn(ticketNGN),
+          // v3 Part 11 — NIBSS payment instruction (mock reference code, escrow account).
+          // Investor must transfer within 24h; funds held pending threshold + 14-day cooling-off.
+          openPaymentInstructionModal(d, ticketNGN, function (payment) {
+            const inv = window.DataBank.investmentsApi().add({
               dealId: d.id,
-              payload: {
-                ticker: d.ticker, wrapper: d.wrapper, ticketNGN: ticketNGN,
-                sourceOfFunds: sourceOfFunds, lane: d.laneLabel,
-                governing: 'Federal Republic of Nigeria · FCT Abuja',
-                escrow: 'Stanbic IBTC Bank (CBN-licensed)'
-              }
+              ticker: d.ticker,
+              legalName: d.legalName || d.company,
+              tradingName: d.tradingName || d.company,
+              wrapper: d.wrapper,
+              lane: d.lane,
+              laneLabel: d.laneLabel,
+              sector: d.sector,
+              ticketNGN: ticketNGN,
+              sourceOfFunds: sourceOfFunds,
+              dealStatus: d.status === 'Closed' ? 'Active' : d.status,
+              valuationCapNGN: Math.round((d.raiseNGN || 50000000) * 5),
+              kycTierAtSign: d.lane === 'lane-b' ? 3 : 2,
+              payment: payment
             });
-          }
-          T.alerts().add({
-            symbol: d.ticker,
-            label: 'Subscribed · ' + fmtNgn(ticketNGN),
-            value: '',
-            unit: '',
-            templateId: 'subscription',
-            severity: 'critical',
-            href: 'portfolio.html'
+            // v3 Part 10 — Bilateral Subscription Agreement filed to the Data Vault.
+            if (window.DataBank.vaultApi) {
+              window.DataBank.vaultApi().add({
+                kind: 'agreement',
+                title: 'Bilateral Subscription Agreement · ' + d.ticker,
+                subtitle: d.legalName + ' · ' + d.wrapper + ' · ' + fmtNgn(ticketNGN),
+                dealId: d.id,
+                payload: {
+                  ticker: d.ticker, wrapper: d.wrapper, ticketNGN: ticketNGN,
+                  sourceOfFunds: sourceOfFunds, lane: d.laneLabel,
+                  governing: 'Federal Republic of Nigeria · FCT Abuja',
+                  escrow: 'Stanbic IBTC Bank (CBN-licensed)',
+                  paymentRef: payment.refCode,
+                  escrowAccount: payment.escrowAcct
+                }
+              });
+            }
+            T.alerts().add({
+              symbol: d.ticker,
+              label: 'Subscribed · ' + fmtNgn(ticketNGN) + ' · ref ' + payment.refCode,
+              value: '',
+              unit: '',
+              templateId: 'subscription',
+              severity: 'critical',
+              href: 'portfolio.html'
+            });
+            T.toast(d.ticker + ' subscription filed · awaiting NIBSS transfer to escrow');
           });
+        });
+      }
+
+      // NIBSS-style payment instruction modal (v3 Part 11).
+      // Generates a mock reference code + escrow account. Real impl: PSSP (Remita / Interswitch) returns
+      // a real ref code bound to the issuer's CBN-licensed escrow account.
+      function openPaymentInstructionModal(d, ticketNGN, onContinue) {
+        const refCode = 'NORG/' + (d.ticker || 'DEAL') + '/INV-' +
+                        Date.now().toString(36).toUpperCase() + '-' +
+                        Math.random().toString(36).slice(2, 6).toUpperCase();
+        const escrowAcct = '0123-' + String(1000 + Math.floor(Math.random() * 9000)) + '-' + String(1000 + Math.floor(Math.random() * 9000));
+        const escrowBank = 'Stanbic IBTC Bank';
+        const cutoff = new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        const body = (
+          '<div class="pay-wrap">' +
+            '<div class="pay-banner">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>' +
+              '<span>Agreement signed. Complete the NIBSS transfer within 24 hours to lock your allocation.</span>' +
+            '</div>' +
+            '<div class="pay-grid">' +
+              '<div class="pay-row"><span class="pay-k">Amount due</span><strong class="pay-v pay-amt">' + fmtNgn(ticketNGN) + '</strong></div>' +
+              '<div class="pay-row"><span class="pay-k">Reference code</span>' +
+                '<span class="pay-ref"><code id="pay-ref-code">' + esc(refCode) + '</code>' +
+                '<button class="t-btn" id="pay-copy" type="button">Copy</button></span>' +
+              '</div>' +
+              '<div class="pay-row"><span class="pay-k">Beneficiary bank</span><span class="pay-v">' + escrowBank + ' (CBN-licensed escrow)</span></div>' +
+              '<div class="pay-row"><span class="pay-k">Escrow account</span><span class="pay-v pay-mono">' + escrowAcct + '</span></div>' +
+              '<div class="pay-row"><span class="pay-k">Rail</span><span class="pay-v">NIBSS Instant Payment (NIP)</span></div>' +
+              '<div class="pay-row"><span class="pay-k">Transfer window</span><span class="pay-v">Closes ' + cutoff + '</span></div>' +
+            '</div>' +
+            '<div class="pay-note">' +
+              '<strong>What happens next.</strong> Funds are held in escrow pending (a) the deal\'s minimum subscription threshold being reached, and (b) the 14-day cooling-off period after deal close. If either condition fails, you receive a full refund to your BVN-verified bank within 5 business days.' +
+            '</div>' +
+            '<div class="pay-note pay-note-warn">' +
+              '<strong>Use the reference code exactly.</strong> Transfers without the reference will not be matched and may delay or void your subscription.' +
+            '</div>' +
+          '</div>'
+        );
+        T.modal('Payment instruction · ' + (d.ticker || d.company), body, {
+          footer:
+            '<button type="button" class="t-btn" data-modal-close>I\'ll pay later</button>' +
+            '<button type="button" class="t-btn t-btn-primary" id="pay-sent">I\'ve sent the transfer →</button>'
+        });
+        document.getElementById('pay-copy').addEventListener('click', function () {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(refCode);
+            T.toast('Reference code copied');
+          }
+        });
+        document.getElementById('pay-sent').addEventListener('click', function () {
           T.closeModal();
-          T.toast(d.ticker + ' subscription filed to Data Vault · ' + fmtNgn(ticketNGN));
+          onContinue({ refCode: refCode, escrowAcct: escrowAcct, escrowBank: escrowBank, rail: 'NIBSS NIP', cutoff: cutoff });
         });
       }
 

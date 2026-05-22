@@ -552,6 +552,85 @@
 
   // v3 KYC tier upgrade — mocks the attestation step per Part 5.
   // T1→T2 needs income/asset evidence; T2→T3 needs net-worth / institutional status.
+  // ---------- Live-validating identifier fields (BVN / NIN / TIN / CAC) ----------
+  // Auto-checks on input once the length hits the expected count, shows a spinner for ~700ms,
+  // then a green check (valid) or red X (invalid). Mock validators stand in for NIMC/NIBSS/CAC/FIRS APIs.
+  function validateIdValue(kind, raw) {
+    const v = String(raw || "").toUpperCase().replace(/[^0-9A-Z]/g, "");
+    if (kind === "bvn" || kind === "nin") {
+      const digits = v.replace(/[^0-9]/g, "");
+      const need = 11;
+      if (!digits.length) return null;
+      if (digits.length < need) return { state: "typing", remaining: need - digits.length };
+      if (digits.length > need) return { state: "invalid", reason: kind.toUpperCase() + " must be exactly 11 digits" };
+      if (/^(.)\1+$/.test(digits) || digits === "12345678901") return { state: "invalid", reason: "Looks like a placeholder, not a real ID" };
+      return {
+        state: "valid",
+        reason: kind === "bvn"
+          ? "BVN matched · NIBSS · Access Bank ****" + digits.slice(-4)
+          : "NIN matched · NIMC ****" + digits.slice(-4)
+      };
+    }
+    if (kind === "tin") {
+      const digits = v.replace(/[A-Z]/g, "");
+      const need = 10;
+      if (!digits.length) return null;
+      if (digits.length < need) return { state: "typing", remaining: need - digits.length };
+      if (digits.length > 14) return { state: "invalid", reason: "TIN too long (10–14 digits)" };
+      if (/^(.)\1+$/.test(digits.slice(0, 10))) return { state: "invalid", reason: "Invalid TIN format" };
+      return { state: "valid", reason: "FIRS-verified · Tax-active · " + digits.slice(0, 8) + "-" + digits.slice(8, 14) };
+    }
+    if (kind === "cac") {
+      const m = v.replace(/^RC/, "");
+      const need = 6;
+      if (!m.length) return null;
+      if (m.length < need) return { state: "typing", remaining: need - m.length };
+      if (m.length > 8) return { state: "invalid", reason: "CAC RC must be 6–8 digits" };
+      if (!/^\d+$/.test(m)) return { state: "invalid", reason: "CAC RC must be digits only" };
+      if (/^(.)\1+$/.test(m)) return { state: "invalid", reason: "Invalid CAC RC" };
+      return { state: "valid", reason: "CAC-registered · BAILEY API match · RC-" + m };
+    }
+    return null;
+  }
+  function _svgCheck()   { return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>'; }
+  function _svgX()       { return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'; }
+  function _svgSpinner() { return '<svg class="lvf-spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3.51-7.13"/></svg>'; }
+  // Wires a live-validating identifier field. Calls onChange(isValid, value) whenever the field's
+  // verification state changes. Spinner shows for 700ms after length hits the threshold.
+  function wireLiveField(inputEl, statusEl, kind, onChange) {
+    let timer = null;
+    inputEl.addEventListener("input", function () {
+      if (timer) { clearTimeout(timer); timer = null; }
+      const result = validateIdValue(kind, inputEl.value);
+      inputEl.classList.remove("lvf-input-valid", "lvf-input-invalid");
+      if (!result) {
+        statusEl.innerHTML = "";
+        onChange(false, inputEl.value);
+        return;
+      }
+      if (result.state === "typing") {
+        statusEl.innerHTML = '<span class="lvf-typing">' + result.remaining + ' more digit' + (result.remaining === 1 ? "" : "s") + '</span>';
+        onChange(false, inputEl.value);
+        return;
+      }
+      // Length hit — show spinner, then resolve to check or X
+      statusEl.innerHTML = '<span class="lvf-pending">' + _svgSpinner() + '<span>Checking…</span></span>';
+      onChange(false, inputEl.value);
+      timer = setTimeout(function () {
+        if (result.state === "valid") {
+          inputEl.classList.add("lvf-input-valid");
+          statusEl.innerHTML = '<span class="lvf-valid">' + _svgCheck() + '<span>' + result.reason + '</span></span>';
+          onChange(true, inputEl.value);
+        } else {
+          inputEl.classList.add("lvf-input-invalid");
+          statusEl.innerHTML = '<span class="lvf-invalid">' + _svgX() + '<span>' + result.reason + '</span></span>';
+          onChange(false, inputEl.value);
+        }
+        timer = null;
+      }, 700);
+    });
+  }
+
   function openTierUpgradeModal(opts) {
     opts = opts || {};
     const accountApi = window.DataBank && window.DataBank.accountApi ? window.DataBank.accountApi() : null;
@@ -562,29 +641,69 @@
     if (target <= current) { toast("Already at Tier " + current); return; }
     const reason = opts.reason || "Unlock higher per-deal caps and broader lane access.";
 
+    // Each evidence option now declares the files and ID fields it requires.
+    // files: [{ id, label, accept, required }]
+    // fields: [{ id, kind, label, hint }] (live-validated)
     const T2_OPTIONS = [
-      { id: "bank",  label: "Bank statements (last 6 months)",  hint: "Two account-holder Nigerian bank accounts, downloaded as PDFs." },
-      { id: "pay",   label: "Payslips (last 3 months)",         hint: "Salary stubs from PAYE-registered employer." },
-      { id: "tax",   label: "Tax returns (last fiscal year)",   hint: "FIRS-stamped Form A or Self-Assessment receipt." }
+      { id: "bank", label: "Bank statements (last 6 months)", hint: "Two account-holder Nigerian bank accounts, downloaded as PDFs.",
+        files: [{ id: "bank-stmt", label: "Bank statements PDF (6 months)", accept: ".pdf", required: true }],
+        fields: [{ id: "bvn", kind: "bvn", label: "BVN", hint: "11-digit Bank Verification Number. Auto-verified against NIBSS." }] },
+      { id: "pay",  label: "Payslips (last 3 months)", hint: "Salary stubs from PAYE-registered employer.",
+        files: [{ id: "payslips", label: "Payslips PDF (3 months)", accept: ".pdf,.jpg,.jpeg,.png", required: true }],
+        fields: [] },
+      { id: "tax",  label: "Tax returns (last fiscal year)", hint: "FIRS-stamped Form A or Self-Assessment receipt.",
+        files: [{ id: "tax-pdf", label: "Tax return PDF", accept: ".pdf", required: true }],
+        fields: [{ id: "tin", kind: "tin", label: "TIN", hint: "10-digit Tax Identification Number. Auto-verified against FIRS." }] }
     ];
     const T3_OPTIONS = [
-      { id: "net",   label: "Net worth attestation — ₦100m+",   hint: "Statement of assets countersigned by your auditor (FRCN-registered)." },
-      { id: "inc",   label: "Annual income — ₦20m+",            hint: "Two consecutive years of audited income statements." },
-      { id: "inst",  label: "SEC-registered institutional",     hint: "Upload your SEC certificate of registration (fund manager, PFA, broker)." }
+      { id: "net",  label: "Net worth attestation — ₦100m+", hint: "Statement of assets countersigned by your auditor (FRCN-registered).",
+        files: [{ id: "net-pdf", label: "Net-worth attestation (signed)", accept: ".pdf", required: true }],
+        fields: [] },
+      { id: "inc",  label: "Annual income — ₦20m+", hint: "Two consecutive years of audited income statements.",
+        files: [{ id: "inc-pdf", label: "Audited income statements (2 years)", accept: ".pdf", required: true }],
+        fields: [] },
+      { id: "inst", label: "SEC-registered institutional", hint: "Upload your SEC certificate of registration (fund manager, PFA, broker).",
+        files: [{ id: "sec-cert", label: "SEC certificate of registration", accept: ".pdf", required: true }],
+        fields: [{ id: "cac", kind: "cac", label: "CAC RC number", hint: "6–8 digit CAC registration number. Auto-verified against BAILEY API." }] }
     ];
     const options = target === 2 ? T2_OPTIONS : T3_OPTIONS;
 
-    function render(selected) {
+    // Per-modal state
+    const state = { selected: null, files: {}, fields: {} };
+    function isComplete() {
+      if (!state.selected) return false;
+      const opt = options.find(function (o) { return o.id === state.selected; });
+      if (!opt) return false;
+      for (let i = 0; i < opt.files.length; i++) {
+        if (opt.files[i].required && !state.files[opt.files[i].id]) return false;
+      }
+      for (let i = 0; i < opt.fields.length; i++) {
+        if (!state.fields[opt.fields[i].id] || !state.fields[opt.fields[i].id].valid) return false;
+      }
+      return true;
+    }
+    function fmtFileSize(b) {
+      if (!b) return "";
+      if (b < 1024) return b + " B";
+      if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
+      return (b / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function render() {
       const items = options.map(function (o) {
-        const sel = o.id === selected ? " is-selected" : "";
+        const sel = o.id === state.selected;
+        const evidenceForm = sel ? evidenceFormHtml(o) : "";
         return (
-          '<button type="button" class="tier-opt' + sel + '" data-tier-opt="' + o.id + '">' +
-            '<div class="tier-opt-head">' +
-              '<span class="tier-opt-radio' + (o.id === selected ? " is-on" : "") + '"></span>' +
-              '<strong>' + o.label + '</strong>' +
-            '</div>' +
-            '<div class="tier-opt-hint">' + o.hint + '</div>' +
-          '</button>'
+          '<div class="tier-opt-wrap">' +
+            '<button type="button" class="tier-opt' + (sel ? " is-selected" : "") + '" data-tier-opt="' + o.id + '">' +
+              '<div class="tier-opt-head">' +
+                '<span class="tier-opt-radio' + (sel ? " is-on" : "") + '"></span>' +
+                '<strong>' + o.label + '</strong>' +
+              '</div>' +
+              '<div class="tier-opt-hint">' + o.hint + '</div>' +
+            '</button>' +
+            evidenceForm +
+          '</div>'
         );
       }).join("");
       const body = (
@@ -597,32 +716,78 @@
             '</div>' +
             '<div class="tier-reason">' + reason + '</div>' +
           '</div>' +
-          '<div class="tier-lede">Pick one evidence type. The compliance team will verify within 5 business days. For this demo, attestation is accepted on submission.</div>' +
+          '<div class="tier-lede">Pick one evidence type, upload supporting documents, and confirm any required IDs. Compliance verifies within 5 business days. IDs auto-check against NIMC / NIBSS / FIRS / CAC.</div>' +
           '<div class="tier-opts">' + items + '</div>' +
         '</div>'
       );
       modal("Upgrade to KYC Tier " + target, body, {
         footer:
           '<button type="button" class="t-btn" data-modal-close>Cancel</button>' +
-          '<button type="button" class="t-btn t-btn-primary" id="tier-confirm" ' + (selected ? '' : 'disabled') + '>Submit attestation →</button>'
+          '<button type="button" class="t-btn t-btn-primary" id="tier-confirm" ' + (isComplete() ? '' : 'disabled') + '>Submit attestation →</button>'
       });
       const root = document.querySelector("[data-modal-root]");
+      // Wire option pickers
       root.querySelectorAll("[data-tier-opt]").forEach(function (b) {
-        b.addEventListener("click", function () { render(b.getAttribute("data-tier-opt")); });
+        b.addEventListener("click", function () {
+          state.selected = b.getAttribute("data-tier-opt");
+          state.files = {}; state.fields = {};
+          render();
+        });
       });
+      // Wire file inputs for the selected option
+      root.querySelectorAll("[data-tier-file]").forEach(function (input) {
+        input.addEventListener("change", function () {
+          const f = input.files && input.files[0];
+          if (f) {
+            state.files[input.getAttribute("data-tier-file")] = { name: f.name, size: f.size };
+            render();
+          }
+        });
+      });
+      // Wire live-validating fields
+      root.querySelectorAll("[data-tier-field]").forEach(function (input) {
+        const id = input.getAttribute("data-tier-field");
+        const kind = input.getAttribute("data-tier-kind");
+        // CAC has a visible "RC-" prefix box — strip any user-typed RC/RC- from the input
+        if (kind === "cac") {
+          input.addEventListener("input", function () {
+            const cleaned = input.value.replace(/^RC[-\s]?/i, "");
+            if (cleaned !== input.value) input.value = cleaned;
+          });
+        }
+        const statusEl = root.querySelector('[data-tier-status="' + id + '"]');
+        if (!statusEl) return;
+        wireLiveField(input, statusEl, kind, function (ok, value) {
+          state.fields[id] = { value: value, valid: ok };
+          const confirm = root.querySelector("#tier-confirm");
+          if (confirm) confirm.disabled = !isComplete();
+        });
+      });
+      // Wire submit
       const confirmBtn = root.querySelector("#tier-confirm");
       if (confirmBtn) confirmBtn.addEventListener("click", function () {
-        if (!selected) return;
+        if (!isComplete()) return;
+        const opt = options.find(function (o) { return o.id === state.selected; });
         accountApi.upgradeTier(target);
-        const evidence = (options.find(function (o) { return o.id === selected; }) || {}).label;
-        alerts().add({ symbol: "ACCT", label: "KYC Tier " + target + " granted · " + evidence, value: "", unit: "", templateId: "tier-upgrade" });
-        // Drop the tier-upgrade attestation receipt into the Data Vault.
+        alerts().add({
+          symbol: "ACCT", label: "KYC Tier " + target + " granted · " + opt.label,
+          value: "", unit: "", templateId: "tier-upgrade"
+        });
         if (window.DataBank && window.DataBank.vaultApi) {
+          const fieldDump = {};
+          opt.fields.forEach(function (f) {
+            let v = state.fields[f.id] && state.fields[f.id].value;
+            // CAC stored with RC- prefix to match v3 canonical form (BAILEY API returns RC-XXXXXX).
+            if (f.kind === "cac" && v) v = "RC-" + v;
+            fieldDump[f.id] = v;
+          });
+          const fileDump = {};
+          opt.files.forEach(function (f) { fileDump[f.id] = state.files[f.id]; });
           window.DataBank.vaultApi().add({
             kind: "kyc",
             title: "KYC Tier " + target + " attestation",
-            subtitle: "Evidence: " + (evidence || "—"),
-            payload: { fromTier: current, toTier: target, evidence: selected, evidenceLabel: evidence }
+            subtitle: "Evidence: " + opt.label,
+            payload: { fromTier: current, toTier: target, evidence: state.selected, evidenceLabel: opt.label, fields: fieldDump, files: fileDump }
           });
         }
         closeModal();
@@ -630,7 +795,58 @@
         if (window.WorkspaceShell && window.WorkspaceShell.refresh) window.WorkspaceShell.refresh();
       });
     }
-    render(null);
+
+    function evidenceFormHtml(opt) {
+      const fileRows = opt.files.map(function (f) {
+        const uploaded = state.files[f.id];
+        const status = uploaded
+          ? '<span class="ev-file-meta ev-file-ok">' + _svgCheck() + ' <span>' + esc(uploaded.name) + ' · ' + fmtFileSize(uploaded.size) + '</span></span>'
+          : '<span class="ev-file-meta ev-file-empty">' + (f.required ? "Required" : "Optional") + '</span>';
+        return (
+          '<div class="ev-file-row">' +
+            '<label class="ev-file-label">' + f.label + '</label>' +
+            '<div class="ev-file-control">' +
+              status +
+              '<input type="file" class="ev-file-input" data-tier-file="' + f.id + '" accept="' + f.accept + '" />' +
+            '</div>' +
+          '</div>'
+        );
+      }).join("");
+      const fieldRows = opt.fields.map(function (fl) {
+        const stored = state.fields[fl.id] || {};
+        const valid = stored.valid ? " lvf-input-valid" : "";
+        const placeholder = fl.kind === "cac" ? "123456" : (fl.kind === "tin" ? "10 digits" : "11 digits");
+        const inputHtml = fl.kind === "cac"
+          ? ('<div class="lvf-prefix-wrap">' +
+               '<span class="lvf-prefix">RC-</span>' +
+               '<input type="text" class="t-input lvf-with-prefix' + valid + '" data-tier-field="' + fl.id + '" data-tier-kind="' + fl.kind + '" value="' + esc(stored.value || "") + '" inputmode="numeric" maxlength="8" placeholder="' + placeholder + '" />' +
+             '</div>')
+          : ('<input type="text" class="t-input' + valid + '" data-tier-field="' + fl.id + '" data-tier-kind="' + fl.kind + '" value="' + esc(stored.value || "") + '" inputmode="numeric" placeholder="' + placeholder + '" />');
+        return (
+          '<div class="ev-field-row">' +
+            '<label class="ev-field-label">' + fl.label + '</label>' +
+            '<div class="ev-field-control">' +
+              inputHtml +
+              '<div class="ev-field-status" data-tier-status="' + fl.id + '"></div>' +
+            '</div>' +
+            '<div class="ev-field-hint">' + fl.hint + '</div>' +
+          '</div>'
+        );
+      }).join("");
+      return (
+        '<div class="ev-form">' +
+          (opt.files.length ? '<div class="ev-form-head">Documents</div>' + fileRows : "") +
+          (opt.fields.length ? '<div class="ev-form-head" style="margin-top:12px">Identifiers</div>' + fieldRows : "") +
+        '</div>'
+      );
+    }
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+
+    render();
   }
 
   // v3 issuer-side "List a Deal" flow (5 steps).
@@ -1690,6 +1906,23 @@
             // Reload to re-format every $ figure baked into rendered HTML
             setTimeout(function () { location.reload(); }, 350);
           }
+        }
+        return;
+      }
+
+      // Sidebar lock interception — locked nav items route to the right gate.
+      const navLock = e.target.closest("[data-nav-lock]");
+      if (navLock) {
+        e.preventDefault();
+        const reason = navLock.getAttribute("data-nav-lock");
+        if (reason === "verify") {
+          openPaywallModal();
+        } else if (reason === "corporate") {
+          modal("Corporate account required",
+            '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55">This module is only available on Corporate accounts. Corporate accounts require CAC RC + TIN, two authorized signatories, audited financials, and Tax Clearance Certificates.</p>',
+            { footer: '<button type="button" class="t-btn" data-modal-close>Cancel</button><button type="button" class="t-btn t-btn-primary" id="navSwitchCorp">Switch to Corporate plan</button>' });
+          const sw = document.getElementById("navSwitchCorp");
+          if (sw) sw.addEventListener("click", function () { closeModal(); openPaywallModal(); });
         }
         return;
       }

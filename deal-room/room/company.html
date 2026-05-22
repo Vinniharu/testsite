@@ -732,7 +732,7 @@
                 '<span class="doc-type">' + (docTypes[ext] || ext.toUpperCase()) + '</span>' +
                 '<span class="doc-name">' + name + '</span>' +
                 '<span class="doc-meta">' + size + ' &middot; ' + day + 'd ago' + '</span>' +
-                (lock ? '<span class="doc-lock" title="Restricted">🔒</span>' : '<span class="doc-lock" style="opacity:0"></span>') +
+                (lock ? '<span class="doc-lock" title="Restricted"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>' : '<span class="doc-lock" style="opacity:0"></span>') +
                 '<button class="t-btn doc-action" data-doc="' + f.name + '/' + name + '" style="font-size:10px;padding:3px 8px">View</button>' +
               '</div>'
             );

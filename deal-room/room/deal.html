@@ -201,8 +201,12 @@
         // Reporting cadence (v3 Part 8) — issuer-only, visible for Active and post-close states.
         const reportsAllowed = isOwner && ["Active", "Converting", "Converted", "Matured", "Defaulted", "Written Off"].indexOf(deal.status) >= 0;
         const reportsBlock = reportsAllowed ? renderReportsPanel() : "";
+        // Issuer broadcasts (v3 Part 13) — one-to-many, immutable, timestamped.
+        const broadcastBlock = renderBroadcastsPanel();
         // Structured Q&A (v3 Part 13) — visible to all deal viewers, with role-aware controls.
         const qaBlock = renderQaPanel();
+        // AI assistant (v3 Part 13) — corpus-constrained, cites sources, refuses to invent.
+        const aiBlock = renderAiPanel();
 
         // Activity feed — show whatever exists; user-created deals have an activity array from dealsApi.
         const activity = (deal.activity && deal.activity.length) ? (
@@ -240,7 +244,7 @@
           allocBlock +
 
           '<div class="lc-grid">' +
-            '<div class="lc-main">' + briefBlock + transitions + reportsBlock + qaBlock + activity + '</div>' +
+            '<div class="lc-main">' + briefBlock + transitions + reportsBlock + broadcastBlock + aiBlock + qaBlock + activity + '</div>' +
             '<aside class="lc-side">' + snap + '</aside>' +
           '</div>'
         );
@@ -272,6 +276,20 @@
         // Wire report-form buttons
         root.querySelectorAll("[data-rep]").forEach(function (b) {
           b.addEventListener("click", function () { openReportModal(b.getAttribute("data-rep")); });
+        });
+
+        // Wire broadcast composer (issuer-only)
+        const bcNew = root.querySelector("#bc-new");
+        if (bcNew) bcNew.addEventListener("click", openBroadcastComposer);
+
+        // Wire AI assistant form
+        const aiForm = root.querySelector("#ai-form");
+        if (aiForm) aiForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const qEl = root.querySelector("#ai-q");
+          const text = qEl.value.trim();
+          if (!text) return;
+          onAiAsk(text);
         });
 
         // Wire Q&A — ask + answer
@@ -383,7 +401,248 @@
         return '<div><dt>' + k + '</dt><dd>' + DF.esc(v || "—") + '</dd></div>';
       }
 
-      // ---- v3 Structured Q&A (Part 13) — no free-form chat. Answers auto-publish to all subscribers. ----
+      // ---- v3 Issuer broadcast updates (Part 13) — one-to-many, immutable, timestamped ----
+      const BROADCAST_CATEGORIES = [
+        { id: "operational", label: "Operational",  color: "info"    },
+        { id: "milestone",   label: "Milestone",    color: "success" },
+        { id: "risk",        label: "Risk",         color: "danger"  },
+        { id: "funding",     label: "Funding",      color: "warning" },
+        { id: "other",       label: "Other",        color: "muted"   }
+      ];
+      function renderBroadcastsPanel() {
+        deal.broadcasts = deal.broadcasts || [];
+        const broadcasts = deal.broadcasts.slice().reverse();
+        const owner = !!deal.userCreated;
+
+        const composerBtn = owner
+          ? '<button class="t-btn t-btn-primary" type="button" id="bc-new" style="height:30px;padding:0 12px;font-size:12px">+ Publish broadcast</button>'
+          : '';
+
+        const items = broadcasts.length ? broadcasts.map(function (b) {
+          const cat = BROADCAST_CATEGORIES.find(function (c) { return c.id === b.category; }) || { label: b.category, color: "muted" };
+          const when = new Date(b.at).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+          return (
+            '<div class="bc-item">' +
+              '<div class="bc-head">' +
+                '<span class="bc-cat bc-cat-' + cat.color + '">' + DF.esc(cat.label) + '</span>' +
+                '<span class="bc-when">' + when + '</span>' +
+                '<span class="bc-immutable" title="Broadcast is immutable per v3 Part 13">·  immutable  ·  published to all subscribers</span>' +
+              '</div>' +
+              '<p class="bc-body">' + DF.esc(b.body) + '</p>' +
+            '</div>'
+          );
+        }).join("") : '<div class="rep-empty">No broadcasts yet. Issuer updates appear here as a one-way, immutable feed to all subscribed investors (v3 Part 13). No private DMs — all updates go to everyone simultaneously.</div>';
+
+        return (
+          '<section class="panel">' +
+            '<div class="panel-header">' +
+              '<div class="panel-title">Broadcast updates</div>' +
+              '<div class="panel-sub">Issuer → all subscribers · one-way · immutable</div>' +
+            '</div>' +
+            '<div class="bc-body-wrap">' +
+              (composerBtn ? '<div class="bc-toolbar">' + composerBtn + '</div>' : '') +
+              '<div class="bc-list">' + items + '</div>' +
+            '</div>' +
+          '</section>'
+        );
+      }
+      function openBroadcastComposer() {
+        let pickedCategory = "operational";
+        function render() {
+          const catButtons = BROADCAST_CATEGORIES.map(function (c) {
+            const sel = c.id === pickedCategory ? " is-selected" : "";
+            return '<button type="button" class="bc-cat-pick bc-cat-' + c.color + sel + '" data-bc-cat="' + c.id + '">' + c.label + '</button>';
+          }).join("");
+          const body = (
+            '<p class="rep-hint">Broadcasts publish to <strong>all subscribed investors simultaneously</strong>. They\'re timestamped, logged, and cannot be edited or removed (v3 Part 13). Used for operational updates, milestones, risk notices.</p>' +
+            '<label class="rep-label">Category</label>' +
+            '<div class="bc-cat-row">' + catButtons + '</div>' +
+            '<label class="rep-label" style="margin-top:14px">Message <span class="rep-hint" style="font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px">600 characters max</span></label>' +
+            '<textarea class="t-input" id="bc-body" rows="5" maxlength="600" placeholder="e.g. We\'ve closed our second QSR offtake at +14% volume vs the LOI. Cold-storage hub utilisation up to 81%."></textarea>'
+          );
+          T.modal("Publish broadcast", body, {
+            footer: '<button class="t-btn" data-modal-close>Cancel</button><button class="t-btn t-btn-primary" id="bc-publish">Publish to all subscribers</button>'
+          });
+          document.querySelectorAll("[data-bc-cat]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              pickedCategory = btn.getAttribute("data-bc-cat");
+              render();
+            });
+          });
+          document.getElementById("bc-publish").addEventListener("click", function () {
+            const text = document.getElementById("bc-body").value.trim();
+            if (!text) { T.toast("Broadcast can't be empty"); return; }
+            deal.broadcasts = deal.broadcasts || [];
+            deal.broadcasts.push({
+              id: "bc_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+              category: pickedCategory,
+              body: text,
+              at: new Date().toISOString()
+            });
+            deal.activity = deal.activity || [];
+            deal.activity.unshift({ at: new Date().toISOString(), text: "Broadcast published · " + (BROADCAST_CATEGORIES.find(function (c) { return c.id === pickedCategory; }) || {}).label });
+            api.save(deal);
+            T.alerts().add({
+              symbol: deal.ticker,
+              label: "Broadcast · " + text.slice(0, 60) + (text.length > 60 ? "…" : ""),
+              value: "", unit: "", templateId: "broadcast", severity: "critical"
+            });
+            T.closeModal();
+            T.toast("Broadcast published to all subscribers.");
+            renderV3();
+          });
+        }
+        render();
+      }
+
+      // ---- v3 AI assistant (Part 13) — strictly corpus-bound, cites sources, refuses out-of-corpus questions ----
+      // Builds a retrievable corpus from everything the issuer has published on this deal. Mock retrieval
+      // uses token overlap scoring; real impl would use embeddings + RAG with the same corpus boundary.
+      const STOP_WORDS = { the:1, a:1, an:1, is:1, are:1, of:1, to:1, in:1, on:1, for:1, this:1, that:1, what:1, how:1, when:1, where:1, why:1, who:1, you:1, your:1, i:1, it:1, with:1, and:1, or:1, do:1, does:1, did:1, can:1, will:1, "?":1 };
+      function tokenize(s) {
+        return String(s || "").toLowerCase().replace(/[^a-z0-9₦% ]/g, " ").split(/\s+/).filter(function (w) { return w && !STOP_WORDS[w] && w.length > 1; });
+      }
+      function buildCorpus() {
+        const items = [];
+        if (deal.brief) items.push({ source: "Deal brief", text: deal.brief, badge: "brief" });
+        if (deal.whyNow) items.push({ source: "Why now", text: deal.whyNow, badge: "context" });
+        if (Array.isArray(deal.useOfProceeds) && deal.useOfProceeds.length) {
+          items.push({
+            source: "Use of Proceeds",
+            text: deal.useOfProceeds.map(function (u) { return u.label + " (" + u.pctRaise + "% · " + Math.round((u.ngn || 0) / 1e6) + "m NGN)"; }).join(". "),
+            badge: "uop"
+          });
+        }
+        if (Array.isArray(deal.milestones) && deal.milestones.length) {
+          items.push({ source: "Milestones", text: deal.milestones.join(". "), badge: "milestones" });
+        }
+        // Instrument terms
+        const terms = [];
+        if (deal.wrapper) terms.push("Wrapper: " + deal.wrapper);
+        if (deal.valuationCapNGN) terms.push("Valuation cap: ₦" + Math.round(deal.valuationCapNGN / 1e6) + "m");
+        if (deal.discountPct) terms.push("Discount: " + deal.discountPct + "%");
+        if (deal.conversionTrigger) terms.push("Conversion trigger: " + deal.conversionTrigger);
+        if (deal.tenor) terms.push("Tenor: " + deal.tenor);
+        if (deal.closingWindow) terms.push("Closing window: " + deal.closingWindow);
+        if (deal.auditor) terms.push("Auditor: " + deal.auditor);
+        if (deal.raiseNGN) terms.push("Target raise: ₦" + Math.round(deal.raiseNGN / 1e6) + "m");
+        if (deal.ticketMinNGN && deal.ticketMaxNGN) terms.push("Ticket range: ₦" + Math.round(deal.ticketMinNGN / 1e3) + "k–₦" + Math.round(deal.ticketMaxNGN / 1e6) + "m");
+        if (terms.length) items.push({ source: "Instrument terms", text: terms.join(". "), badge: "terms" });
+        // Reports
+        (deal.reports || []).forEach(function (r) {
+          const when = new Date(r.at).toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+          if (r.cycle === "weekly") items.push({ source: "Weekly pulse · " + when, text: r.pulse, badge: "report" });
+          if (r.cycle === "monthly") items.push({
+            source: "Monthly fiscal · " + when,
+            text: "Revenue: " + (r.revenue || "—") + ". Cash: " + (r.cash || "—") + ". Burn: " + (r.burn || "—") + ". Headcount: " + (r.headcount || "—") + ". Wins/losses: " + (r.wins || "—"),
+            badge: "report"
+          });
+          if (r.cycle === "quarterly") {
+            const kpi = r.kpis || {};
+            items.push({
+              source: "Quarterly MD&A · " + when,
+              text: (r.narrative || "") + ". KPIs — revenue: " + (kpi.revenue || "—") + ", gross margin: " + (kpi.margin || "—") + ", cash runway: " + (kpi.runway || "—") + ", ARR: " + (kpi.arr || "—"),
+              badge: "report"
+            });
+          }
+        });
+        // Answered Q&A
+        (deal.qa || []).forEach(function (q) {
+          if (q.answer) items.push({
+            source: "Q&A · " + new Date(q.answeredAt).toLocaleDateString("en-GB", { day:"2-digit", month:"short" }),
+            text: "Q: " + q.question + " A: " + q.answer,
+            badge: "qa"
+          });
+        });
+        // Broadcasts
+        (deal.broadcasts || []).forEach(function (b) {
+          items.push({
+            source: "Broadcast · " + new Date(b.at).toLocaleDateString("en-GB", { day:"2-digit", month:"short" }),
+            text: b.body,
+            badge: "broadcast"
+          });
+        });
+        // Pre-tokenize for scoring
+        items.forEach(function (it) { it.tokens = tokenize(it.source + " " + it.text); });
+        return items;
+      }
+      function askCorpus(question, corpus) {
+        const qTokens = tokenize(question);
+        if (!qTokens.length) return null;
+        // Score each corpus item by token overlap
+        const scored = corpus.map(function (it) {
+          let score = 0;
+          qTokens.forEach(function (qt) {
+            it.tokens.forEach(function (ct) {
+              if (qt === ct) score += 2;
+              else if (ct.indexOf(qt) >= 0 || qt.indexOf(ct) >= 0) score += 1;
+            });
+          });
+          return { item: it, score: score };
+        }).filter(function (s) { return s.score > 0; }).sort(function (a, b) { return b.score - a.score; });
+        if (!scored.length) return null;
+        const topThreshold = scored[0].score * 0.6;
+        return scored.filter(function (s) { return s.score >= topThreshold; }).slice(0, 3);
+      }
+      const _aiHistory = [];
+      function renderAiPanel() {
+        const corpus = buildCorpus();
+        const corpusSummary = corpus.length
+          ? corpus.length + " published source" + (corpus.length === 1 ? "" : "s") + ": " + corpus.map(function (c) { return c.badge; }).filter(function (b, i, arr) { return arr.indexOf(b) === i; }).join(", ")
+          : "No corpus yet — issuer hasn't published a brief, reports, Q&A, or broadcasts.";
+        const history = _aiHistory.length ? _aiHistory.map(function (entry) {
+          return (
+            '<div class="ai-turn">' +
+              '<div class="ai-q"><span class="ai-tag">You</span><span>' + DF.esc(entry.q) + '</span></div>' +
+              '<div class="ai-a">' +
+                '<span class="ai-tag ai-tag-bot">Assistant</span>' +
+                '<div class="ai-a-body">' + entry.a + '</div>' +
+                (entry.cites && entry.cites.length
+                  ? '<div class="ai-cites">' + entry.cites.map(function (c) { return '<span class="ai-cite">' + DF.esc(c) + '</span>'; }).join("") + '</div>'
+                  : '') +
+              '</div>' +
+            '</div>'
+          );
+        }).join("") : '<div class="ai-empty">Ask anything answerable from this deal\'s published materials.</div>';
+
+        return (
+          '<section class="panel ai-panel">' +
+            '<div class="panel-header">' +
+              '<div class="panel-title">Ask the deal corpus</div>' +
+              '<div class="panel-sub">Corpus-bound · cites sources · not investment advice</div>' +
+            '</div>' +
+            '<div class="ai-body">' +
+              '<div class="ai-disclaimer">' +
+                '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+                '<span>Answers drawn strictly from this issuer\'s published corpus. The assistant cannot generate new disclosures. ' + DF.esc(corpusSummary) + '</span>' +
+              '</div>' +
+              '<div class="ai-history">' + history + '</div>' +
+              '<form class="ai-form" id="ai-form" autocomplete="off">' +
+                '<input class="t-input" id="ai-q" type="text" placeholder="e.g. What\'s the cold-storage spend? When does the next milestone hit? Who\'s the auditor?" />' +
+                '<button type="submit" class="t-btn t-btn-primary" id="ai-ask">Ask</button>' +
+              '</form>' +
+            '</div>' +
+          '</section>'
+        );
+      }
+      function onAiAsk(question) {
+        const corpus = buildCorpus();
+        const hits = askCorpus(question, corpus);
+        let answer, cites = [];
+        if (!corpus.length) {
+          answer = "<em>The issuer hasn't published anything to this deal yet. Once a brief, report, Q&A answer, or broadcast lands, I can answer from those.</em>";
+        } else if (!hits || !hits.length) {
+          answer = "<em>I can only answer from what this issuer has published on this deal. Your question isn't covered in the current corpus (" + corpus.length + " source" + (corpus.length === 1 ? "" : "s") + "). Try asking about the brief, use of proceeds, milestones, terms, reports, Q&A, or broadcasts — or submit a structured Q&A question to the issuer.</em>";
+        } else {
+          // Render the top hits as a synthesized answer
+          answer = hits.map(function (h) {
+            return "<p><strong>" + DF.esc(h.item.source) + ":</strong> " + DF.esc(h.item.text) + "</p>";
+          }).join("");
+          cites = hits.map(function (h) { return h.item.source; });
+        }
+        _aiHistory.push({ q: question, a: answer, cites: cites });
+        renderV3();
+      }
       function renderQaPanel() {
         deal.qa = deal.qa || [];
         const qa = deal.qa.slice().reverse();

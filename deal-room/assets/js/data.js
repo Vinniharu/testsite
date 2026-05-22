@@ -529,7 +529,7 @@
     }
   }
   function laneLabelFor(lane) {
-    if (lane === 'lane-a') return 'Lane A · Crowdfund';
+    if (lane === 'lane-a') return 'Lane A · Growth Capital';
     if (lane === 'lane-b') return 'Lane B · Private';
     return 'Fund vehicle';
   }
@@ -576,7 +576,7 @@
     { id: 'agrimex', company: 'Agrimex Foods', tradingName: 'Agrimex', legalName: 'Anie Limited',
       ticker: 'AGRMX', sector: 'Food & Agribusiness', stage: 'Seed',
       size: '$95K', sizeNum: 0.095, status: 'Allocating', statusType: 'info', updated: 'May 18, 2026',
-      lane: 'lane-a', laneLabel: 'Lane A · Crowdfund', wrapper: 'CSAFE', kycTier: 1,
+      lane: 'lane-a', laneLabel: 'Lane A · Growth Capital', wrapper: 'CSAFE', kycTier: 1,
       sizeTier: 'Micro', allocationPct: 87,
       raiseNGN: 85000000, ticketMinNGN: 100000, ticketMaxNGN: 5000000, daysLeft: 14,
       brief: 'Agrimex aggregates produce from 400+ smallholder farms in Benue and Nasarawa, processes it through two cold-chain hubs in Lagos, and supplies four QSR chains under offtake contracts. Two-year track record; ₦480m revenue FY2025.',
@@ -598,7 +598,7 @@
     { id: 'sunray', company: 'Sunray Solar Co-op', tradingName: 'Sunray', legalName: 'Sunray Energy Cooperative Limited',
       ticker: 'SUNR', sector: 'Renewable Energy', stage: 'Pre-Seed',
       size: '$55K', sizeNum: 0.055, status: 'Oversubscribed', statusType: 'success', updated: 'May 17, 2026',
-      lane: 'lane-a', laneLabel: 'Lane A · Crowdfund', wrapper: 'CSAFE', kycTier: 1,
+      lane: 'lane-a', laneLabel: 'Lane A · Growth Capital', wrapper: 'CSAFE', kycTier: 1,
       sizeTier: 'Micro', allocationPct: 124,
       raiseNGN: 50000000, ticketMinNGN: 100000, ticketMaxNGN: 5000000, daysLeft: 2,
       brief: 'Sunray installs and operates rooftop solar-plus-storage systems for SMEs in Lagos and Abeokuta on lease-to-own contracts. 38 systems deployed; 91% payment-on-time.',
@@ -619,7 +619,7 @@
     { id: 'lekkicargo', company: 'Lekki Cargo Hub', tradingName: 'Lekki Cargo', legalName: 'Lekki Cargo Hub Limited',
       ticker: 'LCRG', sector: 'Logistics', stage: 'Seed',
       size: '$78K', sizeNum: 0.078, status: 'Live', statusType: 'info', updated: 'May 20, 2026',
-      lane: 'lane-a', laneLabel: 'Lane A · Crowdfund', wrapper: 'CSAFE', kycTier: 1,
+      lane: 'lane-a', laneLabel: 'Lane A · Growth Capital', wrapper: 'CSAFE', kycTier: 1,
       sizeTier: 'Micro', allocationPct: 23,
       raiseNGN: 70000000, ticketMinNGN: 100000, ticketMaxNGN: 5000000, daysLeft: 28,
       brief: 'Bonded last-mile cargo hub serving the Lekki Free Zone. Handles customs clearance + warehousing + dispatch for 14 importers on monthly retainers.',
@@ -640,7 +640,7 @@
     { id: 'naijathreads', company: 'Naija Threads', tradingName: 'NT', legalName: 'Naija Threads Apparel Limited',
       ticker: 'NTHR', sector: 'Consumer Goods', stage: 'Seed',
       size: '$110K', sizeNum: 0.110, status: 'Closing', statusType: 'warning', updated: 'May 21, 2026',
-      lane: 'lane-a', laneLabel: 'Lane A · Crowdfund', wrapper: 'CSAFE', kycTier: 1,
+      lane: 'lane-a', laneLabel: 'Lane A · Growth Capital', wrapper: 'CSAFE', kycTier: 1,
       sizeTier: 'Micro', allocationPct: 84,
       raiseNGN: 95000000, ticketMinNGN: 100000, ticketMaxNGN: 5000000, daysLeft: 1,
       brief: 'DTC apparel brand making locally-produced staples (tees, polos, ankara-trimmed shirts). 18-month-old brand; ₦210m revenue LTM; gross margin 54%.',

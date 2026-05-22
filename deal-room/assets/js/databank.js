@@ -124,7 +124,7 @@
     else                                                           caliber = "Nano";
 
     const lane = (caliber === "Corporate" || caliber === "Large") ? "lane-b" : "lane-a";
-    const laneLabel = lane === "lane-b" ? "Lane B · Private Placement" : "Lane A · Crowdfund";
+    const laneLabel = lane === "lane-b" ? "Lane B · Private Placement" : "Lane A · Growth Capital";
 
     // Lane A annual raise caps per Part 4. Nano is not eligible per spec.
     const A_CAPS = { Nano: 0, Micro: 50_000_000, Small: 70_000_000, Medium: 100_000_000 };
