@@ -438,7 +438,7 @@
       '<div class="pay-panel">' +
         '<div class="pay-summary">' +
           '<div style="display:flex;align-items:center;gap:12px;">' +
-            '<span class="pay-logo" style="background:' + companyColor(company.id) + '">' + (company.name || "?").charAt(0) + '</span>' +
+            companyLogo(company.id, company.name, { size: 40, radius: 8 }) +
             '<div>' +
               '<div style="font-size:14px;font-weight:600">' + company.name + '</div>' +
               '<div style="font-size:12px;color:var(--text-muted)">' + (company.sector || "") + '</div>' +
@@ -545,6 +545,33 @@
     let n = 0;
     for (let i = 0; i < id.length; i++) n = (n + id.charCodeAt(i)) % palette.length;
     return palette[n];
+  }
+
+  // ---------- company logo (image with graceful fallback to coloured initial) ----------
+  // One global helper so logos look the same on every page. opts.size (px) and opts.radius (px).
+  function companyLogo(id, name, opts) {
+    opts = opts || {};
+    const size   = opts.size   || 36;
+    const radius = opts.radius || 8;
+    const color  = companyColor(id || "");
+    const init   = ((name || "?").trim().charAt(0) || "?").toUpperCase();
+    const pad    = Math.max(2, Math.round(size / 9));
+    const fontSz = Math.max(10, Math.round(size * 0.42));
+    const path   = "../assets/images/companies/" + id + ".png";
+    // safe-escape the initial for the inline onerror handler
+    const safeInit = init.replace(/'/g, "\\'");
+    return (
+      '<span class="t-co-logo" style="' +
+        'display:inline-flex;align-items:center;justify-content:center;' +
+        'width:' + size + 'px;height:' + size + 'px;border-radius:' + radius + 'px;' +
+        'background:#fff;border:1px solid var(--border-t);overflow:hidden;padding:' + pad + 'px;' +
+        'flex-shrink:0;color:#fff;font-weight:600;font-size:' + fontSz + 'px;line-height:1;' +
+      '">' +
+        '<img src="' + path + '" alt="" loading="lazy" ' +
+          'style="width:100%;height:100%;object-fit:contain;display:block" ' +
+          'onerror="this.parentElement.style.background=\'' + color + '\';this.parentElement.style.border=\'0\';this.parentElement.style.padding=\'0\';this.parentElement.textContent=\'' + safeInit + '\';" />' +
+      '</span>'
+    );
   }
 
   // ---------- popover ----------
@@ -1001,6 +1028,7 @@
     publisherNet: publisherNet,
     NEIIA_FEE_RATE: NEIIA_FEE_RATE,
     companyColor: companyColor,
+    companyLogo: companyLogo,
     openAlertsModal: openAlertsModal,
     openHelpModal: openHelpModal,
     openPrefsModal: openPrefsModal,

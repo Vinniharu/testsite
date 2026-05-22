@@ -996,9 +996,9 @@ img {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 250px;
-  /* 8 tiles = 4+4, two clean rows */
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 260px;
+  /* 9 tiles = 3+3+3, three clean rows */
   width: 100%;
   max-width: 1200px;
   padding: 0 var(--spacing-md);
@@ -1088,6 +1088,12 @@ img {
 /* 08 Reporting & LP Portals */
 .grid-8 {
   background: url("assets/images/reporting-lp.jpg") center/cover no-repeat;
+}
+
+/* 09 Administration & Governance */
+.grid-9 {
+  background: url("assets/images/enterprise_grc_dashboard_mockup_1770596060655.png")
+    center/cover no-repeat;
 }
 
 @media (max-width: 900px) {

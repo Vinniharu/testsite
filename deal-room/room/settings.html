@@ -989,62 +989,66 @@
 
       const PLANS = [
         {
-          key: "free",
-          name: "Free",
+          key: "investor",
+          name: "Investor",
           price: 0,
-          tagline: "Read previews, build your watchlist.",
+          tagline: "For LPs. Find deals, commit, track your portfolio, get AI summaries.",
           includes: [
-            "Up to 3 watchlist companies",
-            "Preview tab on any company profile",
-            "Weekly newsletter digest"
+            "Browse and commit on any deal you're invited to",
+            "Portfolio dashboard — KPIs, MOIC, TVPI, DPI",
+            "AI performance summary, on demand",
+            "Watchlist + alerts on companies you track",
+            "Naira / USD toggle"
           ]
         },
         {
           key: "standard",
           name: "Standard",
-          price: 0,
-          tagline: "Subscribe pay-as-you-go to individual companies.",
+          price: 199,
+          unit: "/mo",
+          tagline: "For GPs raising one vehicle. Full lifecycle, six wrappers.",
           includes: [
-            "Per-company subscriptions ($29–$79/mo)",
-            "Up to 10 deal rooms · 50 GB each",
-            "Unlimited viewers and invites",
-            "Real-time engagement analytics"
+            "Unlimited deals in Draft / Source / Structure",
+            "1 live vehicle (Outreach → Administer)",
+            "All six wrappers — SPV, Sub-Fund, Rolling, Venture, Co-Invest, Roll-Up",
+            "Up to 50 investors per deal · unlimited viewers",
+            "Document upload (10 GB) · activity log · CSV exports"
           ],
           featured: true
         },
         {
-          key: "verified",
-          name: "Verified",
-          price: DB.VERIFIED_PRICE_USD,
+          key: "pro",
+          name: "Pro",
+          price: 799,
           unit: "/mo",
-          tagline: "Verified badge + message any verified enterprise on the platform.",
+          tagline: "Multi-vehicle firms with real LP volume + admin workflows.",
           includes: [
-            "Verified ✓ badge on your workspace",
-            "Direct messaging to verified enterprises",
-            "Restrict your inbox to verified senders",
-            "Priority human support, 1 business day"
+            "Unlimited live vehicles + parallel raises",
+            "Up to 500 investors per deal · workspaces & roles",
+            "Document upload (100 GB) · custom report templates",
+            "Webhooks + API access · audit log",
+            "Priority human support, 1 business day SLA"
           ]
         }
       ];
 
       function currentPlanKey() {
-        if (verApi.isVerified()) return "verified";
-        return DB.store.get(DB.keys.plan, "standard") || "standard";
+        const stored = DB.store.get(DB.keys.plan, "standard") || "standard";
+        // migrate legacy keys
+        if (stored === "verified" || stored === "free") return "investor";
+        if (stored === "pro" || stored === "standard" || stored === "investor") return stored;
+        return "standard";
       }
 
       function renderPlanBanner() {
         const key = currentPlanKey();
-        const v = verApi.get();
         const plan = PLANS.find(function (p) { return p.key === key; }) || PLANS[1];
-        const renewsTxt = v && v.active && v.renewsAt
-          ? "Renews " + new Date(v.renewsAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
-          : "No renewal scheduled";
         const el = document.getElementById("planBanner");
         el.className = "plan-banner is-" + key;
         el.innerHTML = (
           '<div class="plan-banner-left">' +
             '<div class="plan-banner-eyebrow">Current plan</div>' +
-            '<div class="plan-banner-name">' + plan.name + (key === "verified" ? ' <span class="verified-badge">✓ Verified</span>' : '') + '</div>' +
+            '<div class="plan-banner-name">' + plan.name + '</div>' +
             '<div class="plan-banner-sub">' + plan.tagline + '</div>' +
           '</div>' +
           '<div class="plan-banner-right">' +
@@ -1052,7 +1056,7 @@
               (plan.price === 0 ? '<span class="amt">$0</span><span class="per">included</span>' :
                 '<span class="amt">$' + plan.price + '</span><span class="per">' + (plan.unit || "/mo") + '</span>') +
             '</div>' +
-            '<div class="plan-banner-renew">' + renewsTxt + '</div>' +
+            '<div class="plan-banner-renew">' + (plan.price === 0 ? 'No renewal — free tier' : 'Billed monthly') + '</div>' +
           '</div>'
         );
       }
@@ -1063,15 +1067,11 @@
           const isCurrent = plan.key === key;
           const action = isCurrent
             ? '<button class="t-btn" type="button" disabled>Current plan</button>'
-            : plan.key === "verified"
-              ? '<button class="t-btn t-btn-primary" type="button" data-upgrade-verified>Verify for $' + plan.price + '/mo</button>'
-              : plan.key === "free"
-                ? '<button class="t-btn" type="button" data-set-plan="free">Switch to Free</button>'
-                : '<button class="t-btn" type="button" data-set-plan="standard">Switch to Standard</button>';
+            : '<button class="t-btn' + (plan.featured ? ' t-btn-primary' : '') + '" type="button" data-set-plan="' + plan.key + '">Switch to ' + plan.name + '</button>';
           return (
             '<div class="plan-card ' + (isCurrent ? "is-current" : "") + (plan.featured && !isCurrent ? " is-featured" : "") + '">' +
-              (plan.featured ? '<span class="plan-card-flag">Most teams pick this</span>' : '') +
-              '<div class="plan-card-name">' + plan.name + (plan.key === "verified" ? ' <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:9999px;margin-left:4px;background:linear-gradient(135deg,#E5C260 0%,#B8862B 100%);color:#fff;box-shadow:0 1px 0 rgba(255,255,255,0.3) inset;"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>' : '') + '</div>' +
+              (plan.featured ? '<span class="plan-card-flag">Most GPs pick this</span>' : '') +
+              '<div class="plan-card-name">' + plan.name + '</div>' +
               '<div class="plan-card-price">' +
                 (plan.price === 0 ? '<span class="amt">Free</span>' :
                   '<span class="amt">$' + plan.price + '</span><span class="per">' + (plan.unit || "/mo") + '</span>') +
@@ -1206,13 +1206,11 @@
 
       // Plan picker actions
       document.getElementById("planGrid").addEventListener("click", function (e) {
-        const verUp = e.target.closest("[data-upgrade-verified]");
-        if (verUp) { openVerifyModal(); return; }
         const setPlan = e.target.closest("[data-set-plan]");
         if (setPlan) {
           const k = setPlan.getAttribute("data-set-plan");
           DB.store.set(DB.keys.plan, k);
-          if (k !== "verified") verApi.cancel();
+          if (verApi && verApi.cancel) verApi.cancel();
           renderPlanBanner();
           renderPlanGrid();
           T.toast("Switched to " + k.charAt(0).toUpperCase() + k.slice(1));

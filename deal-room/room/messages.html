@@ -445,7 +445,7 @@
           const preview = (lastMsg.from === ME ? "You: " : "") + lastMsg.text;
           return (
             '<button class="msg-thread-item ' + (t.id === state.activeId ? "is-active" : "") + (t.unread ? " unread-row" : "") + '" data-thread="' + t.id + '" type="button">' +
-              '<span class="avatar" style="background:' + logoColor(t.companyId) + '">' + initial(t.name) + '</span>' +
+              T.companyLogo(t.companyId, t.name, { size: 36, radius: 18 }) +
               '<div class="meta">' +
                 '<div class="name">' + t.name + (t.verified ? " " + vbadge() : "") + '</div>' +
                 '<div class="preview">' + preview + '</div>' +
@@ -529,7 +529,7 @@
         pane.innerHTML = (
           '<header class="msg-thread-header">' +
             '<div class="who">' +
-              '<span class="avatar" style="background:' + logoColor(t.companyId) + '">' + initial(t.name) + '</span>' +
+              T.companyLogo(t.companyId, t.name, { size: 36, radius: 18 }) +
               '<div>' +
                 '<div class="name">' + t.name + (t.verified ? " " + vbadge() : "") + '</div>' +
                 '<div class="sub">' + t.sector + (t.verified ? " · Verified enterprise" : "") + '</div>' +

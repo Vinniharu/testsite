@@ -76,7 +76,7 @@
             '<a href="#" data-action="open-prefs">Preferences</a>' +
             '<a href="#" data-action="open-help">Keyboard shortcuts</a>' +
             '<div class="menu-sep"></div>' +
-            '<a href="../index.html" data-action="signout">' + icon("signout") + ' Sign out</a>' +
+            '<a href="../signin.html" data-action="signout">' + icon("signout") + ' Sign out</a>' +
           '</div>' +
         '</div>' +
       '</header>'
@@ -206,7 +206,7 @@
               '<div style="color:var(--text-muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;max-width:160px;white-space:nowrap;">' + (email || (org.name || "Workspace")) + '</div>' +
             '</div>' +
           '</div>' +
-          '<a href="../index.html" data-action="signout" style="margin-top:12px;padding-left:0;border-left:0;">' + icon("signout") + '<span>Sign out</span></a>' +
+          '<a href="../signin.html" data-action="signout" style="margin-top:12px;padding-left:0;border-left:0;">' + icon("signout") + '<span>Sign out</span></a>' +
         '</div>' +
       '</nav>'
     );

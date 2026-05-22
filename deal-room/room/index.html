@@ -46,9 +46,9 @@
           <div class="wh-sub-left">
             <span class="wh-sub-badge">Standard</span>
             <div class="wh-sub-text">
-              <strong>4 of 10 banks used</strong> — your plan includes 50 GB per bank, unlimited viewers, and weekly briefings on subscribed companies.
+              <strong>$199/mo · 1 of 1 live vehicles in use.</strong> Full Source → Administer lifecycle, six vehicle wrappers, up to 50 investors per deal, 10 GB documents. Upgrade to Pro for unlimited vehicles.
             </div>
-            <div class="wh-sub-meter" aria-hidden="true"><span style="width:40%"></span></div>
+            <div class="wh-sub-meter" aria-hidden="true"><span style="width:100%"></span></div>
           </div>
           <a class="wh-sub-link" href="settings.html#billing">Manage plan &rarr;</a>
         </div>
@@ -277,7 +277,7 @@
               (opts.subscribed ? '' : '<span style="font-size:11px;color:var(--text-muted);font-feature-settings:\'tnum\'">' + pct + '</span>') +
             '</div>' +
             '<a class="wh-card-top" href="company.html?company=' + c.id + '" style="text-decoration:none;color:inherit;">' +
-              '<span class="wh-card-logo" style="background:' + logoColor(c.id) + '">' + initial(c.name) + '</span>' +
+              T.companyLogo(c.id, c.name, { size: 36, radius: 8 }) +
               '<div style="min-width:0;">' +
                 '<div class="wh-card-name">' + c.name + '</div>' +
                 '<div class="wh-card-sector">' + c.sector + '</div>' +
@@ -376,7 +376,7 @@
         const pct = (c.changePct >= 0 ? "+" : "") + c.changePct.toFixed(2) + "%";
         return (
           '<a class="wh-watch-row" href="company.html?company=' + c.id + '">' +
-            '<span class="wh-watch-logo" style="background:' + logoColor(c.id) + '">' + initial(c.name) + '</span>' +
+            T.companyLogo(c.id, c.name, { size: 32, radius: 6 }) +
             '<div style="min-width:0;">' +
               '<div class="wh-watch-name">' + c.name + '</div>' +
               '<div class="wh-watch-sector">' + c.sector + '</div>' +

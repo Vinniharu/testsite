@@ -158,7 +158,7 @@
         return (
           '<tr data-row="' + d.id + '">' +
             '<td><div style="display:flex;align-items:center;gap:10px;">' +
-              '<span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;background:' + logoColor(d.id) + ';color:#FFFFFF;font-weight:600;font-size:12px">' + d.company.charAt(0) + '</span>' +
+              T.companyLogo(d.id, d.company, { size: 30, radius: 6 }) +
               '<a href="company.html?company=' + d.id + '">' + d.company + '</a>' +
             '</div></td>' +
             '<td style="color:var(--text-secondary)">' + d.sector + '</td>' +

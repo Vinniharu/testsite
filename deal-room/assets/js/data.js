@@ -111,9 +111,7 @@
       { id: "seplat",     company: "Seplat Energy",   sector: "Oil & Gas",               stage: "Public",     size: "$240M", sizeNum: 240,  status: "Allocating",    statusType: "info",    updated: "Mar 04, 2026" },
       { id: "daystar",    company: "Daystar Power",   sector: "Renewable Energy",        stage: "Series A",   size: "$8M",   sizeNum: 8,    status: "Closed",        statusType: "success", updated: "Feb 28, 2026" },
       { id: "transcorp",  company: "Transcorp Power", sector: "Electricity & Utilities", stage: "Growth",     size: "$45M",  sizeNum: 45,   status: "Due diligence", statusType: "warning", updated: "Feb 22, 2026" },
-      { id: "auxano",     company: "Auxano Solar",    sector: "Renewable Energy",        stage: "Series A",   size: "$6M",   sizeNum: 6,    status: "On hold",       statusType: "danger",  updated: "Feb 18, 2026" },
       { id: "starsight",  company: "Starsight Energy",sector: "Renewable Energy",        stage: "Series C",   size: "$30M",  sizeNum: 30,   status: "Term sheet",    statusType: "info",    updated: "Feb 15, 2026" },
-      { id: "azura",      company: "Azura Power",     sector: "Electricity & Utilities", stage: "Project",    size: "$900M", sizeNum: 900,  status: "Closed",        statusType: "success", updated: "Feb 09, 2026" },
       { id: "okomu",      company: "Okomu Oil Palm",  sector: "Agriculture",             stage: "Public",     size: "$60M",  sizeNum: 60,   status: "Allocating",    statusType: "info",    updated: "Feb 04, 2026" },
       { id: "dangotecement", company: "Dangote Cement", sector: "Industrials",           stage: "Public",     size: "$320M", sizeNum: 320,  status: "Closed",        statusType: "success", updated: "Jan 28, 2026" },
       { id: "mtnnigeria", company: "MTN Nigeria",     sector: "Telecoms",                stage: "Public",     size: "$180M", sizeNum: 180,  status: "Term sheet",    statusType: "info",    updated: "Jan 21, 2026" },
@@ -125,7 +123,6 @@
       { id: "andela",       company: "Andela",             sector: "Technology",      stage: "Series E",   size: "$200M", sizeNum: 200, status: "Closed",        statusType: "success", updated: "Dec 21, 2025" },
       { id: "ulesson",      company: "uLesson",            sector: "Education",       stage: "Series B",   size: "$15M",  sizeNum: 15,  status: "Due diligence", statusType: "warning", updated: "Dec 18, 2025" },
       { id: "helium",       company: "Helium Health",      sector: "Healthcare",      stage: "Series B",   size: "$30M",  sizeNum: 30,  status: "Term sheet",    statusType: "info",    updated: "Dec 14, 2025" },
-      { id: "fiftyfourgene",company: "54gene",             sector: "Healthcare",      stage: "Series B",   size: "$25M",  sizeNum: 25,  status: "On hold",       statusType: "danger",  updated: "Dec 09, 2025" },
       { id: "kobo360",      company: "Kobo360",            sector: "Logistics",       stage: "Series B",   size: "$30M",  sizeNum: 30,  status: "Term sheet",    statusType: "info",    updated: "Dec 04, 2025" },
       { id: "giglogistics", company: "GIG Logistics",      sector: "Logistics",       stage: "Growth",     size: "$22M",  sizeNum: 22,  status: "Due diligence", statusType: "warning", updated: "Nov 27, 2025" },
       { id: "jumia",        company: "Jumia Nigeria",      sector: "Consumer / E-com",stage: "Public",     size: "$140M", sizeNum: 140, status: "Allocating",    statusType: "info",    updated: "Nov 22, 2025" },
@@ -210,17 +207,6 @@
           { name: "Receivables",level: "Medium", note: "Outstanding DisCo balances" }
         ]
       },
-      { id: "auxano",   name: "Auxano Solar",     sector: "Renewable Energy",        hq: "Lagos, Nigeria",  founded: 2014, valuation: "$45M",  valuationNum: 45,   revenue: "$9M",   revenueNum: 9,   employees: "95",   growth: "+34% YoY",
-        thesis: "Vertically integrated solar manufacturer and EPC. First domestic panel assembly line provides a structural cost advantage on Nigerian projects.",
-        market: "Local-content rules favour assembly-here capacity; Auxano is positioned to win government and industrial RFPs.",
-        milestones: [
-          { date: "Q4 2025", text: "Commissioned 100MW/yr panel assembly line" }
-        ],
-        risks: [
-          { name: "FX",         level: "High",   note: "Cell imports remain dollar-priced" },
-          { name: "Demand",     level: "Medium", note: "Public sector procurement cycle" }
-        ]
-      },
       { id: "starsight",name: "Starsight Energy", sector: "Renewable Energy",        hq: "Lagos, Nigeria",  founded: 2015, valuation: "$210M", valuationNum: 210,  revenue: "$36M",  revenueNum: 36,  employees: "240",  growth: "+41% YoY",
         thesis: "Pan-African C&I solar leader following the Starsight-SunAfrica merger. Strong portfolio of multi-site contracts with blue-chip offtakers.",
         market: "C&I solar across West & Southern Africa expanding at 22% CAGR, with bankability now the gating constraint.",
@@ -229,16 +215,6 @@
         ],
         risks: [
           { name: "Integration", level: "Medium", note: "Post-merger operating cadence" }
-        ]
-      },
-      { id: "azura",    name: "Azura Power",      sector: "Electricity & Utilities", hq: "Edo, Nigeria",    founded: 2010, valuation: "$1.3B", valuationNum: 1300, revenue: "$280M", revenueNum: 280, employees: "410",  growth: "+8% YoY",
-        thesis: "461MW open-cycle gas plant under a USD-indexed PPA. Cornerstone IPP for Nigerian generation supply.",
-        market: "Nigeria's installed-to-available capacity gap remains structural; Azura's contracted offtake gives revenue stability.",
-        milestones: [
-          { date: "Q4 2025", text: "Renegotiated gas supply contract for 2026 cycle" }
-        ],
-        risks: [
-          { name: "Sovereign", level: "Medium", note: "PPA backed by partial-risk guarantee" }
         ]
       },
       { id: "okomu",    name: "Okomu Oil Palm",   sector: "Agriculture",             hq: "Benin City, Nigeria", founded: 1976, valuation: "$420M", valuationNum: 420, revenue: "$95M", revenueNum: 95,  employees: "1,800",growth: "+15% YoY",
@@ -452,9 +428,7 @@
     seplat:     [4300, 0.0004, 0.017, 320000],
     daystar:    [85,   0.0009, 0.025, 18000],
     transcorp:  [780,  0.0003, 0.015, 95000],
-    auxano:     [45,   0.0010, 0.030, 8000],
     starsight:  [210,  0.0007, 0.020, 22000],
-    azura:      [1300, 0.0002, 0.012, 65000],
     okomu:      [420,  0.0004, 0.016, 42000],
     dangotecement: [468, 0.0003, 0.013, 410000],
     mtnnigeria: [232,  0.0003, 0.012, 510000],

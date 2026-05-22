@@ -513,7 +513,7 @@
       document.getElementById("companyGrowth").textContent = company.growth || "+0%";
       const deal = D.deals.find(function (d) { return d.id === company.id; });
       document.getElementById("companyStage").textContent = deal ? deal.stage : "Tracked";
-      document.getElementById("companyLogo").textContent = company.name.charAt(0);
+      document.getElementById("companyLogo").outerHTML = T.companyLogo(company.id, company.name, { size: 48, radius: 8 });
 
       // Last price + change
       const dir = company.changePct >= 0 ? "up" : "down";

@@ -156,7 +156,7 @@
         return (
           '<tr data-row="' + d.id + '">' +
             '<td><div style="display:flex;align-items:center;gap:10px;">' +
-              '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:3px;background:' + logoColor(d.id) + ';color:#FFFFFF;font-family:var(--mono);font-weight:700;font-size:11px">' + d.company.charAt(0) + '</span>' +
+              T.companyLogo(d.id, d.company, { size: 28, radius: 4 }) +
               '<a href="company.html?company=' + d.id + '">' + d.company + '</a>' +
             '</div></td>' +
             '<td style="color:var(--text-secondary)">' + d.sector + '</td>' +
@@ -236,7 +236,7 @@
         grid.innerHTML = pool.map(function (d) {
           return (
             '<div class="kpi-card" style="padding:10px 12px;display:flex;align-items:center;gap:10px">' +
-              '<span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:3px;background:' + logoColor(d.id) + ';color:#FFFFFF;font-family:var(--mono);font-weight:700;font-size:12px">' + d.company.charAt(0) + '</span>' +
+              T.companyLogo(d.id, d.company, { size: 30, radius: 4 }) +
               '<div style="flex:1;min-width:0">' +
                 '<div style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><a href="company.html?company=' + d.id + '" style="color:inherit">' + d.company + '</a></div>' +
                 '<div style="font-family:var(--mono);font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">' + d.sector + (d.size ? ' &middot; ' + d.size : '') + '</div>' +

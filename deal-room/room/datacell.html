@@ -334,7 +334,7 @@
           const price = p.price || 0;
           return (
             '<div class="pub-card" data-pub-id="' + p.id + '">' +
-              '<span class="pub-logo" style="background:' + logoColor(p.id) + '">' + initial(p.name) + '</span>' +
+              T.companyLogo(p.id, p.name, { size: 40, radius: 8 }) +
               '<div class="pub-meta">' +
                 '<div class="pub-name">' + p.name + '</div>' +
                 '<div class="pub-sub">' + p.sector + ' · ' + (p.entries || []).length + ' entries · last update ' + lastWhen + '</div>' +

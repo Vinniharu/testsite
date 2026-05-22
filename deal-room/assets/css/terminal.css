@@ -2120,6 +2120,24 @@ html.terminal .wh-card-logo {
   color: #fff;
   flex-shrink: 0;
 }
+/* Variant that holds a real logo image — light bg + bordered square so the logo reads cleanly */
+html.terminal .wh-card-logo-img {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 4px;
+}
+html.terminal .wh-card-logo-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
 html.terminal .wh-card-name {
   font-size: 15px;
   font-weight: 600;
