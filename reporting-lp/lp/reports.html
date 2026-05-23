@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:18px;">
+          <h1 style="margin:0;font-size:24px;">Reports</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">Updates on every deal you're invested in. Cadence per your agreement.</p>
+        </div>
+
+        <div id="reports-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'lp', activeNav: 'reports' });
+
+    const me = NEIIA_STATE.currentUser || NEIIA_DATA.personas.lp[0];
+    const myMemos = (NEIIA_DATA.dealMemos || []).filter(function (m) { return m.lp && m.lp.id === me.id; });
+
+    function nextDueLabel(cadence, lastIso) {
+      if (!cadence) return '—';
+      const last = lastIso ? new Date(lastIso) : new Date();
+      const map = { 'Daily': 1, 'Weekly': 7, 'Monthly': 30, 'Quarterly': 90, 'Yearly': 365 };
+      const days = map[cadence] || 90;
+      const next = new Date(last.getTime() + days * 86400000);
+      return next.toISOString().slice(0, 10);
+    }
+
+    function reportsForMemo(memoId) {
+      const seeded = (NEIIA_DATA.dealReports || []).filter(function (r) { return r.dealMemoId === memoId; });
+      const gpReports = (NEIIA_STATE.gpReports || []).filter(function (r) { return r.dealId === memoId; });
+      return seeded.concat(gpReports).sort(function (a, b) { return (b.publishedAt || '').localeCompare(a.publishedAt || ''); });
+    }
+
+    const wrap = document.getElementById('reports-wrap');
+    if (!myMemos.length) {
+      wrap.innerHTML = '<div class="card card-p" style="text-align:center;padding:40px;">' +
+        '<div style="font-weight:700;color:var(--ink);font-size:15px;margin-bottom:6px;">No reports yet</div>' +
+        '<div style="color:var(--muted);font-size:14px;">Once you sign your first deal, reports from the GP will appear here.</div>' +
+      '</div>';
+    } else {
+      wrap.innerHTML = myMemos.map(function (m) {
+        const reports = reportsForMemo(m.id);
+        const cadence = (m.deal && m.deal.reportCadence) || 'Quarterly';
+        const rowsHtml = reports.length ? reports.map(function (r) {
+          const kpis = r.kpis || {};
+          const kpiList = [
+            ['Revenue', kpis.revenue],
+            ['Burn', kpis.burn],
+            ['Runway', kpis.runway ? (typeof kpis.runway === 'number' ? kpis.runway + ' mo' : kpis.runway) : null],
+            ['Customers', kpis.customers]
+          ].filter(function (k) { return k[1]; });
+          const kpiCards = kpiList.map(function (k) {
+            return '<div class="kpi-card" style="padding:10px;"><div class="kpi-label">' + k[0] + '</div><div class="kpi-value" style="font-size:15px;">' + k[1] + '</div></div>';
+          }).join('');
+          return '<div class="report-row" data-id="' + r.id + '">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;" data-toggle="' + r.id + '">' +
+              '<div><div style="font-weight:700;color:var(--ink);">' + (r.title || r.period || 'Report') + '</div>' +
+              '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + (r.period || '—') + ' · published ' + (r.publishedAt || '—') + '</div></div>' +
+              '<div style="display:flex;gap:8px;align-items:center;">' +
+                '<button class="btn btn-ghost btn-sm" data-act="download" data-id="' + r.id + '" data-name="' + (r.file || (r.title || 'report') + '.pdf') + '">' + Portal.icon('download', 14) + ' PDF</button>' +
+                '<button class="btn btn-secondary btn-sm" data-act="view" data-id="' + r.id + '">View</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="rpt-expand" id="rx-' + r.id + '" style="display:none;padding:16px;background:var(--surface);border-bottom:1px solid var(--border);">' +
+              (r.summary ? '<div style="font-weight:600;color:var(--ink);margin-bottom:6px;">Executive summary</div><div style="font-size:14px;color:var(--body);line-height:1.5;margin-bottom:14px;">' + r.summary + '</div>' : '') +
+              (kpiCards ? '<div style="font-weight:600;color:var(--ink);margin-bottom:6px;">KPIs</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;" class="kpi-mini-grid">' + kpiCards + '</div>' : '') +
+              (r.commentary ? '<div style="font-weight:600;color:var(--ink);margin-bottom:6px;">Commentary</div><div style="font-size:14px;color:var(--body);line-height:1.5;margin-bottom:14px;">' + r.commentary + '</div>' : '') +
+              (r.outlook ? '<div style="font-weight:600;color:var(--ink);margin-bottom:6px;">Outlook</div><div style="font-size:14px;color:var(--body);line-height:1.5;margin-bottom:14px;">' + r.outlook + '</div>' : '') +
+              (r.file ? '<div style="font-size:13px;">Attached: <a href="#" style="color:var(--brand);font-weight:600;">' + r.file + '</a></div>' : '') +
+            '</div>' +
+          '</div>';
+        }).join('') : '<div style="padding:18px;color:var(--muted);font-size:14px;background:var(--surface);">No reports posted yet. Next report due <b>' + nextDueLabel(cadence, m.agreedAt) + '</b> per ' + cadence.toLowerCase() + ' cadence.</div>';
+
+        return '<div class="card" style="overflow:hidden;margin-bottom:18px;">' +
+          '<div style="padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">' +
+            '<div><div style="font-weight:800;color:var(--ink);font-size:16px;">' + (m.deal ? m.deal.title : 'Deal') + '</div>' +
+            '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + reports.length + ' report' + (reports.length === 1 ? '' : 's') + ' · GP: ' + (m.gp ? m.gp.firm : 'NEIIA') + '</div></div>' +
+            '<span class="badge badge-green">' + cadence + ' cadence</span>' +
+          '</div>' +
+          rowsHtml +
+        '</div>';
+      }).join('');
+
+      // Wire up View / Download
+      document.querySelectorAll('[data-toggle]').forEach(function (b) {
+        b.addEventListener('click', function (e) {
+          if (e.target.closest('[data-act]')) return;
+          const id = b.dataset.toggle;
+          const ex = document.getElementById('rx-' + id);
+          if (ex) ex.style.display = ex.style.display === 'none' ? 'block' : 'none';
+        });
+      });
+      document.querySelectorAll('[data-act="view"]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          const id = b.dataset.id;
+          const ex = document.getElementById('rx-' + id);
+          if (ex) ex.style.display = 'block';
+        });
+      });
+      document.querySelectorAll('[data-act="download"]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          const docId = b.dataset.id;
+          NEIIA_STATE.trackDownload(docId);
+          Portal.toast('Downloading ' + (b.dataset.name || 'report.pdf'), 'success');
+        });
+      });
+    }
+  </script>
+
+  <style>
+    @media (max-width: 900px) { .kpi-mini-grid { grid-template-columns: repeat(2,1fr) !important; } }
+  </style>
+</body>
+</html>

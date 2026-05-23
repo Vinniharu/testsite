@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:20px;">
+          <h1 style="margin:0;font-size:24px;">Billing & subscription</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">Manage plan, add-ons, payment method, and invoices.</p>
+        </div>
+
+        <div id="upgrade-banner" style="display:none;" class="card card-p" style="margin-bottom:18px;border-color:var(--amber);background:#FFF7E6;">
+          <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;">
+            <div>
+              <div style="font-weight:700;color:var(--ink);" id="upgrade-msg"></div>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px;">Upgrade to the next tier to keep onboarding LPs without limit warnings.</div>
+            </div>
+            <button class="btn btn-primary btn-sm" id="upgrade-banner-btn">Upgrade tier</button>
+          </div>
+        </div>
+
+        <div class="card card-p" style="margin-bottom:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+            <div>
+              <div style="display:inline-block;padding:2px 10px;border-radius:999px;background:var(--brand-50);color:var(--brand);font-weight:600;font-size:12px;margin-bottom:8px;">Current plan</div>
+              <h2 style="margin:0;font-size:22px;" id="plan-headline">Growth · $140/mo</h2>
+              <div style="font-size:13px;color:var(--muted);margin-top:6px;" id="plan-sub">Next billing: 2026-06-15 · Visa ending 4242 · expires 08/27</div>
+              <div class="pill-toggle" id="cycle-toggle" style="margin-top:12px;flex-wrap:wrap;">
+                <button class="active" data-cycle="monthly">Monthly</button>
+                <button data-cycle="quarterly">Quarterly <span style="font-size:11px;color:var(--brand);margin-left:4px;">5% off</span></button>
+                <button data-cycle="yearly">Yearly <span style="font-size:11px;color:var(--brand);margin-left:4px;">2 months free · 17% off</span></button>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
+              <button class="btn btn-secondary" id="upgrade-tier-btn">Upgrade plan</button>
+              <button class="btn btn-secondary">Manage payment method</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-p" style="margin-bottom:18px;">
+          <h3 style="margin:0 0 14px;font-size:15px;">Usage this period</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;" class="usage-row">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><b>Funds</b><span style="color:var(--muted);">2 active</span></div>
+              <div class="progress"><div class="progress-bar" style="width:67%;"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;">2 of 3 included</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><b>LPs</b><span style="color:var(--muted);" id="lps-label">28 of 60</span></div>
+              <div class="progress"><div class="progress-bar" id="lps-bar" style="width:47%;"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="lps-note">Growth tier ceiling: 60 LPs</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><b>Storage</b><span style="color:var(--muted);" id="storage-label">12 of 50 GB</span></div>
+              <div class="progress"><div class="progress-bar" id="storage-bar" style="width:24%;"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;">Base 50GB + active 20GB upgrades</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-p" style="margin-bottom:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <h3 style="margin:0;font-size:16px;">Settlement bank account</h3>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px;">Where NEIIA disbursements (refunds, credits) land. Capital-call settlements happen off-platform.</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="edit-bank-btn">Edit bank</button>
+          </div>
+          <div id="bank-card" style="display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:10px;">
+            <span style="width:40px;height:40px;border-radius:8px;background:var(--brand-50);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M12 3 2 8h20Z"/></svg>
+            </span>
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--ink);">Stanbic IBTC · NGN</div>
+              <div style="font-size:13px;color:var(--muted);">Sahel Capital Partners — Operations · ****6789 · SWIFT SBICNGLX</div>
+            </div>
+            <span class="badge badge-green">Verified</span>
+          </div>
+        </div>
+
+        <h3 style="margin:24px 0 12px;font-size:16px;">Power-ups</h3>
+        <p style="margin:-6px 0 12px;color:var(--muted);font-size:13px;">Toggle add-ons on or off. Pricing pro-rates on the next invoice.</p>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px;" id="addons" class="row-2"></div>
+
+        <div class="card card-p" style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:var(--brand-50);border-color:var(--brand);">
+          <div>
+            <div style="font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;">Total this month</div>
+            <div style="font-size:24px;font-weight:800;color:var(--ink);" id="total-this-month">$140/mo</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="total-breakdown">Base $140/mo + add-ons $0/mo</div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);">Add or remove add-ons anytime — pro-rated.</div>
+        </div>
+
+        <h3 style="margin:24px 0 12px;font-size:16px;">Invoice history</h3>
+        <div class="card" style="overflow:hidden;">
+          <table class="tbl">
+            <thead><tr><th>Invoice</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+            <tbody id="inv-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'billing' });
+
+    const PRICING = NEIIA_DATA.pricing || {};
+    const GP_TIERS = (PRICING.tiers && PRICING.tiers.gp) || [];
+    let cycle = (NEIIA_DATA.subscription && NEIIA_DATA.subscription.cycle) || 'monthly';
+    let currentTierId = NEIIA_STATE.gpTier || (NEIIA_DATA.subscription && NEIIA_DATA.subscription.tier) || 'growth';
+
+    function tierObj() { return GP_TIERS.find(function (t) { return t.id === currentTierId; }) || GP_TIERS[1]; }
+    function perMonth(base) { return NEIIA_DATA.perMonthForCycle(base, cycle); }
+    function billedPeriodLabel(base) {
+      if (cycle === 'monthly') return '';
+      var total = NEIIA_DATA.computeCyclePrice(base, cycle);
+      var noun = cycle === 'quarterly' ? 'quarterly' : 'yearly';
+      if (cycle === 'yearly') {
+        var saves = (base * 12) - total;
+        if (saves > 0) return '$' + total + ' billed yearly (saves $' + saves + ')';
+      }
+      return '$' + total + ' billed ' + noun;
+    }
+    function lpLimitFor(tier) { return tier.lpMax === Infinity ? Infinity : tier.lpMax; }
+
+    function renderHeadline() {
+      var t = tierObj();
+      var pm = perMonth(t.monthly);
+      var billed = billedPeriodLabel(t.monthly);
+      document.getElementById('plan-headline').textContent = t.name + ' · $' + pm + '/mo';
+      var sub = NEIIA_DATA.subscription;
+      var subText = 'Next billing: ' + sub.nextBilling + ' · ' + sub.paymentMethod.type + ' ending ' + sub.paymentMethod.last4 + ' · expires ' + sub.paymentMethod.expiry;
+      if (billed) subText = billed + ' · ' + subText;
+      document.getElementById('plan-sub').textContent = subText;
+    }
+
+    function renderUsage() {
+      var t = tierObj();
+      var sub = NEIIA_DATA.subscription;
+      var lpsUsed = (sub.usage && sub.usage.lps && sub.usage.lps.used) || 28;
+      var limit = lpLimitFor(t);
+      var pct = limit === Infinity ? 30 : Math.min(100, Math.round((lpsUsed / limit) * 100));
+      var lpsLabel = limit === Infinity ? lpsUsed + ' active (unlimited)' : lpsUsed + ' of ' + limit;
+      document.getElementById('lps-label').textContent = lpsLabel;
+      document.getElementById('lps-bar').style.width = pct + '%';
+      document.getElementById('lps-note').textContent = limit === Infinity ? 'Enterprise tier: unlimited LPs' : t.name + ' tier ceiling: ' + limit + ' LPs';
+
+      // Upgrade banner if >85% of LP limit
+      var banner = document.getElementById('upgrade-banner');
+      if (limit !== Infinity && lpsUsed / limit > 0.85) {
+        banner.style.display = 'block';
+        var nextTier = GP_TIERS[GP_TIERS.findIndex(function (x) { return x.id === t.id; }) + 1];
+        document.getElementById('upgrade-msg').textContent = 'You are at ' + lpsUsed + ' of ' + limit + ' LPs on ' + t.name + '. Upgrade to ' + (nextTier ? nextTier.name : 'the next tier') + ' before you hit the ceiling.';
+      } else {
+        banner.style.display = 'none';
+      }
+
+      // Storage
+      var storageOn = NEIIA_DATA.subscription.addons.some(function (a) { return a.id === 'storage' && a.active; });
+      var storageLimit = 50 + (storageOn ? 20 : 0);
+      var storageUsed = 12;
+      document.getElementById('storage-label').textContent = storageUsed + ' of ' + storageLimit + ' GB';
+      document.getElementById('storage-bar').style.width = Math.round((storageUsed / storageLimit) * 100) + '%';
+    }
+
+    function activeAddonTotal() {
+      return NEIIA_DATA.subscription.addons.filter(function (a) { return a.active; }).reduce(function (s, a) { return s + a.price; }, 0);
+    }
+
+    function renderTotals() {
+      var t = tierObj();
+      var base = perMonth(t.monthly);
+      var adds = activeAddonTotal();
+      var total = base + adds;
+      document.getElementById('total-this-month').textContent = '$' + total + '/mo';
+      document.getElementById('total-breakdown').textContent = 'Base $' + base + '/mo + add-ons $' + adds + '/mo';
+    }
+
+    function renderAddons() {
+      document.getElementById('addons').innerHTML = NEIIA_DATA.subscription.addons.map(function (a) {
+        var active = a.active;
+        var label = (active ? 'Remove · $' : 'Add · $') + a.price + '/mo';
+        var cls = active ? 'btn-secondary' : 'btn-primary';
+        var color = active ? 'color:var(--red);' : '';
+        return '<div class="card card-p" style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">' +
+          '<div style="flex:1;min-width:160px;"><div style="font-weight:700;color:var(--ink);">' + a.name + '</div>' +
+          '<div style="font-size:13px;color:var(--muted);margin-top:2px;">$' + a.price + '/mo</div></div>' +
+          '<button class="btn ' + cls + ' btn-sm addon-cta" data-aid="' + a.id + '" style="' + color + 'min-height:36px;">' + label + '</button>' +
+        '</div>';
+      }).join('');
+      document.querySelectorAll('.addon-cta').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var aid = btn.dataset.aid;
+          var addon = NEIIA_DATA.subscription.addons.find(function (a) { return a.id === aid; });
+          if (!addon) return;
+          addon.active = !addon.active;
+          // Sync activeAddons array
+          var arr = NEIIA_DATA.subscription.addons.filter(function (a) { return a.active; }).map(function (a) { return a.id; });
+          NEIIA_DATA.subscription.activeAddons = arr;
+          Portal.toast(addon.name + (addon.active ? ' added' : ' removed'), 'success');
+          renderAddons();
+          renderUsage();
+          renderTotals();
+        });
+      });
+    }
+
+    document.querySelectorAll('#cycle-toggle [data-cycle]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        cycle = btn.dataset.cycle;
+        NEIIA_DATA.subscription.cycle = cycle;
+        document.querySelectorAll('#cycle-toggle [data-cycle]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        renderHeadline();
+        renderTotals();
+      });
+    });
+
+    function openUpgradeModal() {
+      var body = document.createElement('div');
+      body.innerHTML =
+        '<p style="margin:0 0 14px;">Pick the tier that matches your active LP count. You can switch back later.</p>' +
+        '<div id="up-tiers" style="display:grid;grid-template-columns:1fr;gap:10px;"></div>';
+      var inst = Portal.modal({
+        title: 'Upgrade plan',
+        body: body,
+        primary: null,
+        secondary: { label: 'Close' }
+      });
+      var wrap = body.querySelector('#up-tiers');
+      wrap.innerHTML = GP_TIERS.map(function (t) {
+        var pm = perMonth(t.monthly);
+        var sel = t.id === currentTierId ? 'border:2px solid var(--brand);background:var(--brand-50);' : 'border:1px solid var(--border);';
+        return '<button type="button" class="up-tier" data-tid="' + t.id + '" style="text-align:left;padding:14px;border-radius:10px;background:white;cursor:pointer;' + sel + '">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">' +
+            '<div><div style="font-weight:700;color:var(--ink);">' + t.name + '</div><div style="font-size:12px;color:var(--muted);">' + t.range + ' · ' + t.blurb + '</div></div>' +
+            '<div style="font-weight:800;color:var(--brand);font-size:18px;">$' + pm + '/mo</div>' +
+          '</div>' +
+        '</button>';
+      }).join('');
+      wrap.querySelectorAll('.up-tier').forEach(function (b) {
+        b.addEventListener('click', function () {
+          currentTierId = b.dataset.tid;
+          NEIIA_STATE.gpTier = currentTierId;
+          NEIIA_DATA.subscription.tier = currentTierId;
+          NEIIA_DATA.subscription.tierName = tierObj().name;
+          NEIIA_DATA.subscription.basePrice = tierObj().monthly;
+          Portal.toast('Plan switched to ' + tierObj().name, 'success');
+          renderHeadline();
+          renderUsage();
+          renderTotals();
+          inst.close();
+        });
+      });
+    }
+    document.getElementById('upgrade-tier-btn').addEventListener('click', openUpgradeModal);
+    document.getElementById('upgrade-banner-btn').addEventListener('click', openUpgradeModal);
+
+    const ebb = document.getElementById('edit-bank-btn');
+    if (ebb) ebb.addEventListener('click', function () {
+      const body = document.createElement('div');
+      body.innerHTML =
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+          '<div><label style="font-size:12px;font-weight:600;">Bank name</label><input value="Stanbic IBTC" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div><label style="font-size:12px;font-weight:600;">Currency</label><select style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"><option>NGN</option><option>USD</option><option>KES</option><option>GHS</option></select></div>' +
+          '<div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:600;">Account name</label><input value="Sahel Capital Partners — Operations" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div><label style="font-size:12px;font-weight:600;">Account number</label><input value="0123456789" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div><label style="font-size:12px;font-weight:600;">SWIFT</label><input value="SBICNGLX" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+        '</div>';
+      Portal.modal({
+        title: 'Edit settlement bank account',
+        body: body,
+        primary: { label: 'Save', onClick: function () { Portal.toast('Bank account saved.', 'success'); } },
+        secondary: { label: 'Cancel' }
+      });
+    });
+
+    renderHeadline();
+    renderAddons();
+    renderUsage();
+    renderTotals();
+
+    document.getElementById('inv-body').innerHTML = NEIIA_DATA.subscription.invoices.map(function (inv) {
+      return '<tr><td><b>' + inv.id + '</b></td><td>' + inv.date + '</td><td>$' + inv.amount.toLocaleString() + '</td>' +
+        '<td><span class="badge badge-green">' + inv.status + '</span></td>' +
+        '<td><button class="btn btn-ghost btn-sm">' + Portal.icon('download', 14) + ' PDF</button></td></tr>';
+    }).join('');
+  </script>
+  <style>
+    @media (max-width: 800px) {
+      .usage-row, .row-2 { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</body>
+</html>

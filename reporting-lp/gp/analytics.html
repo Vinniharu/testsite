@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <style>
+    .anx-page-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
+    .anx-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+    .anx-kpi { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+    .anx-kpi-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+    .anx-kpi-value { font-size: 26px; font-weight: 700; color: var(--ink); line-height: 1; }
+    .anx-kpi-delta { font-size: 12px; font-weight: 600; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+    .anx-kpi-delta.up { color: var(--brand); }
+    .anx-kpi-delta.down { color: var(--red); }
+    .anx-row { display: grid; gap: 14px; margin-bottom: 14px; }
+    .anx-row-21 { grid-template-columns: 2fr 1fr; }
+    .anx-row-11 { grid-template-columns: 1fr 1fr; }
+    .anx-row-full { grid-template-columns: 1fr; }
+    .anx-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+    .anx-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; gap: 12px; }
+    .anx-card-title { margin: 0; font-size: 15px; font-weight: 700; color: var(--ink); }
+    .anx-card-sub { margin: 2px 0 16px; font-size: 12px; color: var(--muted); }
+    .anx-card-pill { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--brand-50); color: var(--brand); white-space: nowrap; }
+    .anx-segctl { display: inline-flex; background: #F1F5F9; padding: 3px; border-radius: 8px; gap: 2px; }
+    .anx-segctl button { padding: 5px 10px; border: 0; background: transparent; font-size: 12px; font-weight: 600; color: #475569; border-radius: 6px; cursor: pointer; }
+    .anx-segctl button.active { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .anx-heat-wrap { display: grid; grid-template-columns: 130px 1fr; gap: 0; align-items: stretch; }
+    .anx-heat-names { display: flex; flex-direction: column; }
+    .anx-heat-name { height: 22px; line-height: 22px; font-size: 11px; color: var(--ink); padding-right: 10px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid #fff; }
+    .anx-heat-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .anx-heat-col-head { font-size: 10px; font-weight: 600; color: var(--muted); text-align: center; padding-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .anx-heat-cells { display: contents; }
+    .anx-heat-cell { height: 22px; border-radius: 3px; cursor: pointer; transition: transform .12s, outline .12s; outline: 0 solid transparent; margin-bottom: 1px; }
+    .anx-heat-cell:hover { transform: scale(1.08); outline: 2px solid var(--brand); z-index: 2; position: relative; }
+    .anx-heat-legend { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted); margin-top: 14px; padding-top: 14px; border-top: 1px solid #F1F5F9; }
+    .anx-heat-scale { display: inline-flex; height: 10px; width: 160px; border-radius: 999px; background: linear-gradient(90deg, rgba(14,122,60,0.08) 0%, rgba(14,122,60,0.35) 35%, rgba(14,122,60,0.65) 70%, rgba(14,122,60,0.95) 100%); }
+    .anx-heat-tip { position: fixed; background: #0F172A; color: #fff; padding: 6px 9px; border-radius: 6px; font-size: 12px; font-weight: 500; pointer-events: none; opacity: 0; transition: opacity .1s; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .anx-heat-tip.show { opacity: 1; }
+    .anx-toplps { display: flex; flex-direction: column; gap: 8px; }
+    .anx-toplp { display: flex; align-items: center; gap: 10px; padding: 8px 4px; }
+    .anx-toplp-avatar { width: 32px; height: 32px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .anx-toplp-meta { flex: 1; min-width: 0; }
+    .anx-toplp-name { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .anx-toplp-type { font-size: 11px; color: var(--muted); }
+    .anx-toplp-bar-wrap { width: 100px; height: 6px; background: #F1F5F9; border-radius: 999px; overflow: hidden; }
+    .anx-toplp-bar { height: 100%; background: var(--brand); border-radius: 999px; }
+    .anx-toplp-score { font-size: 12px; font-weight: 700; color: var(--ink); width: 28px; text-align: right; }
+    @media (max-width: 900px) {
+      .anx-kpis, .anx-row-21, .anx-row-11 { grid-template-columns: 1fr !important; }
+      .anx-heat-wrap { grid-template-columns: 96px 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+
+        <div class="anx-page-head">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Analytics</h1>
+            <p style="margin:4px 0 0;color:var(--muted);font-size:14px;">Fund performance, LP engagement, capital deployment.</p>
+          </div>
+          <button class="btn btn-primary" id="ask-apex-cta"></button>
+        </div>
+
+        <!-- KPI strip -->
+        <div class="anx-kpis">
+          <div class="anx-kpi">
+            <div class="anx-kpi-label">Net IRR · Growth Fund I</div>
+            <div class="anx-kpi-value">19.4%</div>
+            <div class="anx-kpi-delta up">▲ 0.6pp vs Q4</div>
+          </div>
+          <div class="anx-kpi">
+            <div class="anx-kpi-label">MOIC</div>
+            <div class="anx-kpi-value">1.32×</div>
+            <div class="anx-kpi-delta up">▲ 0.05× vs Q4</div>
+          </div>
+          <div class="anx-kpi">
+            <div class="anx-kpi-label">Total deployed</div>
+            <div class="anx-kpi-value">$28.5M</div>
+            <div class="anx-kpi-delta up">▲ $4.5M YTD</div>
+          </div>
+          <div class="anx-kpi">
+            <div class="anx-kpi-label">LP engagement</div>
+            <div class="anx-kpi-value">74<span style="font-size:14px;color:var(--muted);font-weight:500;">/100</span></div>
+            <div class="anx-kpi-delta up">▲ 6 pts QoQ</div>
+          </div>
+        </div>
+
+        <!-- Row 1: Performance + Deployment -->
+        <div class="anx-row anx-row-21">
+          <div class="anx-card">
+            <div class="anx-card-head">
+              <div>
+                <h3 class="anx-card-title">Fund performance</h3>
+                <p class="anx-card-sub">IRR · MOIC · TVPI across 8 quarters · NEIIA Growth Fund I</p>
+              </div>
+              <div class="anx-segctl" data-perf-toggle>
+                <button data-fund="f-1" class="active">Growth Fund I</button>
+                <button data-fund="f-2">Tech Ventures</button>
+              </div>
+            </div>
+            <div id="chart-perf" style="height:300px;"></div>
+          </div>
+          <div class="anx-card">
+            <div class="anx-card-head">
+              <div>
+                <h3 class="anx-card-title">Capital deployment</h3>
+                <p class="anx-card-sub">New + follow-ons per quarter ($000s)</p>
+              </div>
+              <span class="anx-card-pill">+$4.5M YTD</span>
+            </div>
+            <div id="chart-deploy" style="height:300px;"></div>
+          </div>
+        </div>
+
+        <!-- Row 2: Engagement heatmap (full width) -->
+        <div class="anx-row anx-row-full">
+          <div class="anx-card">
+            <div class="anx-card-head">
+              <div>
+                <h3 class="anx-card-title">LP engagement heatmap</h3>
+                <p class="anx-card-sub">Activity score per LP × week — darker = more reads, downloads, ack'd calls, messages</p>
+              </div>
+              <div class="anx-segctl" data-heat-toggle>
+                <button data-range="4w" class="active">Last 4 weeks</button>
+                <button data-range="13w">Last quarter</button>
+              </div>
+            </div>
+            <div id="heat-root"></div>
+            <div class="anx-heat-legend">
+              <span>Low</span>
+              <span class="anx-heat-scale"></span>
+              <span>High</span>
+              <span style="margin-left:auto;">28 LPs · click any cell to drill in</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Top LPs + Document downloads -->
+        <div class="anx-row anx-row-11">
+          <div class="anx-card">
+            <div class="anx-card-head">
+              <div>
+                <h3 class="anx-card-title">Most engaged LPs</h3>
+                <p class="anx-card-sub">By 4-week activity composite</p>
+              </div>
+            </div>
+            <div id="top-lps" class="anx-toplps"></div>
+          </div>
+          <div class="anx-card">
+            <div class="anx-card-head">
+              <div>
+                <h3 class="anx-card-title">Document downloads</h3>
+                <p class="anx-card-sub">Top 10 documents · last 90 days</p>
+              </div>
+            </div>
+            <div id="chart-docs" style="height:300px;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="anx-heat-tip" id="heatTip"></div>
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'analytics' });
+
+    var apexBtn = document.getElementById('ask-apex-cta');
+    apexBtn.innerHTML = Portal.icon('zap', 16) + ' Ask Apex about these metrics';
+    apexBtn.addEventListener('click', function () { Portal.openApex && Portal.openApex({ page: 'analytics' }); });
+
+    // ===== Performance chart =====
+    var perfFontStack = { fontFamily: 'Inter, system-ui, sans-serif' };
+    function perfData(fundId) {
+      var rows = NEIIA_DATA.reports.filter(function (r) { return r.fundId === fundId; });
+      var cats = rows.map(function (r) { return r.quarter; });
+      var irr  = rows.map(function (r) { return r.irr == null ? 0 : r.irr; });
+      var moic = rows.map(function (r, i) { return +(1 + (r.irr || 0) / 100 * (i * 0.18)).toFixed(2); });
+      var tvpi = rows.map(function (r, i) { return +(moic[i] + 0.05 + i * 0.01).toFixed(2); });
+      return { cats: cats, irr: irr, moic: moic, tvpi: tvpi };
+    }
+    var perfChart = new ApexCharts(document.querySelector('#chart-perf'), {
+      chart: Object.assign({ type: 'line', height: 300, toolbar: { show: false }, zoom: { enabled: false } }, perfFontStack),
+      colors: ['#0E7A3C', '#F59E0B', '#2563EB'],
+      stroke: { width: [3, 2, 2], curve: 'smooth', dashArray: [0, 0, 4] },
+      markers: { size: 4, strokeWidth: 0, hover: { sizeOffset: 2 } },
+      series: [
+        { name: 'IRR (%)',  data: perfData('f-1').irr },
+        { name: 'MOIC (×)', data: perfData('f-1').moic },
+        { name: 'TVPI (×)', data: perfData('f-1').tvpi }
+      ],
+      xaxis: { categories: perfData('f-1').cats, labels: { style: { fontSize: '11px', colors: '#64748B' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: [
+        { seriesName: 'IRR (%)', title: { text: 'IRR (%)', style: { fontSize: '11px', color: '#64748B', fontWeight: 600 } }, labels: { style: { fontSize: '11px', colors: '#64748B' }, formatter: function (v) { return v.toFixed(0) + '%'; } } },
+        { seriesName: 'MOIC (×)', opposite: true, title: { text: 'MOIC / TVPI (×)', style: { fontSize: '11px', color: '#64748B', fontWeight: 600 } }, labels: { style: { fontSize: '11px', colors: '#64748B' }, formatter: function (v) { return v.toFixed(2) + '×'; } } },
+        { seriesName: 'TVPI (×)', show: false }
+      ],
+      legend: { position: 'top', horizontalAlign: 'left', fontSize: '12px', markers: { width: 10, height: 10, radius: 999 }, itemMargin: { horizontal: 12 } },
+      tooltip: { shared: true, intersect: false },
+      grid: { borderColor: '#F1F5F9', strokeDashArray: 4, padding: { left: 0, right: 8 } }
+    });
+    perfChart.render();
+
+    document.querySelectorAll('[data-perf-toggle] button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('[data-perf-toggle] button').forEach(function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        var d = perfData(b.dataset.fund);
+        perfChart.updateOptions({ xaxis: { categories: d.cats } }, false, true);
+        perfChart.updateSeries([{ name: 'IRR (%)', data: d.irr }, { name: 'MOIC (×)', data: d.moic }, { name: 'TVPI (×)', data: d.tvpi }]);
+      });
+    });
+
+    // ===== Capital deployment stacked column =====
+    var deployCats = perfData('f-1').cats;
+    new ApexCharts(document.querySelector('#chart-deploy'), {
+      chart: Object.assign({ type: 'bar', stacked: true, height: 300, toolbar: { show: false } }, perfFontStack),
+      colors: ['#0E7A3C', '#A7D7B7'],
+      plotOptions: { bar: { borderRadius: 5, columnWidth: '52%' } },
+      dataLabels: { enabled: false },
+      series: [
+        { name: 'New investments', data: [800, 1500, 2200, 3000, 2500, 1800, 2400, 2100] },
+        { name: 'Follow-ons',      data: [200,  800, 1500, 2000, 1200, 2700, 1600,  400] }
+      ],
+      xaxis: { categories: deployCats, labels: { style: { fontSize: '11px', colors: '#64748B' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: { labels: { formatter: function (v) { return '$' + (v / 1000).toFixed(0) + 'M'; }, style: { fontSize: '11px', colors: '#64748B' } } },
+      legend: { position: 'top', horizontalAlign: 'left', fontSize: '12px', markers: { width: 10, height: 10, radius: 999 }, itemMargin: { horizontal: 12 } },
+      grid: { borderColor: '#F1F5F9', strokeDashArray: 4, padding: { left: 0, right: 8 } },
+      tooltip: { y: { formatter: function (v) { return '$' + v.toLocaleString() + 'K'; } } }
+    }).render();
+
+    // ===== LP engagement heatmap =====
+    function buildHeat(weeks) {
+      var lps = NEIIA_DATA.personas.lp;
+      var root = document.getElementById('heat-root');
+      // Build header row (week labels)
+      var weekLabels = [];
+      for (var w = 0; w < weeks; w++) { weekLabels.push('W' + (w + 1)); }
+
+      var html = '<div class="anx-heat-wrap">';
+      // Left column: names
+      html += '<div>';
+      html += '<div class="anx-heat-col-head" style="text-align:right;padding-right:10px;">LP</div>';
+      html += '<div class="anx-heat-names">';
+      lps.forEach(function (lp) {
+        html += '<div class="anx-heat-name" title="' + lp.name + '">' + lp.name + '</div>';
+      });
+      html += '</div></div>';
+
+      // Right: header + cells
+      html += '<div>';
+      html += '<div class="anx-heat-cols" style="grid-template-columns:repeat(' + weeks + ', 1fr);">';
+      weekLabels.forEach(function (lbl) { html += '<div class="anx-heat-col-head">' + lbl + '</div>'; });
+      html += '</div>';
+
+      html += '<div style="display:grid;grid-template-columns:repeat(' + weeks + ', 1fr);gap:3px;">';
+      lps.forEach(function (lp, i) {
+        for (var w = 0; w < weeks; w++) {
+          var base = lp.engagement / 100;
+          var jitter = ((i * 7 + w * 13) % 30) / 100 - 0.15;
+          var score = Math.max(0.05, Math.min(1, base + jitter));
+          var pct = Math.round(score * 100);
+          // Use a perceptual ramp: low = pale, high = bold green
+          var alpha = 0.08 + score * 0.92;
+          html += '<div class="anx-heat-cell"' +
+                  ' data-lp="' + lp.id + '" data-week="' + (w + 1) + '" data-score="' + pct + '"' +
+                  ' style="background:rgba(14,122,60,' + alpha.toFixed(2) + ');"></div>';
+        }
+      });
+      html += '</div>';
+
+      html += '</div>';
+      html += '</div>';
+
+      root.innerHTML = html;
+      wireHeatTips();
+    }
+
+    var heatTip = document.getElementById('heatTip');
+    function wireHeatTips() {
+      document.querySelectorAll('.anx-heat-cell').forEach(function (cell) {
+        cell.addEventListener('mouseenter', function (e) {
+          var lpId = cell.dataset.lp;
+          var lp = NEIIA_DATA.personas.lp.find(function (x) { return x.id === lpId; });
+          heatTip.innerHTML = '<strong style="color:#fff;">' + lp.name + '</strong><br>' +
+                              '<span style="color:#94A3B8;font-size:11px;">' + lp.type + ' · Week ' + cell.dataset.week + '</span><br>' +
+                              '<span style="color:#A7D7B7;font-weight:600;">' + cell.dataset.score + '/100 activity score</span>';
+          heatTip.classList.add('show');
+        });
+        cell.addEventListener('mousemove', function (e) {
+          heatTip.style.left = (e.clientX + 12) + 'px';
+          heatTip.style.top = (e.clientY + 12) + 'px';
+        });
+        cell.addEventListener('mouseleave', function () { heatTip.classList.remove('show'); });
+        cell.addEventListener('click', function () {
+          window.location.href = 'lps.html#' + cell.dataset.lp;
+        });
+      });
+    }
+
+    buildHeat(4);
+
+    document.querySelectorAll('[data-heat-toggle] button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('[data-heat-toggle] button').forEach(function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        buildHeat(b.dataset.range === '13w' ? 13 : 4);
+      });
+    });
+
+    // ===== Top LPs panel =====
+    (function () {
+      var sorted = NEIIA_DATA.personas.lp.slice().sort(function (a, b) { return b.engagement - a.engagement; }).slice(0, 8);
+      var html = sorted.map(function (lp) {
+        return '<div class="anx-toplp">' +
+          '<div class="anx-toplp-avatar">' + lp.initials + '</div>' +
+          '<div class="anx-toplp-meta">' +
+            '<div class="anx-toplp-name">' + lp.name + '</div>' +
+            '<div class="anx-toplp-type">' + lp.type + '</div>' +
+          '</div>' +
+          '<div class="anx-toplp-bar-wrap"><div class="anx-toplp-bar" style="width:' + lp.engagement + '%;"></div></div>' +
+          '<div class="anx-toplp-score">' + lp.engagement + '</div>' +
+        '</div>';
+      }).join('');
+      document.getElementById('top-lps').innerHTML = html;
+    })();
+
+    // ===== Document downloads horizontal bar =====
+    (function () {
+      var top10 = NEIIA_DATA.documents.slice(0, 10);
+      var cats = top10.map(function (d) { return d.name.length > 32 ? d.name.slice(0, 30) + '…' : d.name; });
+      var data = top10.map(function (d, i) { return Math.round(d.sharedWith * (0.55 + (i % 5) * 0.08)); });
+      new ApexCharts(document.querySelector('#chart-docs'), {
+        chart: Object.assign({ type: 'bar', height: 300, toolbar: { show: false } }, perfFontStack),
+        colors: ['#0E7A3C'],
+        plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '72%', distributed: false } },
+        dataLabels: { enabled: true, style: { fontSize: '10px', colors: ['#fff'] }, formatter: function (v) { return v; }, offsetX: -2 },
+        series: [{ name: 'Downloads', data: data }],
+        xaxis: { categories: cats, labels: { style: { fontSize: '10px', colors: '#64748B' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+        yaxis: { labels: { style: { fontSize: '10px', colors: '#0F172A' } } },
+        grid: { borderColor: '#F1F5F9', strokeDashArray: 4, padding: { left: 0, right: 8 } }
+      }).render();
+    })();
+  </script>
+</body>
+</html>

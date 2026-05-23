@@ -41,17 +41,17 @@
 
       <div id="aiPanel" style="display:none"></div>
 
-      <!-- v3 subscriptions (CSAFE / Bonds / Equity Sub / etc.) — always shows all, filterable by state -->
+      <!-- Deal agreements (Change 5) — every Intent-to-Invest and its countersign state -->
       <section class="panel" id="invPanel" style="margin-bottom:14px">
         <div class="panel-header">
-          <div class="panel-title">Subscriptions <span style="font-weight:400;color:var(--text-muted);font-size:11px;margin-left:8px">Every deal you've subscribed to</span></div>
+          <div class="panel-title">Your deal agreements <span style="font-weight:400;color:var(--text-muted);font-size:11px;margin-left:8px">Intents submitted · countersign state · executed agreements</span></div>
           <div class="panel-sub"><span id="invCount">0</span> visible · <span id="invTotal">0</span> total</div>
         </div>
-        <!-- State filter chips — All / Pending / Executed / Declined / Withdrawn -->
+        <!-- State filter chips — Change 5 terminology -->
         <div class="inv-state-row" id="invStateChips" style="padding:10px 16px 0">
           <button type="button" class="inv-state-chip is-active" data-inv-state="all">All <span class="inv-state-count" id="ic-all">0</span></button>
-          <button type="button" class="inv-state-chip" data-inv-state="pending">Pending <span class="inv-state-count" id="ic-pending">0</span></button>
-          <button type="button" class="inv-state-chip" data-inv-state="accepted">Executed <span class="inv-state-count" id="ic-accepted">0</span></button>
+          <button type="button" class="inv-state-chip" data-inv-state="pending">Intent submitted <span class="inv-state-count" id="ic-pending">0</span></button>
+          <button type="button" class="inv-state-chip" data-inv-state="accepted">Issuer countersigned <span class="inv-state-count" id="ic-accepted">0</span></button>
           <button type="button" class="inv-state-chip" data-inv-state="declined">Declined <span class="inv-state-count" id="ic-declined">0</span></button>
           <button type="button" class="inv-state-chip" data-inv-state="withdrawn">Withdrawn <span class="inv-state-count" id="ic-withdrawn">0</span></button>
         </div>
@@ -63,9 +63,9 @@
                 <th>Lane</th>
                 <th>Wrapper</th>
                 <th>Sector</th>
-                <th class="text-right">Ticket</th>
-                <th class="text-right">Valuation cap</th>
-                <th>Execution</th>
+                <th class="text-right">Allocation</th>
+                <th>Audit</th>
+                <th>Agreement state</th>
                 <th>Signed</th>
                 <th></th>
               </tr>
@@ -74,8 +74,8 @@
           </table>
         </div>
         <div id="invEmpty" class="t-empty" style="display:none">
-          <div class="empty-title">No subscriptions in this bucket</div>
-          <div style="font-size:13px;color:var(--text-secondary);margin:8px 0 4px">Subscribe to a Lane A / Lane B deal from the deal room.</div>
+          <div class="empty-title">No agreements in this bucket</div>
+          <div style="font-size:13px;color:var(--text-secondary);margin:8px 0 4px">Submit Intent to Invest on a live deal — settlement is arranged off-platform once the issuer countersigns.</div>
           <a class="t-btn t-btn-primary" href="deals.html" style="margin-top:8px">Browse deals →</a>
         </div>
       </section>
@@ -191,8 +191,8 @@
         const k = aggregate(positionsAll);
         const ticketSumNGN = investmentsAll.reduce(function (a, i) { return a + (i.ticketNGN || 0); }, 0);
         document.getElementById("kpiStrip").innerHTML = [
-          { label: "Subscriptions",     value: investmentsAll.length },
-          { label: "Ticket total",      value: fmtNgnInline(ticketSumNGN) },
+          { label: "Agreements",        value: investmentsAll.length },
+          { label: "Allocation total",  value: fmtNgnInline(ticketSumNGN) },
           { label: "Fund positions",    value: positionsAll.length },
           { label: "Total committed",   value: DF.fmtMoney(k.commitment) },
           { label: "Distributed",       value: DF.fmtMoney(k.distributed) },
@@ -214,14 +214,14 @@
           invBody.innerHTML = invList.map(function (i) {
             const laneCls = i.lane === 'lane-a' ? 'lane-a' : i.lane === 'lane-b' ? 'lane-b' : 'lane-fund';
             const signed = new Date(i.signedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-            // v3 Part 9 — surface countersign state per row + offer Withdraw within 14-day cooling-off
+            // Change 5 — countersign state mapped to agreement-room terminology.
             const cs = i.countersignState || 'pending';
             let csChip;
-            if (cs === 'accepted')      csChip = '<span class="cs-pill cs-accepted">Executed</span>';
+            if (cs === 'accepted')      csChip = '<span class="cs-pill cs-accepted">Issuer countersigned</span>';
             else if (cs === 'declined') csChip = '<span class="cs-pill cs-declined" title="' + DF.esc(i.declineReason || '') + '">Declined</span>';
-            else if (cs === 'withdrawn')csChip = '<span class="cs-pill cs-withdrawn">Withdrawn (refund)</span>';
-            else                        csChip = '<span class="cs-pill cs-pending">Pending countersign</span>';
-            // Cooling-off countdown — 14 days from countersignedAt
+            else if (cs === 'withdrawn')csChip = '<span class="cs-pill cs-withdrawn">Withdrawn</span>';
+            else                        csChip = '<span class="cs-pill cs-pending">Intent submitted</span>';
+            // 14-day cooling-off withdraw window post-countersign (unchanged mechanic).
             let actionBtn = '';
             if (cs === 'accepted' && i.countersignedAt) {
               const daysIn = Math.floor((Date.now() - new Date(i.countersignedAt).getTime()) / 86400000);
@@ -234,6 +234,16 @@
             } else {
               actionBtn = '<button class="t-btn" type="button" data-inv-remove="' + i.id + '" style="height:24px;padding:0 8px;font-size:11px">Remove</button>';
             }
+            // Change 3 — Audit Confidence on each agreement card (lookup deal by id).
+            const dealLookup = (window.DataBank && window.DataBank.dealsApi) ? window.DataBank.dealsApi().get(i.dealId) : null;
+            const seededDeal = window.DataBankData && window.DataBankData.deals
+              ? window.DataBankData.deals.find(function (x) { return x.id === i.dealId; }) : null;
+            const auditScore = (dealLookup && dealLookup.auditConfidence != null) ? dealLookup.auditConfidence
+                              : (seededDeal && seededDeal.auditConfidence != null) ? seededDeal.auditConfidence
+                              : 82;
+            const auditChip = (window.Terminal && window.Terminal.auditConfidenceChip)
+              ? window.Terminal.auditConfidenceChip(auditScore)
+              : ('<span style="font-size:11px">' + auditScore + '/100</span>');
             return (
               '<tr>' +
                 '<td>' +
@@ -244,7 +254,7 @@
                 '<td style="color:var(--text-secondary);font-size:12px">' + DF.esc(i.wrapper || '') + '</td>' +
                 '<td style="color:var(--text-secondary)">' + DF.esc(i.sector || '') + '</td>' +
                 '<td class="num">' + fmtNgnInline(i.ticketNGN) + '</td>' +
-                '<td class="num">' + (i.valuationCapNGN ? fmtNgnInline(i.valuationCapNGN) : '—') + '</td>' +
+                '<td>' + auditChip + '</td>' +
                 '<td>' + csChip + '</td>' +
                 '<td style="color:var(--text-secondary);font-size:11px">' + signed + '</td>' +
                 '<td style="text-align:right">' + actionBtn + '</td>' +
@@ -460,8 +470,8 @@
           if (!inv) return;
           const daysIn = inv.countersignedAt ? Math.floor((Date.now() - new Date(inv.countersignedAt).getTime()) / 86400000) : 0;
           const daysLeft = 14 - daysIn;
-          T.modal("Withdraw subscription · " + (inv.ticker || ""),
-            '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin:0 0 10px">v3 Part 9 — you have <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + '</strong> left in the 14-day cooling-off period. Withdrawing now triggers a full refund of <strong>' + fmtNgnInline(inv.ticketNGN) + '</strong> to your BVN-verified bank account within 5 business days. After cooling-off the subscription is binding (subject to escrow threshold).</p>' +
+          T.modal("Withdraw agreement · " + (inv.ticker || ""),
+            '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin:0 0 10px">Cooling-off withdraw — you have <strong>' + daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + '</strong> left in the 14-day cooling-off period. Withdrawing voids your <strong>' + fmtNgnInline(inv.ticketNGN) + '</strong> intent. Any off-platform settlement already arranged with the issuer should be reversed bilaterally. After cooling-off the agreement is binding.</p>' +
             '<label class="rep-label">Reason (optional)</label>' +
             '<textarea class="t-input" id="wd-reason" rows="2" placeholder="Reason for withdrawal — visible to issuer for audit."></textarea>',
             { footer: '<button class="t-btn" data-modal-close>Stay subscribed</button><button class="t-btn t-btn-primary" id="confirmWithdraw" style="background:var(--down);border-color:var(--down)">Withdraw &amp; refund</button>' });
@@ -474,7 +484,7 @@
             });
             T.alerts().add({
               symbol: inv.ticker,
-              label: "Subscription withdrawn within cooling-off · " + fmtNgnInline(inv.ticketNGN) + " refund initiated",
+              label: "Agreement withdrawn within cooling-off · " + fmtNgnInline(inv.ticketNGN),
               value: "", unit: "",
               templateId: "subscription", severity: "critical"
             });
@@ -487,14 +497,14 @@
         const b = e.target.closest("[data-inv-remove]");
         if (!b) return;
         const id = b.getAttribute("data-inv-remove");
-        T.modal("Remove subscription?",
-          '<div style="font-size:13px;color:var(--text-secondary)">This removes the subscription from your portfolio view. The underlying agreement in your Data Vault is not affected.</div>',
+        T.modal("Remove agreement?",
+          '<div style="font-size:13px;color:var(--text-secondary)">This removes the agreement from your portfolio view. The underlying document in your Data Vault is not affected.</div>',
           { footer: '<button class="t-btn" data-modal-close>Cancel</button><button class="t-btn t-btn-primary" id="confirmInvRemove">Remove</button>' }
         );
         document.getElementById("confirmInvRemove").addEventListener("click", function () {
           investments.remove(id);
           T.closeModal();
-          T.toast("Subscription removed");
+          T.toast("Agreement removed");
           render();
         });
       });

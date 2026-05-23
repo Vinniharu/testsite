@@ -292,6 +292,11 @@
 
         const laneCls = deal.lane === "lane-a" ? "lane-a" : "lane-b";
 
+        // Change 3 — Audit Confidence chip rendered in hero next to lane + wrapper.
+        if (deal.auditConfidence == null) {
+          deal.auditConfidence = 78 + Math.floor(Math.random() * 15);
+        }
+        const auditChipHtml = (T && T.auditConfidenceChip) ? T.auditConfidenceChip(deal.auditConfidence) : '';
         root.innerHTML = (
           '<div class="lc-hero">' +
             '<div class="lc-hero-eyebrow"><a href="deals.html" style="color:inherit">Deal room</a> · ' + DF.esc(deal.laneLabel || "") + '</div>' +
@@ -300,6 +305,7 @@
               '<span class="lane-chip ' + laneCls + '">' + DF.esc(deal.laneLabel) + '</span>' +
               '<span class="wrap-chip">' + DF.esc(deal.wrapper || "") + '</span>' +
               '<span class="badge badge-' + meta.severity + '">' + DF.esc(deal.status) + '</span>' +
+              auditChipHtml +
               (deal.sector ? '<span class="lc-hero-meta-text">' + DF.esc(deal.sector) + '</span>' : '') +
               (deal.stage  ? '<span class="lc-hero-meta-text">' + DF.esc(deal.stage)  + '</span>' : '') +
               (isOwner ? '<span class="your-raise-tag" style="margin-left:auto">Your raise</span>' : '') +
@@ -439,17 +445,13 @@
           b.addEventListener("click", function () { openAnswerQuestionModal(b.getAttribute("data-qa-answer")); });
         });
 
-        // Wire investor "+ Invest" — same gating as deals.html
+        // Change 5 — "+ Invest" routes directly to the Intent-to-Invest modal (no payment paths).
         const inv = root.querySelector("#v3InvestBtn");
         if (inv) inv.addEventListener("click", function () {
           const acctApi = DB.accountApi ? DB.accountApi() : null;
           const acc = acctApi ? acctApi.get() : null;
           if (!acc || !acc.verified) { T.openPaywallModal && T.openPaywallModal(); return; }
-          if (deal.lane === "lane-b" && (acc.kycTier || 1) < 3) {
-            T.openTierUpgradeModal && T.openTierUpgradeModal({ target: 3, reason: "Lane B private placement subscription" });
-            return;
-          }
-          window.location.href = "deals.html?invest=" + encodeURIComponent(deal.id);
+          if (T.openIntentModal) { T.openIntentModal(deal); return; }
         });
       }
 
@@ -494,6 +496,16 @@
             actions = "";
           }
           const stateBorder = active === "accepted" ? "cs-row-accepted" : active === "declined" ? "cs-row-declined" : "cs-row-pending";
+          // Change 6 — Company Profile expander on every queue row. Issuers must be able to
+          // review the investor's full corporate identity BEFORE accepting/declining.
+          const cp = inv.investorCompanyProfile || null;
+          const cpBlock = (T && T.renderCompanyProfileBlock)
+            ? '<details class="cs-cp-expander"><summary>Investor Company Profile · auto-attached</summary><div class="cs-cp-body">' + T.renderCompanyProfileBlock(cp, { title: "Investor Company Profile" }) + '</div></details>'
+            : '';
+          // Also surface the investor's stated thesis if present.
+          const thesisBlock = inv.investorThesis
+            ? '<div style="margin-top:6px;font-size:12px;color:var(--text-secondary);line-height:1.5"><strong style="color:var(--text-primary)">Investment thesis:</strong> ' + DF.esc(inv.investorThesis) + '</div>'
+            : '';
           return (
             '<div class="cs-row ' + stateBorder + '">' +
               '<div class="cs-row-main">' +
@@ -502,6 +514,8 @@
                   '<span class="cs-row-amt">' + fmtNgn(inv.ticketNGN) + '</span>' +
                 '</div>' +
                 '<div class="cs-row-meta">' + meta + '</div>' +
+                thesisBlock +
+                cpBlock +
               '</div>' +
               actions +
             '</div>'
@@ -519,7 +533,7 @@
         return (
           '<section class="panel">' +
             '<div class="panel-header">' +
-              '<div class="panel-title">Subscriptions on this deal</div>' +
+              '<div class="panel-title">Investor intents on this deal</div>' +
               '<div class="panel-sub">' + all.length + ' total · v3 Part 9 · dual-signatory required to execute</div>' +
             '</div>' +
             '<div class="cs-tabs">' +
@@ -539,12 +553,12 @@
         // Step 1 — Signatory 1 PIN
         T.pinPad({
           title: "Signatory 1 countersign · " + (deal.ticker || deal.company),
-          subtitle: "First authorized signatory enters their 6-digit PIN to countersign this Bilateral Subscription Agreement.",
+          subtitle: "First authorized signatory enters their 6-digit Vault PIN to countersign this Subscription Agreement.",
           onConfirm: function () {
             // Step 2 — Signatory 2 PIN (corporate dual-signatory rule, v3 Part 3)
             T.pinPad({
               title: "Signatory 2 countersign · " + (deal.ticker || deal.company),
-              subtitle: "Second authorized signatory enters their 6-digit PIN. Both signatures are required per v3 Part 3.",
+              subtitle: "Second authorized signatory enters their 6-digit Vault PIN. Both signatures are required per the dual-signatory rule.",
               onConfirm: function () {
                 const now = new Date().toISOString();
                 investmentsApi.update(invId, {
@@ -556,25 +570,27 @@
                 if (DB.vaultApi) {
                   DB.vaultApi().add({
                     kind: "agreement",
-                    title: "Bilateral Subscription Agreement · " + deal.ticker + " · executed",
-                    subtitle: (inv.investorName || "Demo Investor") + " · " + fmtNgn(inv.ticketNGN) + " · countersigned " + new Date(now).toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }),
+                    title: "Subscription Agreement · " + deal.ticker + " · executed",
+                    subtitle: (inv.investorName || "Investor") + " · " + fmtNgn(inv.ticketNGN) + " · countersigned " + new Date(now).toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }),
                     dealId: deal.id,
                     investmentId: invId,
-                    payload: Object.assign({}, inv.payment ? { paymentRef: inv.payment.refCode, escrowAccount: inv.payment.escrowAcct } : {}, {
+                    payload: {
                       ticker: deal.ticker, wrapper: deal.wrapper, ticketNGN: inv.ticketNGN,
                       lane: deal.laneLabel, governing: "Federal Republic of Nigeria · FCT Abuja",
+                      settlement: "Off-platform — arranged directly between Issuer and Investor",
                       countersignState: "accepted", countersignedAt: now,
-                      countersignedBy: ["Signatory 1", "Signatory 2"]
-                    })
+                      countersignedBy: ["Signatory 1", "Signatory 2"],
+                      investorCompanyProfile: inv.investorCompanyProfile || null
+                    }
                   });
                 }
                 T.alerts().add({
                   symbol: deal.ticker,
-                  label: "Subscription countersigned · " + fmtNgn(inv.ticketNGN) + " · executed",
-                  value: "", unit: "", templateId: "subscription", severity: "critical"
+                  label: "Agreement countersigned · " + fmtNgn(inv.ticketNGN) + " · settlement off-platform",
+                  value: "", unit: "", templateId: "agreement", severity: "critical"
                 });
                 deal.activity = deal.activity || [];
-                deal.activity.unshift({ at: now, text: "Countersigned subscription · " + fmtNgn(inv.ticketNGN) });
+                deal.activity.unshift({ at: now, text: "Countersigned agreement · " + fmtNgn(inv.ticketNGN) + " · settlement off-platform" });
                 api.save(deal);
                 T.toast("Countersigned and filed to both Vaults.");
                 renderV3();
@@ -588,11 +604,11 @@
         const investmentsApi = DB.investmentsApi();
         const inv = investmentsApi.list().find(function (i) { return i.id === invId; });
         if (!inv) return;
-        T.modal("Decline subscription · " + deal.ticker,
-          '<p class="rep-hint">v3 Part 9 — declined subscriptions trigger full refund within 5 business days. Investor is notified with your remediation note.</p>' +
+        T.modal("Decline intent · " + deal.ticker,
+          '<p class="rep-hint">Declined intents are notified to the investor with your remediation note. No funds move on Deal Room — declining is a notification, not a refund.</p>' +
           '<label class="rep-label">Reason (visible to investor)</label>' +
-          '<textarea class="t-input" id="cs-decline-note" rows="4" placeholder="e.g. Allocation exhausted by earlier subscriptions. Refund initiated."></textarea>',
-          { footer: '<button class="t-btn" data-modal-close>Cancel</button><button class="t-btn t-btn-primary" id="cs-decline-confirm">Decline subscription</button>' });
+          '<textarea class="t-input" id="cs-decline-note" rows="4" placeholder="e.g. Allocation exhausted by earlier intents. Please consider future rounds."></textarea>',
+          { footer: '<button class="t-btn" data-modal-close>Cancel</button><button class="t-btn t-btn-primary" id="cs-decline-confirm">Decline intent</button>' });
         document.getElementById("cs-decline-confirm").addEventListener("click", function () {
           const note = document.getElementById("cs-decline-note").value.trim();
           if (!note) { T.toast("Reason is required"); return; }
@@ -603,11 +619,11 @@
           });
           T.alerts().add({
             symbol: deal.ticker,
-            label: "Subscription declined · " + fmtNgn(inv.ticketNGN) + " · refund initiated",
-            value: "", unit: "", templateId: "subscription", severity: "critical"
+            label: "Intent declined · " + fmtNgn(inv.ticketNGN),
+            value: "", unit: "", templateId: "intent", severity: "critical"
           });
           T.closeModal();
-          T.toast("Declined. Investor notified, refund initiated.");
+          T.toast("Declined. Investor notified.");
           renderV3();
         });
       }
@@ -1391,7 +1407,7 @@
       }
 
       function closeBody() {
-        return '<div style="font-size:13px;color:var(--text-secondary)">Generate subscription package per investor. Collect signatures, KYC, AML, wire confirmations. Lock allocations.</div>';
+        return '<div style="font-size:13px;color:var(--text-secondary)">Generate the agreement package per investor. Collect signatures, KYB attestations, dual-signatory countersign. Lock allocations. Settlement of funds is arranged off-platform between issuer and investor.</div>';
       }
 
       function administerBody() {
@@ -1412,7 +1428,7 @@
         2: [{ name: "Term sheet",              kind: "terms"  }],
         3: [{ name: "Teaser",                  kind: "teaser" }, { name: "Interest tracker", kind: "tracker" }],
         4: [{ name: "Diligence pack",          kind: "pack"   }, { name: "Q&A log",          kind: "qa"      }],
-        5: [{ name: "Subscription package",    kind: "subdoc" }, { name: "Wire instructions", kind: "wire"   }],
+        5: [{ name: "Agreement package",       kind: "subdoc" }, { name: "Countersign log",    kind: "agreement" }],
         6: [{ name: "Capital call notice",     kind: "call"   }, { name: "Quarterly LP update", kind: "update" }, { name: "Distribution notice", kind: "dist" }],
       };
 

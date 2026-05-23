@@ -115,4 +115,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Guide page: highlight the current section in the sticky TOC.
+    const tocLinks = document.querySelectorAll('.gd-toc a[href^="#"]');
+    if (tocLinks.length > 0) {
+        const sectionMap = new Map();
+        tocLinks.forEach(link => {
+            const id = link.getAttribute('href').slice(1);
+            const target = document.getElementById(id);
+            if (target) sectionMap.set(target, link);
+        });
+
+        if (sectionMap.size > 0) {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const link = sectionMap.get(entry.target);
+                    if (!link) return;
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
+                        tocLinks.forEach(l => l.classList.remove('is-active'));
+                        link.classList.add('is-active');
+                    }
+                });
+            }, { rootMargin: '-100px 0px -60% 0px', threshold: [0, 0.2, 0.5] });
+
+            sectionMap.forEach((_, section) => obs.observe(section));
+        }
+
+        // Smooth scroll for TOC links (offset for sticky header).
+        tocLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const id = link.getAttribute('href').slice(1);
+                const target = document.getElementById(id);
+                if (target) {
+                    e.preventDefault();
+                    const top = target.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                    history.replaceState(null, '', '#' + id);
+                }
+            });
+        });
+    }
+
 });

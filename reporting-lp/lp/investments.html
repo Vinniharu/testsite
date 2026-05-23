@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Investments · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:18px;">
+          <h1 style="margin:0;font-size:24px;">My investments</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">Deals you've signed and the current mark-to-market on each.</p>
+        </div>
+
+        <div id="kpi-strip" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;" class="kpi-row"></div>
+
+        <div id="deals-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'lp', activeNav: 'investments' });
+
+    function fmtCompact(n) {
+      const sign = n < 0 ? '-' : '';
+      const v = Math.abs(n);
+      if (v >= 1e6) return sign + '$' + (v / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (v >= 1e3) return sign + '$' + (v / 1e3).toFixed(0) + 'K';
+      return sign + '$' + Math.round(v).toLocaleString();
+    }
+
+    const me = NEIIA_STATE.currentUser || NEIIA_DATA.personas.lp[0];
+    const myMemos = (NEIIA_DATA.dealMemos || []).filter(function (m) { return m.lp && m.lp.id === me.id; });
+
+    // Compute net worth per memo
+    function netWorthOf(m) {
+      const initial = (m.deal && m.deal.allocation) || 0;
+      // Use currentValuation if it differs from valuation as a "round-up" multiplier; otherwise use currentValue directly.
+      if (m.currentValue) return m.currentValue;
+      if (m.deal && m.deal.currentValuation && m.deal.valuation) {
+        return Math.round(initial * (m.deal.currentValuation / m.deal.valuation));
+      }
+      return initial;
+    }
+
+    const totalInvested = myMemos.reduce(function (s, m) { return s + ((m.deal && m.deal.allocation) || 0); }, 0);
+    const totalNetWorth = myMemos.reduce(function (s, m) { return s + netWorthOf(m); }, 0);
+    const totalReturnPct = totalInvested > 0 ? ((totalNetWorth - totalInvested) / totalInvested) * 100 : 0;
+    const returnColor = totalReturnPct >= 0 ? 'var(--brand)' : 'var(--red)';
+    const returnArrow = totalReturnPct >= 0 ? '↑' : '↓';
+
+    document.getElementById('kpi-strip').innerHTML =
+      '<div class="kpi-card"><div class="kpi-label">Total invested</div><div class="kpi-value">' + fmtCompact(totalInvested) + '</div><div class="kpi-delta">' + myMemos.length + ' deal' + (myMemos.length === 1 ? '' : 's') + '</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Current net worth</div><div class="kpi-value">' + fmtCompact(totalNetWorth) + '</div><div class="kpi-delta">Mark-to-market</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Total return</div><div class="kpi-value" style="color:' + returnColor + ';">' + (totalReturnPct >= 0 ? '+' : '') + totalReturnPct.toFixed(1) + '% ' + returnArrow + '</div><div class="kpi-delta">' + fmtCompact(totalNetWorth - totalInvested) + ' unrealized</div></div>';
+
+    if (!myMemos.length) {
+      document.getElementById('deals-wrap').innerHTML = '<div class="card card-p" style="text-align:center;padding:50px;">' +
+        '<div style="font-weight:700;color:var(--ink);font-size:16px;margin-bottom:6px;">You haven\'t completed any deals yet</div>' +
+        '<div style="color:var(--muted);font-size:14px;margin-bottom:14px;">Browse pending and open offers from your GPs.</div>' +
+        '<a href="deal-feed.html" class="btn btn-primary">Browse the deal feed →</a>' +
+      '</div>';
+    } else {
+      const tints = ['avatar-blue', 'avatar-amber', 'avatar-purple', 'avatar-teal', 'avatar-rose', 'avatar-slate'];
+      const statusMap = { 'Active': 'badge-green', 'Exited': 'badge-blue', 'Converted': 'badge-amber', 'Lost': 'badge-slate' };
+      document.getElementById('deals-wrap').innerHTML = '<div class="inv-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">' +
+        myMemos.map(function (m, i) {
+          const initial = (m.deal && m.deal.allocation) || 0;
+          const cur = netWorthOf(m);
+          const delta = initial > 0 ? ((cur - initial) / initial) * 100 : 0;
+          const sign = delta >= 0 ? '+' : '';
+          const color = delta >= 0 ? 'var(--brand)' : 'var(--red)';
+          const arrow = delta >= 0 ? '↑' : '↓';
+          const status = m.dealStatus || 'Active';
+          const badge = statusMap[status] || 'badge-slate';
+          const sector = m.sector || (m.deal && m.deal.sector) || '—';
+          const initials = (m.deal && m.deal.portfolioCompany ? m.deal.portfolioCompany : 'PC').split(' ').map(function (p) { return p[0]; }).join('').slice(0, 2).toUpperCase();
+          return '<div class="card card-p">' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
+              '<div style="display:flex;gap:10px;align-items:center;">' +
+                '<span class="avatar avatar-md ' + tints[i % tints.length] + '">' + initials + '</span>' +
+                '<div><div style="font-weight:800;color:var(--ink);font-size:15px;">' + (m.deal ? m.deal.portfolioCompany : 'Deal') + '</div>' +
+                '<div style="font-size:12px;color:var(--muted);">Signed ' + (m.agreedAt || (m.generatedAt || '').slice(0, 10)) + '</div></div>' +
+              '</div>' +
+              '<span class="badge ' + badge + '">' + status + '</span>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">' +
+              '<span class="chip">' + sector + '</span>' +
+              '<span class="chip">' + (m.deal && m.deal.wrapper ? m.deal.wrapper : '—') + '</span>' +
+            '</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">' +
+              '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Initial</div><div style="font-weight:700;color:var(--ink);font-size:16px;">' + fmtCompact(initial) + '</div></div>' +
+              '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Net worth</div><div style="font-weight:700;color:var(--ink);font-size:16px;">' + fmtCompact(cur) + '</div></div>' +
+            '</div>' +
+            '<div style="font-weight:700;font-size:15px;color:' + color + ';margin-bottom:14px;">' + sign + delta.toFixed(1) + '% ' + arrow + '</div>' +
+            '<a href="../deal-memo.html?id=' + m.id + '&role=lp" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;">View details →</a>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+    }
+  </script>
+
+  <style>
+    @media (max-width: 1024px) { .inv-grid { grid-template-columns: repeat(2,1fr) !important; } }
+    @media (max-width: 700px) { .inv-grid, .kpi-row { grid-template-columns: 1fr !important; } }
+    .badge-blue { background:#DBEAFE;color:#1E40AF; }
+    .badge-slate { background:#F1F5F9;color:#475569; }
+  </style>
+</body>
+</html>

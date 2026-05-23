@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:18px;">
+          <h1 style="margin:0;font-size:24px;">Documents</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">All documents shared with you, your uploads, and your recently downloaded files.</p>
+        </div>
+
+        <div id="drop-zone" style="border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;color:var(--muted);cursor:pointer;background:var(--surface);margin-bottom:18px;">
+          <div style="display:inline-flex;width:42px;height:42px;border-radius:10px;background:var(--brand-50);color:var(--brand);align-items:center;justify-content:center;margin-bottom:8px;" id="drop-icon"></div>
+          <div style="font-weight:700;color:var(--ink);">Drag files here or click to upload</div>
+          <div style="font-size:13px;margin-top:4px;">Any file type · max 25MB</div>
+          <input id="up-input" type="file" style="display:none;">
+        </div>
+
+        <div class="tabs" style="margin-bottom:16px;flex-wrap:wrap;">
+          <div class="tab active" data-tab="all">All</div>
+          <div class="tab" data-tab="uploaded">Uploaded by me</div>
+          <div class="tab" data-tab="shared">Shared with me</div>
+          <div class="tab" data-tab="downloaded">Recently downloaded</div>
+        </div>
+
+        <div class="card" style="overflow:hidden;">
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Folder</th><th>Size</th><th>Modified</th><th>Action</th></tr></thead>
+            <tbody id="docs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'lp', activeNav: 'documents' });
+    document.getElementById('drop-icon').innerHTML = Portal.icon('upload', 20);
+
+    let curTab = 'all';
+
+    function fmtBytes(b) {
+      if (!b && b !== 0) return '—';
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return Math.round(b / 1024) + ' KB';
+      return (b / 1048576).toFixed(1) + ' MB';
+    }
+
+    function getList() {
+      const seeded = (NEIIA_DATA.documents || []).slice();
+      const uploaded = (NEIIA_STATE.uploadedDocs || []).map(function (u) {
+        return { id: u.id, name: u.name, folder: 'Uploaded by me', size: fmtBytes(u.size), modified: new Date(u.ts).toISOString().slice(0, 10), uploadedBy: 'me' };
+      });
+      // "Shared with me" = seeded docs (all are GP-shared in this demo)
+      const downloadIds = (NEIIA_STATE.downloadedDocs || []).map(function (d) { return d.docId; });
+      const downloadSet = {}; downloadIds.forEach(function (id) { downloadSet[id] = true; });
+
+      let list;
+      if (curTab === 'uploaded') list = uploaded;
+      else if (curTab === 'shared') list = seeded; // every seeded doc has been shared with the LP by the GP
+      else if (curTab === 'downloaded') list = seeded.concat(uploaded).filter(function (d) { return downloadSet[d.id]; });
+      else list = seeded.concat(uploaded);
+      return list;
+    }
+
+    function renderDocs() {
+      const list = getList();
+      const tb = document.getElementById('docs-tbody');
+      if (!list.length) {
+        tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px;">' +
+          (curTab === 'uploaded' ? 'You haven\'t uploaded anything yet. Drag a file to the zone above to upload.' :
+           curTab === 'downloaded' ? 'No download history yet. Click Download on any document to start tracking.' :
+           'No documents in this view.') +
+        '</td></tr>';
+        return;
+      }
+      tb.innerHTML = list.map(function (d) {
+        return '<tr>' +
+          '<td><div style="display:flex;align-items:center;gap:10px;">' + Portal.icon('file', 18) + '<b style="color:var(--ink);">' + d.name + '</b></div></td>' +
+          '<td><span class="chip">' + (d.folder || '—') + '</span></td>' +
+          '<td>' + (d.size || '—') + '</td>' +
+          '<td>' + (d.modified || '—') + '</td>' +
+          '<td><button class="btn btn-secondary btn-sm" data-dl="' + d.id + '" data-name="' + d.name + '">' + Portal.icon('download', 14) + ' Download</button></td>' +
+        '</tr>';
+      }).join('');
+      tb.querySelectorAll('[data-dl]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          NEIIA_STATE.trackDownload(b.dataset.dl);
+          Portal.toast('Downloading ' + b.dataset.name, 'success');
+          if (curTab === 'downloaded') renderDocs();
+        });
+      });
+    }
+
+    document.querySelectorAll('.tab[data-tab]').forEach(function (t) {
+      t.addEventListener('click', function () {
+        document.querySelectorAll('.tab[data-tab]').forEach(function (x) { x.classList.remove('active'); });
+        t.classList.add('active');
+        curTab = t.dataset.tab;
+        renderDocs();
+      });
+    });
+
+    // Drag-drop upload (visual only — pushes a fake record into uploadedDocs)
+    const drop = document.getElementById('drop-zone');
+    const upInput = document.getElementById('up-input');
+    drop.addEventListener('click', function () { upInput.click(); });
+    drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.style.background = 'var(--brand-50)'; });
+    drop.addEventListener('dragleave', function () { drop.style.background = 'var(--surface)'; });
+    drop.addEventListener('drop', function (e) {
+      e.preventDefault(); drop.style.background = 'var(--surface)';
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) addUpload(f);
+    });
+    upInput.addEventListener('change', function (e) {
+      const f = e.target.files && e.target.files[0];
+      if (f) addUpload(f);
+    });
+    function addUpload(f) {
+      const rec = { id: 'up-' + Date.now(), name: f.name, size: f.size };
+      NEIIA_STATE.trackUpload(rec);
+      Portal.toast('Uploaded ' + f.name, 'success');
+      renderDocs();
+    }
+
+    renderDocs();
+  </script>
+
+  <style>
+    @media (max-width: 800px) { .form-grid { grid-template-columns: 1fr !important; } }
+  </style>
+</body>
+</html>

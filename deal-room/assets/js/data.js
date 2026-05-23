@@ -557,6 +557,15 @@
     "Active":"success","Converting":"warning","Converted":"success","Matured":"success","Defaulted":"danger","Written Off":"danger"
   };
 
+  // Change 3 — deterministic NEIIA Audit Overlay confidence score per deal.
+  // Lane A 75-92, Lane B 80-95, Fund 85-95. Stable per deal id (no random drift across reloads).
+  function auditConfidenceFor(id, lane) {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 131 + id.charCodeAt(i)) >>> 0;
+    const range = lane === 'lane-a' ? [75, 92] : lane === 'lane-b' ? [80, 95] : [85, 95];
+    return range[0] + (h % (range[1] - range[0] + 1));
+  }
+
   window.DataBankData.deals.forEach(function (d) {
     const v = V3[d.id] || { lane: 'fund', wrapper: 'SPV', ticker: d.id.slice(0, 4).toUpperCase(), kycTier: 2 };
     d.lane = v.lane;
@@ -570,6 +579,7 @@
     d.allocationPct = allocationFor(d.status);
     d.tradingName = d.tradingName || d.company;
     d.legalName = d.legalName || (d.company + ' Limited');
+    d.auditConfidence = d.auditConfidence != null ? d.auditConfidence : auditConfidenceFor(d.id, d.lane);
   });
 
   const csafeDeals = [
@@ -658,6 +668,10 @@
       whyNow: 'Naira devaluation made imported apparel uneconomic for the mass market; local-make brands gaining share. Founder previously scaled and exited a similar concept.',
       issuerSignatories: ['Chioma Eze, Founder/CEO', 'Yemi Adetona, CFO'] }
   ];
+  // Stamp Lane A csafeDeals with audit confidence as well.
+  csafeDeals.forEach(function (d) {
+    if (d.auditConfidence == null) d.auditConfidence = auditConfidenceFor(d.id, d.lane);
+  });
   Array.prototype.push.apply(window.DataBankData.deals, csafeDeals);
 
   // Lighter use-of-proceeds for existing Lane B (PPMs filed with SEC carry the full prospectus)

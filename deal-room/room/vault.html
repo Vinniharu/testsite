@@ -73,8 +73,8 @@
             '<div class="vault-locked">' +
               '<div class="vault-locked-icon">' + svgLock() + '</div>' +
               '<div class="vault-locked-title">Vault locked</div>' +
-              '<div class="vault-locked-sub">' + count + ' document' + (count === 1 ? "" : "s") + ' inside. Enter your 6-digit PIN to unlock.</div>' +
-              '<button class="t-btn t-btn-primary" type="button" id="vault-unlock">Unlock with PIN</button>' +
+              '<div class="vault-locked-sub">' + count + ' document' + (count === 1 ? "" : "s") + ' inside. Enter your 6-digit Vault PIN to unlock.</div>' +
+              '<button class="t-btn t-btn-primary" type="button" id="vault-unlock">Unlock with Vault PIN</button>' +
               '<div class="vault-locked-security">' +
                 '<div>· AES-256 at rest · split-key (platform alone cannot decrypt)</div>' +
                 '<div>· Every access is audit-logged (who · when · IP)</div>' +
@@ -87,7 +87,7 @@
         document.getElementById("vault-unlock").addEventListener("click", function () {
           T.pinPad({
             title: "Unlock Data Vault",
-            subtitle: "Your 6-digit transaction PIN is required to access encrypted documents.",
+            subtitle: "Your 6-digit Vault PIN is required to access encrypted documents. Deal Room does not process payments — your PIN never authorizes money movement.",
             onConfirm: function () {
               unlocked = true;
               T.toast("Vault unlocked.");

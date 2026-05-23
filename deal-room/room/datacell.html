@@ -290,16 +290,7 @@
         const acctApi = DB.accountApi ? DB.accountApi() : null;
         const acc = acctApi ? acctApi.get() : null;
         if (!acc || !acc.verified) { T.openPaywallModal && T.openPaywallModal(); return; }
-        if (acc.accountType !== "corporate") {
-          T.modal("Corporate account required",
-            '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55">Per v3 Part 3, only Corporate accounts can issue deals. Corporate accounts require CAC RC + TIN, two authorized signatories, audited financials, and Tax Clearance Certificates.</p>',
-            { footer: '<button class="t-btn" data-modal-close>Cancel</button><button class="t-btn t-btn-primary" id="switchToCorp">Switch to Corporate plan</button>' });
-          document.getElementById("switchToCorp").addEventListener("click", function () {
-            T.closeModal();
-            T.openPaywallModal && T.openPaywallModal();
-          });
-          return;
-        }
+        // Deal Room is corporate-only — accountType is always corporate (Change 1).
         T.openListDealFlow && T.openListDealFlow();
       });
       // Refresh listings when wizard saves a new deal

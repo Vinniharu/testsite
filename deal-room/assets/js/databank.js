@@ -20,16 +20,21 @@
     compliance: "neiia_db_compliance",
     prefs: "neiia_db_prefs",
     currency: "neiia_db_currency",
+    companyProfile: "dr_company_profile",
   };
 
-  // v3 verification fee prices (Part 12). NGN is the billed currency; USD shown for transparency.
-  // Discounts: 10% quarterly, 20% annual on the monthly rate.
+  // Change 3 — NEIIA 20% Audit Surcharge on every issuer registration fee.
+  // Surcharge funds the platform-wide audit overlay that cross-checks each issuer's own auditor.
+  const NEIIA_AUDIT_SURCHARGE_RATE = 0.20;
+  function computeRegistrationFee(opts) {
+    const base = Math.max(0, +(opts && opts.base) || 0);
+    const auditSurcharge = Math.round(base * NEIIA_AUDIT_SURCHARGE_RATE);
+    return { base: base, auditSurcharge: auditSurcharge, total: base + auditSurcharge, rate: NEIIA_AUDIT_SURCHARGE_RATE };
+  }
+
+  // Change 1 + 4 — corporate-only verification. Single plan; KYB needs only TIN + CAC.
+  // Pricing kept tiered for billing UX continuity.
   const VERIFICATION_PLANS = {
-    individual: {
-      monthly:   { priceUSD: 70,  priceNGN: 110000,  cycleLabel: "Monthly",   periodDays: 30  },
-      quarterly: { priceUSD: 189, priceNGN: 300000,  cycleLabel: "Quarterly", periodDays: 90  },
-      annual:    { priceUSD: 672, priceNGN: 1050000, cycleLabel: "Annual",    periodDays: 365 }
-    },
     corporate: {
       monthly:   { priceUSD: 150,  priceNGN: 235000,  cycleLabel: "Monthly",   periodDays: 30  },
       quarterly: { priceUSD: 405,  priceNGN: 635000,  cycleLabel: "Quarterly", periodDays: 90  },
@@ -37,11 +42,12 @@
     }
   };
 
-  // v3 KYC tier caps (Part 5)
+  // Change 4 — KYC tiers collapsed to T1 (signed up, not KYB-complete) and T2 (verified).
+  // T3 retained for optional institutional uplift (audited financials) but not required for normal use.
   const TIER_CAPS = {
-    1: { perDealMinNGN: 100000,  perDealMaxNGN: 5000000,   annualMaxNGN: 20000000,   label: "Retail" },
-    2: { perDealMinNGN: 5000000, perDealMaxNGN: 50000000,  annualMaxNGN: 200000000,  label: "Sophisticated" },
-    3: { perDealMinNGN: 0,       perDealMaxNGN: Infinity,  annualMaxNGN: Infinity,   label: "Qualified" }
+    1: { perDealMinNGN: 100000,  perDealMaxNGN: 5000000,   annualMaxNGN: 20000000,   label: "Unverified" },
+    2: { perDealMinNGN: 100000,  perDealMaxNGN: 50000000,  annualMaxNGN: 200000000,  label: "KYB Verified" },
+    3: { perDealMinNGN: 0,       perDealMaxNGN: Infinity,  annualMaxNGN: Infinity,   label: "Institutional" }
   };
 
   // v3 Part 19B — Deal lifecycle state machine.
@@ -547,19 +553,29 @@
     return Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
   }
 
-  // v3 account state: type, KYC tier, verification status, current plan.
-  // Default is unverified Tier 1 individual — no deal access until verified.
+  // Change 1 — corporate-only accounts.
+  // Change 2 — Vault PIN (previously "Transaction PIN") with backwards-compat read of the old hash.
   function accountApi() {
     const key = STORAGE_KEYS.account;
     function load() {
-      return store.get(key, {
-        accountType: "individual",
+      const acc = store.get(key, {
+        accountType: "corporate",
         kycTier: 1,
         verified: false,
         plan: null,
-        annualSubscribedNGN: 0,
-        listeners: undefined
+        annualSubscribedNGN: 0
       }) || {};
+      // Change 1 — coerce any pre-existing individual accounts to corporate.
+      if (acc.accountType !== "corporate") acc.accountType = "corporate";
+      // Change 2 — vaultPin* keys are canonical; if absent, migrate from legacy pin* once on first read.
+      if (!acc.vaultPinHash && acc.pinHash) {
+        acc.vaultPinSalt = acc.pinSalt;
+        acc.vaultPinHash = acc.pinHash;
+        acc.vaultPinSetAt = acc.pinSetAt;
+        acc.vaultPinFailedAttempts = acc.pinFailedAttempts || 0;
+        acc.vaultPinLockoutUntil = acc.pinLockoutUntil || null;
+      }
+      return acc;
     }
     function save(acc) {
       store.set(key, acc);
@@ -573,18 +589,20 @@
         save(merged);
         return merged;
       },
-      setType(type) {
-        const t = type === "corporate" ? "corporate" : "individual";
-        return this.set({ accountType: t });
+      setType() {
+        // Corporate-only platform — setType is a no-op kept for compatibility.
+        return this.set({ accountType: "corporate" });
       },
       verify(planType, cycle) {
+        // Force corporate plan regardless of caller's planType (Change 1).
+        planType = "corporate";
         const plan = (VERIFICATION_PLANS[planType] && VERIFICATION_PLANS[planType][cycle]) || null;
         if (!plan) return null;
         const now = Date.now();
         return this.set({
           accountType: planType,
           verified: true,
-          kycTier: Math.max(1, load().kycTier || 1),
+          kycTier: Math.max(2, load().kycTier || 1), // Change 4 — verified == T2 (KYB complete)
           plan: {
             type: planType,
             cycle: cycle,
@@ -608,35 +626,49 @@
         const t = Math.min(3, Math.max(1, toTier | 0));
         return this.set({ kycTier: t });
       },
-      // v3 Part 10 — transaction PIN. Stored as salted hash; never plaintext.
-      // 3 wrong entries lock the PIN out for 24h. Reset requires re-KYC (out of demo scope).
-      hasPin() { return !!(load().pinHash); },
+      // Change 2 — Vault PIN (rename of Transaction PIN).
+      // Underlying salted-hash mechanism + 3-strike 24h lockout unchanged.
+      hasPin() { return !!(load().vaultPinHash); },
       setPin(pin) {
         if (!/^\d{6}$/.test(String(pin))) return false;
         const salt = _newSalt();
-        return this.set({ pinSalt: salt, pinHash: _hashPin(pin, salt), pinSetAt: Date.now(), pinFailedAttempts: 0, pinLockoutUntil: null });
+        return this.set({
+          vaultPinSalt: salt,
+          vaultPinHash: _hashPin(pin, salt),
+          vaultPinSetAt: Date.now(),
+          vaultPinFailedAttempts: 0,
+          vaultPinLockoutUntil: null,
+          // Clear the old keys once a new PIN has been set.
+          pinSalt: null, pinHash: null, pinSetAt: null, pinFailedAttempts: 0, pinLockoutUntil: null
+        });
       },
-      clearPin() { return this.set({ pinSalt: null, pinHash: null, pinSetAt: null, pinFailedAttempts: 0, pinLockoutUntil: null }); },
+      clearPin() {
+        return this.set({
+          vaultPinSalt: null, vaultPinHash: null, vaultPinSetAt: null,
+          vaultPinFailedAttempts: 0, vaultPinLockoutUntil: null,
+          pinSalt: null, pinHash: null, pinSetAt: null, pinFailedAttempts: 0, pinLockoutUntil: null
+        });
+      },
       lockoutState() {
         const acc = load();
-        if (!acc.pinLockoutUntil) return { locked: false, attemptsLeft: 3 - (acc.pinFailedAttempts || 0) };
-        if (Date.now() >= +new Date(acc.pinLockoutUntil)) return { locked: false, attemptsLeft: 3 };
-        return { locked: true, until: acc.pinLockoutUntil };
+        if (!acc.vaultPinLockoutUntil) return { locked: false, attemptsLeft: 3 - (acc.vaultPinFailedAttempts || 0) };
+        if (Date.now() >= +new Date(acc.vaultPinLockoutUntil)) return { locked: false, attemptsLeft: 3 };
+        return { locked: true, until: acc.vaultPinLockoutUntil };
       },
       verifyPin(pin) {
         const acc = load();
-        if (!acc.pinHash) return { ok: true, noPinSet: true }; // demo fallback: any PIN accepted until one is set
-        if (this.lockoutState().locked) return { ok: false, locked: true, until: acc.pinLockoutUntil };
-        const computed = _hashPin(pin, acc.pinSalt);
-        if (computed === acc.pinHash) {
-          this.set({ pinFailedAttempts: 0 });
+        if (!acc.vaultPinHash) return { ok: true, noPinSet: true }; // demo fallback: any PIN accepted until one is set
+        if (this.lockoutState().locked) return { ok: false, locked: true, until: acc.vaultPinLockoutUntil };
+        const computed = _hashPin(pin, acc.vaultPinSalt);
+        if (computed === acc.vaultPinHash) {
+          this.set({ vaultPinFailedAttempts: 0 });
           return { ok: true };
         }
-        const failed = (acc.pinFailedAttempts || 0) + 1;
-        const patch = { pinFailedAttempts: failed };
-        if (failed >= 3) patch.pinLockoutUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        const failed = (acc.vaultPinFailedAttempts || 0) + 1;
+        const patch = { vaultPinFailedAttempts: failed };
+        if (failed >= 3) patch.vaultPinLockoutUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
         this.set(patch);
-        return { ok: false, attemptsLeft: Math.max(0, 3 - failed), locked: failed >= 3, until: patch.pinLockoutUntil };
+        return { ok: false, attemptsLeft: Math.max(0, 3 - failed), locked: failed >= 3, until: patch.vaultPinLockoutUntil };
       },
       caps() {
         const acc = load();
@@ -645,12 +677,51 @@
       canSubscribeTo(deal) {
         const acc = load();
         if (!acc.verified) return { ok: false, reason: "not-verified" };
-        if (deal.lane === "lane-b" && acc.kycTier < 3) return { ok: false, reason: "tier-too-low", required: 3 };
-        // Lane A always requires at least Tier 1 (which is the floor for verified users).
+        // Change 4 — T2 (KYB complete) is the access floor for all lanes. T3 reserved for institutional.
         return { ok: true };
       },
       plans: VERIFICATION_PLANS,
       tierCaps: TIER_CAPS
+    };
+  }
+
+  // Change 6 — Company Profile auto-fill on every Intent.
+  // Stored in localStorage under dr_company_profile. Attached to every intent-to-invest submission
+  // and embedded in the executed agreement so the issuer sees the full investor entity at signing.
+  function companyProfileApi() {
+    const key = STORAGE_KEYS.companyProfile;
+    const FIELDS = [
+      "legalName", "cacRC", "tin",
+      "addressLine1", "addressLine2", "city", "state", "country",
+      "yearIncorporated", "sector", "companySize", "revenueRange",
+      "directors", "authorizedSignatory", "auditFirm", "fiscalYearEnd",
+      "investmentMandate", "linkedin", "website"
+    ];
+    function load() { return store.get(key, null) || null; }
+    function save(p) {
+      const merged = Object.assign({ onboardingDate: new Date().toISOString() }, load() || {}, p || {});
+      merged.updated = new Date().toISOString();
+      store.set(key, merged);
+      try { window.dispatchEvent(new CustomEvent("norgroup:company-profile-changed", { detail: merged })); } catch (_) {}
+      return merged;
+    }
+    function isComplete() {
+      const p = load(); if (!p) return false;
+      // Required fields to consider profile "complete enough" to submit an intent.
+      const required = ["legalName", "cacRC", "tin", "addressLine1", "city", "state", "country",
+                        "yearIncorporated", "sector", "companySize", "directors", "authorizedSignatory"];
+      return required.every(function (k) {
+        const v = p[k];
+        if (Array.isArray(v)) return v.length > 0;
+        return v != null && String(v).trim().length > 0;
+      });
+    }
+    return {
+      fields: FIELDS,
+      get: load,
+      set: save,
+      isComplete: isComplete,
+      clear() { store.remove(key); }
     };
   }
 
@@ -922,12 +993,15 @@
     positionsApi,
     investmentsApi,
     accountApi,
+    companyProfileApi,
     vaultApi,
     complianceApi,
     prefsApi,
     currencyApi,
     VERIFICATION_PLANS,
     TIER_CAPS,
+    computeRegistrationFee,
+    NEIIA_AUDIT_SURCHARGE_RATE,
     smedanRoute,
     LANE_A_WRAPPERS,
     LANE_B_WRAPPERS,

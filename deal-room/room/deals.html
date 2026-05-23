@@ -24,8 +24,8 @@
       <header style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
         <div>
           <div style="font-size:11px;letter-spacing:0.18em;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;font-weight:500;">Companies in your universe</div>
-          <h1 style="font-family:var(--serif);font-size:36px;font-weight:400;color:var(--text-primary);letter-spacing:-0.025em;line-height:1.05;">Companies you can subscribe to</h1>
-          <p style="font-size:14px;color:var(--text-secondary);margin-top:8px;line-height:1.5;max-width:60ch;"><strong id="dealsCount">--</strong> businesses tracked across sectors &middot; <strong id="dealsCapital">--</strong> total commitment on file. Tap <strong>Premium</strong> on any row to unlock its exclusive data.</p>
+          <h1 style="font-family:var(--serif);font-size:36px;font-weight:400;color:var(--text-primary);letter-spacing:-0.025em;line-height:1.05;">Companies you can deal with</h1>
+          <p style="font-size:14px;color:var(--text-secondary);margin-top:8px;line-height:1.5;max-width:60ch;"><strong id="dealsCount">--</strong> Nigerian companies live across sectors &middot; <strong id="dealsCapital">--</strong> total raise on file. Each deal carries a NEIIA Audit Confidence score. Submit Intent to Invest — settlement is arranged off-platform.</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="t-btn" type="button" id="exportBtn">Export CSV</button>
@@ -84,6 +84,7 @@
                 <th class="col-wrapper" data-sort="wrapper">Wrapper <span class="arrow"></span></th>
                 <th class="col-size text-right" data-sort="sizeNum">Size <span class="arrow"></span></th>
                 <th class="col-alloc no-sort">Allocation</th>
+                <th class="col-audit" data-sort="auditConfidence">Audit <span class="arrow"></span></th>
                 <th class="col-status" data-sort="status">Status <span class="arrow"></span></th>
                 <th class="col-actions no-sort" aria-label="row actions"></th>
               </tr>
@@ -215,8 +216,8 @@
 
       // ---- v3 tooltip + label helpers ----
       const LANE_TIPS = {
-        'lane-a': 'Lane A · Growth Capital — SEC-regulated retail. Open to KYC Tier 1+. Wrappers: CSAFE, Convertible Note, Equity Subscription. Lane auto-routed by issuer SMEDAN caliber.',
-        'lane-b': 'Lane B · Private Placement — Qualified investors only (KYC Tier 3). No public solicitation. Wrappers: PPM, Commercial Paper, Bonds, Revenue Share.',
+        'lane-a': 'Lane A · Growth Capital — SEC-regulated retail. Open to all KYB-verified corporate investors. Wrappers: CSAFE, Convertible Note, Equity Subscription. Lane auto-routed by issuer SMEDAN caliber.',
+        'lane-b': 'Lane B · Private Placement — Qualified corporate investors only. No public solicitation. Wrappers: PPM, Commercial Paper, Bonds, Revenue Share.',
         'fund':   'Fund Vehicle — Off-platform GP/LP raise (SPV, Sub-Fund, Rolling, Venture, Co-Invest, Roll-Up, Scout). Not a regulated issuance lane.'
       };
       const WRAPPER_TIPS = {
@@ -267,6 +268,15 @@
         return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
           return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
         });
+      }
+      // Change 3 — NEIIA Audit Confidence column. Defaults to a sensible value for backward-compat
+      // (deals saved before this feature shipped). T.auditConfidenceChip is the shared renderer.
+      function auditCell(d) {
+        if (d.auditConfidence == null) {
+          // 78-92 default per spec when no score on file (older deals).
+          d.auditConfidence = 78 + Math.floor(Math.random() * 15);
+        }
+        return T && T.auditConfidenceChip ? T.auditConfidenceChip(d.auditConfidence) : ('<span style="font-size:11px">' + d.auditConfidence + '/100</span>');
       }
       // v3 gating — Invest button reflects verification + KYC tier + deal status.
       // Per v3 Part 19B: only Live + Closing accept new commitments. Allocating means cooling-off
@@ -324,6 +334,7 @@
             '<td class="col-wrapper">' + wrapperCell(d) + '</td>' +
             '<td class="col-size num">' + d.size + '</td>' +
             '<td class="col-alloc">' + allocBar(d) + '</td>' +
+            '<td class="col-audit">' + auditCell(d) + '</td>' +
             '<td class="col-status"><span class="badge badge-' + (d.statusType || "info") + '" data-tip="Status: ' + esc(d.status) + ' · updated ' + esc(d.updated) + '" title="Status: ' + esc(d.status) + ' · updated ' + esc(d.updated) + '">' + d.status + '</span></td>' +
             '<td class="col-actions">' +
               investButtonHtml(d) +
@@ -344,6 +355,7 @@
         { key: "lane" },
         { key: "wrapper" },
         { key: "sizeNum" },
+        { key: "auditConfidence" },
         { key: "status" }
       ];
 
@@ -431,11 +443,19 @@
         applyScreen(b.getAttribute("data-screen"));
       });
 
-      // Lane A/B deals are *issuances* — investors subscribe to a wrapper (CSAFE/Bonds/etc.),
-      // they don't structure a fund vehicle around them. So "+ Invest" branches by lane:
-      //   lane-a / lane-b → open subscription modal (ticket size, attestations, PIN sign)
-      //   fund            → open the existing 3-step co-invest wizard
+      // Change 5 + 6 — All "+ Invest" buttons now open the Intent-to-Invest modal.
+      // No payment instructions are generated anywhere; the modal auto-attaches the
+      // investor's Company Profile and routes to the issuer's countersign queue.
+      // Change 5 — All "+ Invest" buttons route to the Intent-to-Invest modal in terminal.js.
+      // No payment instruction modals, no escrow refs, no NIBSS rails — Deal Room is the
+      // Agreement Room and settlement happens off-platform.
       function openSubscriptionModal(d) {
+        if (T && T.openIntentModal) { T.openIntentModal(d); return; }
+        T.toast("Intent flow unavailable on this page.");
+      }
+      // Legacy subscription/payment-instruction code removed in the Agreement Room refactor.
+      // openAgreementPreview + openPaymentInstructionModal are no longer referenced.
+      function _removedLegacySubscriptionFlow(d) {
         const raise = d.raiseNGN ? fmtNgn(d.raiseNGN) : d.size;
         // Effective ticket bounds = intersection of (deal-defined) and (user KYC tier) caps.
         const caps = acctApi ? acctApi.caps() : { perDealMinNGN: 0, perDealMaxNGN: Infinity, annualMaxNGN: Infinity, label: '' };
@@ -558,7 +578,7 @@
           T.closeModal();
           T.pinPad({
             title: 'Sign subscription · ' + (d.ticker || d.company),
-            subtitle: 'Enter your 6-digit transaction PIN to sign the Bilateral Subscription Agreement.',
+            subtitle: 'Enter your 6-digit Vault PIN to sign the agreement.',
             onConfirm: function () {
               openAgreementPreview(d, ticket, source);
             }
@@ -608,9 +628,7 @@
               '<ul>' +
                 '<li><strong>Legal name:</strong> ' + esc(investorName) + '</li>' +
                 '<li><strong>Email:</strong> ' + esc(investorEmail) + '</li>' +
-                '<li><strong>NIN (verified):</strong> ••••-••••-' + (Math.abs(((investorEmail || '').charCodeAt(0) || 65) * 1337) % 9000 + 1000) + '</li>' +
-                '<li><strong>BVN-verified bank:</strong> Access Bank ••••••' + (Math.abs(((investorEmail || '').charCodeAt(1) || 90) * 421) % 9000 + 1000) + '</li>' +
-                '<li><strong>KYC tier:</strong> Tier ' + investorTier + '</li>' +
+                '<li><strong>KYB tier:</strong> Tier ' + investorTier + '</li>' +
                 '<li><strong>Accreditation status:</strong> ' + (investorTier >= 3 ? 'Qualified (Lane B eligible)' : 'Retail (Lane A eligible)') + '</li>' +
               '</ul>' +
             '</section>' +
@@ -739,7 +757,7 @@
               '<div class="pay-row"><span class="pay-k">Transfer window</span><span class="pay-v">Closes ' + cutoff + '</span></div>' +
             '</div>' +
             '<div class="pay-note">' +
-              '<strong>What happens next.</strong> Funds are held in escrow pending (a) the deal\'s minimum subscription threshold being reached, and (b) the 14-day cooling-off period after deal close. If either condition fails, you receive a full refund to your BVN-verified bank within 5 business days.' +
+              '<strong>What happens next.</strong> [Legacy demo flow — disabled. Settlement is arranged off-platform between issuer and investor.]' +
             '</div>' +
             '<div class="pay-note pay-note-warn">' +
               '<strong>Use the reference code exactly.</strong> Transfers without the reference will not be matched and may delay or void your subscription.' +
@@ -875,17 +893,7 @@
       document.getElementById("listDealBtn").addEventListener("click", function () {
         const acc = acctApi ? acctApi.get() : null;
         if (!acc || !acc.verified) { T.openPaywallModal && T.openPaywallModal(); return; }
-        if (acc.accountType !== 'corporate') {
-          T.modal("Corporate account required",
-            '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55">Per v3 Part 3, only Corporate accounts can issue deals. Corporate accounts require CAC RC + TIN, two authorized signatories, audited financials, and Tax Clearance Certificates.</p>' +
-            '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-top:10px">Switch your plan to Corporate to access the List-a-Deal flow.</p>',
-            { footer: '<button class="t-btn" data-modal-close>Cancel</button><button class="t-btn t-btn-primary" id="switchToCorp">Switch to Corporate plan</button>' });
-          document.getElementById("switchToCorp").addEventListener("click", function () {
-            T.closeModal();
-            if (T.openPaywallModal) T.openPaywallModal();
-          });
-          return;
-        }
+        // Deal Room is corporate-only — accountType is always corporate (Change 1).
         if (T.openListDealFlow) T.openListDealFlow();
       });
 

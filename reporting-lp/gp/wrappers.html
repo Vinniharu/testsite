@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fund wrappers · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:18px;">
+          <h1 style="margin:0;font-size:24px;">Fund wrappers</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">NEIIA's six standard vehicle types. Pick the right wrapper when listing a new deal.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;" class="row-2" id="wrap-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'funds' });
+
+    const wrappers = NEIIA_DATA.fundWrappers || [];
+    document.getElementById('wrap-grid').innerHTML = wrappers.map(function (w) {
+      return '<div class="card card-p">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+          '<span style="width:40px;height:40px;border-radius:10px;background:var(--brand-50);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;font-weight:800;">' + (w.name || '?')[0] + '</span>' +
+          '<div><div style="font-weight:800;color:var(--ink);font-size:17px;">' + w.name + '</div>' +
+          '<div style="font-size:12px;color:var(--muted);">' + (w.longName || '') + '</div></div>' +
+        '</div>' +
+        '<div style="font-size:14px;color:var(--body);line-height:1.5;margin-bottom:12px;">' + (w.description || '') + '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Use cases</div><div style="color:var(--ink);font-weight:600;margin-top:2px;">' + (w.useCases || '—') + '</div></div>' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Typical size</div><div style="color:var(--ink);font-weight:600;margin-top:2px;">' + (w.typicalSize || '—') + '</div></div>' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Duration</div><div style="color:var(--ink);font-weight:600;margin-top:2px;">' + (w.typicalDuration || '—') + '</div></div>' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Regulatory</div><div style="color:var(--ink);font-weight:600;margin-top:2px;">' + (w.regulatory || '—') + '</div></div>' +
+        '</div>' +
+      '</div>';
+    }).join('') || '<div class="card card-p" style="color:var(--muted);">No wrappers configured yet.</div>';
+  </script>
+
+  <style>
+    @media (max-width: 900px) {
+      .row-2 { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</body>
+</html>

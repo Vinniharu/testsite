@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in · NEIIA LP & GP Reporting</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/portal.css">
+</head>
+<body>
+  <div class="login-split">
+    <div class="login-brand brand-animated">
+      <!-- Geometric SVG pattern decoration -->
+      <svg viewBox="0 0 400 400" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.18;pointer-events:none;">
+        <defs>
+          <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="20" cy="20" r="1.6" fill="white"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="400" fill="url(#dots)"/>
+        <circle cx="80" cy="80" r="120" fill="white" opacity="0.05"/>
+        <circle cx="320" cy="320" r="160" fill="white" opacity="0.05"/>
+      </svg>
+
+      <!-- Desktop full layout -->
+      <div class="login-brand-full" style="display:flex;flex-direction:column;justify-content:space-between;flex:1;position:relative;z-index:2;">
+        <a href="index.html" class="wordmark" style="color:white;">
+          <span class="wordmark-mark" style="background:white;color:var(--brand);">N</span>
+          <span style="color:white;">NEIIA</span>
+        </a>
+        <div>
+          <div class="rotating-quotes" id="quotes">
+            <div class="quote active">
+              <div style="font-size:24px;line-height:1.35;font-weight:600;margin-bottom:20px;color:white;">"NEIIA replaced 14 spreadsheets and the entire deal-sourcing email chain. Our LPs see every opportunity within an hour."</div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="avatar avatar-md" style="background:rgba(255,255,255,0.18);color:white;">AO</div>
+                <div>
+                  <div style="font-weight:700;color:white;">Adaobi Okonkwo</div>
+                  <div style="font-size:13px;color:rgba(255,255,255,0.8);">Managing Partner · Sahel Capital</div>
+                </div>
+              </div>
+            </div>
+            <div class="quote">
+              <div style="font-size:24px;line-height:1.35;font-weight:600;margin-bottom:20px;color:white;">"I see every deal Nigerian GPs send me in one place. I counter-propose in two clicks, Apex AI helps me think it through."</div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="avatar avatar-md" style="background:rgba(255,255,255,0.18);color:white;">TA</div>
+                <div>
+                  <div style="font-weight:700;color:white;">Tunde Adeyemi</div>
+                  <div style="font-size:13px;color:rgba(255,255,255,0.8);">Angel · FounderHQ Holdings</div>
+                </div>
+              </div>
+            </div>
+            <div class="quote">
+              <div style="font-size:24px;line-height:1.35;font-weight:600;margin-bottom:20px;color:white;">"The first platform that treats African LPs and GPs as a single market. Auto-generated memos saved us three weeks of legal back-and-forth."</div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="avatar avatar-md" style="background:rgba(255,255,255,0.18);color:white;">SM</div>
+                <div>
+                  <div style="font-weight:700;color:white;">Sarah Mensah</div>
+                  <div style="font-size:13px;color:rgba(255,255,255,0.8);">Principal · Mensah Family Office</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);">© NEIIA 2026 · Lagos · Nairobi · Accra · LP & GP Reporting</div>
+      </div>
+
+      <!-- Mobile compact banner -->
+      <div class="login-brand-mobile" style="position:relative;z-index:2;display:flex;align-items:center;gap:12px;">
+        <a href="index.html" class="wordmark" style="color:white;">
+          <span class="wordmark-mark" style="background:white;color:var(--brand);">N</span>
+          <span style="color:white;">NEIIA</span>
+        </a>
+        <div style="margin-left:auto;font-size:12px;color:rgba(255,255,255,0.85);">LP & GP Reporting</div>
+      </div>
+    </div>
+
+    <div class="login-form">
+      <div style="max-width:380px;width:100%;margin:0 auto;">
+        <h1 style="font-size:26px;margin:0 0 6px;">Welcome back</h1>
+        <p style="color:var(--muted);margin:0 0 28px;">Sign in to your NEIIA workspace.</p>
+
+        <form id="signin-form" onsubmit="onSignIn(event)">
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;">Email</label>
+          <input type="email" required value="adaobi@sahelcapital.ng" style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:14px;font-size:14px;min-height:44px;">
+
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;">Password</label>
+          <input type="password" required value="demopassword" style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:14px;font-size:14px;min-height:44px;">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--body);"><input type="checkbox" checked> Remember me</label>
+            <a href="#" style="font-size:13px;color:var(--brand);font-weight:600;">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;">Sign in</button>
+        </form>
+
+        <div style="display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--muted);font-size:12px;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span>Live demo presets</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+
+        <button class="btn btn-secondary" style="width:100%;justify-content:center;margin-bottom:8px;padding:11px;" onclick="signInAs('gp')">
+          <span class="avatar avatar-sm">AO</span> Sign in as Adaobi (GP)
+        </button>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center;padding:11px;" onclick="signInAs('lp')">
+          <span class="avatar avatar-sm avatar-blue">TA</span> Sign in as Tunde (LP)
+        </button>
+
+        <div style="text-align:center;font-size:13px;color:var(--muted);margin-top:24px;">
+          Don't have an account? <a href="signup.html" style="color:var(--brand);font-weight:600;">Start KYB sign-up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/portal.js"></script>
+  <script>
+    function signInAs(role) {
+      NEIIA_STATE.role = role;
+      NEIIA_STATE.currentUser = role === 'gp' ? NEIIA_DATA.personas.gp[0] : NEIIA_DATA.personas.lp[0];
+      window.location.href = role === 'gp' ? 'gp/dashboard.html' : 'lp/dashboard.html';
+    }
+
+    function onSignIn(e) {
+      e.preventDefault();
+      const body = document.createElement('div');
+      body.innerHTML = '<p style="margin:0 0 14px;">Enter the 6-digit code from your authenticator app.</p>' +
+        '<input id="otp" maxlength="6" placeholder="000000" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:18px;letter-spacing:6px;text-align:center;font-family:monospace;">' +
+        '<div style="font-size:12px;color:var(--muted);margin-top:8px;">Demo: any 6 digits will work.</div>';
+
+      Portal.modal({
+        title: 'Two-factor authentication',
+        body: body,
+        primary: {
+          label: 'Verify',
+          onClick: function (close) {
+            const code = (body.querySelector('#otp').value || '').trim();
+            if (code.length !== 6) { Portal.toast('Enter 6 digits', 'error'); return false; }
+            close();
+            signInAs('gp');
+          }
+        },
+        secondary: { label: 'Cancel' }
+      });
+    }
+
+    // Rotate testimonial quotes every 5s
+    const quotes = document.querySelectorAll('#quotes .quote');
+    let qi = 0;
+    setInterval(function () {
+      quotes[qi].classList.remove('active');
+      qi = (qi + 1) % quotes.length;
+      quotes[qi].classList.add('active');
+    }, 5000);
+  </script>
+</body>
+</html>

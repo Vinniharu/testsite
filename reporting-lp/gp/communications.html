@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communications · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div><h1 style="margin:0;font-size:24px;">Communications</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">Secure LP messaging · 8 active threads</p></div>
+          <button class="btn btn-primary" id="new-msg-btn"></button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:340px 1fr;gap:0;border:1px solid var(--border);border-radius:12px;background:white;height:calc(100vh - 180px);overflow:hidden;" class="comm-grid">
+          <div style="border-right:1px solid var(--border);overflow-y:auto;" id="thread-list"></div>
+          <div id="thread-view" style="display:flex;flex-direction:column;overflow:hidden;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'communications' });
+    document.getElementById('new-msg-btn').innerHTML = Portal.icon('plus', 16) + ' New message';
+
+    document.getElementById('new-msg-btn').addEventListener('click', function () {
+      // First try Portal helper which uses contactsFor. If no contacts returned, fall back to all LPs.
+      const userId = (NEIIA_STATE.currentUser && NEIIA_STATE.currentUser.id) || 'u-gp-1';
+      const contacts = (NEIIA_DATA.contactsFor && NEIIA_DATA.contactsFor('gp', userId)) || [];
+      if (contacts.length) {
+        Portal.openContactPicker({
+          role: 'gp', userId: userId,
+          onPick: function (c) {
+            if (!c) return;
+            Portal.toast('Opening message composer with ' + c.name + '…', 'success');
+          }
+        });
+        return;
+      }
+      // Fallback: list all LPs as contacts
+      const lpList = (NEIIA_DATA.personas.lp || []).slice(0, 12);
+      const body = document.createElement('div');
+      body.innerHTML =
+        '<input id="cp-search" placeholder="Search LPs by name or firm…" autofocus style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;">' +
+        '<div id="cp-list" style="max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;"></div>' +
+        '<a href="#" id="cp-bypass" style="display:block;margin-top:10px;font-size:13px;color:var(--brand);font-weight:600;">Compose anyway (free text) →</a>';
+      function rndr(q) {
+        const ql = (q || '').toLowerCase();
+        const filt = lpList.filter(function (l) { return (l.name + ' ' + (l.country || '')).toLowerCase().indexOf(ql) > -1; });
+        body.querySelector('#cp-list').innerHTML = filt.length ? filt.map(function (l) {
+          return '<div class="cp-row" data-id="' + l.id + '" style="padding:10px 12px;border-bottom:1px solid #F1F5F9;display:flex;gap:10px;align-items:center;cursor:pointer;">' +
+            '<span class="avatar avatar-sm">' + l.initials + '</span>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-weight:600;color:var(--ink);font-size:13px;">' + l.name + '</div>' +
+              '<div style="font-size:12px;color:var(--muted);">' + (l.type || 'LP') + ' · ' + (l.city || '') + (l.country ? ', ' + l.country : '') + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') : '<div style="padding:20px;text-align:center;color:var(--muted);">No matches.</div>';
+        body.querySelectorAll('.cp-row').forEach(function (r) {
+          r.addEventListener('click', function () {
+            const l = lpList.find(function (x) { return x.id === r.dataset.id; });
+            inst.close();
+            Portal.toast('Opening message composer with ' + (l ? l.name : 'recipient') + '…', 'success');
+          });
+        });
+      }
+      const inst = Portal.modal({ title: 'Pick recipient', body: body, primary: null, secondary: { label: 'Close' } });
+      setTimeout(function () {
+        rndr('');
+        body.querySelector('#cp-search').addEventListener('input', function (e) { rndr(e.target.value); });
+        body.querySelector('#cp-bypass').addEventListener('click', function (e) {
+          e.preventDefault(); inst.close();
+          Portal.toast('Composing free-text message…', 'success');
+        });
+      }, 0);
+    });
+
+    const realThread = NEIIA_DATA.messages;
+    const stubs = [
+      { id: 't-2', lpId: 'lp-2', subject: 'Distribution timing question', preview: 'Wanted to check on the timing for the next…', when: '3h ago', unread: true },
+      { id: 't-3', lpId: 'lp-3', subject: 'K-1 clarification', preview: 'The K-1 line 11 figure does not match…', when: '1d ago', unread: false },
+      { id: 't-4', lpId: 'lp-4', subject: 'ESG report draft', preview: 'Reviewed the draft, a couple of comments on…', when: '2d ago', unread: false },
+      { id: 't-5', lpId: 'lp-5', subject: 'Wire confirmation', preview: 'Confirming receipt of the distribution wire on…', when: '3d ago', unread: false },
+      { id: 't-6', lpId: 'lp-6', subject: 'Updated bank details', preview: 'Please update our wiring instructions, GTBank…', when: '5d ago', unread: false },
+      { id: 't-7', lpId: 'lp-7', subject: 'Q1 report follow-up', preview: 'On page 9 of the Q1 report, the IRR figure…', when: '1w ago', unread: false },
+      { id: 't-8', lpId: 'lp-8', subject: 'Annual meeting RSVP', preview: 'Confirming attendance for the AGM on…', when: '2w ago', unread: false }
+    ];
+
+    const tints = ['avatar-blue', 'avatar-amber', 'avatar-purple', 'avatar-teal', 'avatar-rose', 'avatar-slate'];
+    const allThreads = [
+      { id: realThread.threadId, lpId: 'lp-1', subject: realThread.subject, preview: realThread.messages[realThread.messages.length - 1].body, when: '2d ago', unread: true, real: true }
+    ].concat(stubs);
+
+    function renderList() {
+      document.getElementById('thread-list').innerHTML = allThreads.map(function (t, i) {
+        const lp = NEIIA_DATA.personas.lp.find(function (l) { return l.id === t.lpId; });
+        return '<div class="thread-row" data-id="' + t.id + '" style="padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:10px;' + (t.id === selectedId ? 'background:var(--brand-50);' : '') + '">' +
+          '<span class="avatar avatar-sm ' + tints[i % tints.length] + '">' + lp.initials + '</span>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="display:flex;justify-content:space-between;font-size:13px;"><span style="font-weight:700;color:var(--ink);">' + lp.name + '</span><span style="color:var(--muted);font-size:12px;">' + t.when + '</span></div>' +
+            '<div style="font-size:13px;color:var(--ink);font-weight:500;margin-top:2px;">' + t.subject + '</div>' +
+            '<div style="font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + t.preview + '</div>' +
+          '</div>' + (t.unread ? '<span style="width:8px;height:8px;border-radius:999px;background:var(--brand);margin-top:6px;flex-shrink:0;"></span>' : '') +
+        '</div>';
+      }).join('');
+      document.querySelectorAll('.thread-row').forEach(function (r) {
+        r.addEventListener('click', function () { selectedId = r.dataset.id; renderList(); renderThread(); });
+      });
+    }
+
+    function renderThread() {
+      const t = allThreads.find(function (x) { return x.id === selectedId; });
+      const lp = NEIIA_DATA.personas.lp.find(function (l) { return l.id === t.lpId; });
+      const tags = t.real ? realThread.tags.map(function (g) { return '<span class="chip">' + g + '</span>'; }).join(' ') : '';
+      const msgs = t.real ? realThread.messages : [{ from: t.lpId, name: lp.name, initials: lp.initials, when: t.when, body: t.preview }];
+      const bubbles = msgs.map(function (m) {
+        const isLp = m.from.startsWith('lp-');
+        return '<div style="display:flex;gap:10px;margin-bottom:16px;' + (isLp ? '' : 'flex-direction:row-reverse;') + '">' +
+          '<span class="avatar avatar-md ' + (isLp ? 'avatar-blue' : '') + '">' + m.initials + '</span>' +
+          '<div style="flex:1;max-width:70%;">' +
+            '<div style="display:flex;gap:8px;align-items:baseline;font-size:12px;color:var(--muted);margin-bottom:4px;' + (isLp ? '' : 'justify-content:flex-end;') + '">' +
+              '<b style="color:var(--ink);">' + m.name + '</b>' + m.when +
+            '</div>' +
+            '<div style="background:' + (isLp ? 'var(--surface)' : 'var(--brand-50)') + ';border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5;color:var(--ink);">' + m.body + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.getElementById('thread-view').innerHTML =
+        '<div style="padding:16px 20px;border-bottom:1px solid var(--border);">' +
+          '<div style="font-weight:700;color:var(--ink);font-size:15px;">' + t.subject + '</div>' +
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px;">With ' + lp.name + '</div>' +
+          (tags ? '<div style="margin-top:8px;display:flex;gap:6px;">' + tags + '</div>' : '') +
+        '</div>' +
+        '<div style="flex:1;overflow-y:auto;padding:20px;">' + bubbles + '</div>' +
+        '<div style="border-top:1px solid var(--border);padding:14px;display:flex;gap:8px;align-items:flex-end;">' +
+          '<textarea placeholder="Type a reply…" rows="2" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;resize:none;"></textarea>' +
+          '<button class="btn btn-primary" onclick="Portal.toast(\'Message sent\')">Send</button>' +
+        '</div>';
+    }
+
+    let selectedId = realThread.threadId;
+    renderList();
+    renderThread();
+  </script>
+  <style>
+    @media (max-width: 900px) {
+      .comm-grid { grid-template-columns: 1fr !important; height: auto !important; }
+    }
+  </style>
+</body>
+</html>

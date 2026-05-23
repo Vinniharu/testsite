@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bilateral Subscription Agreement</title>
+  <title>Subscription Agreement · Deal Room Agreement Room</title>
   <link rel="icon" type="image/svg+xml" href="../assets/images/Coat_of_arms_of_Nigeria.svg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <style>
@@ -75,7 +75,7 @@
 <body>
   <div class="toolbar" id="toolbar">
     <div class="toolbar-meta">
-      <strong>Bilateral Subscription Agreement</strong>
+      <strong>Subscription Agreement · Agreement Room</strong>
       <span id="meta-ticker"></span>
       <span id="meta-state"></span>
     </div>
@@ -120,15 +120,19 @@
 
       if (!invId) { fail("Missing ?id parameter."); return; }
       const inv = DB.investmentsApi().list().find(function (i) { return i.id === invId; });
-      if (!inv) { fail("Subscription not found."); return; }
+      if (!inv) { fail("Agreement not found."); return; }
       // Find the deal — try dealsApi first (mutations + user-created), fall back to seeded D.deals
       const deal = DB.dealsApi().get(inv.dealId) || (D.deals.find(function (d) { return d.id === inv.dealId; })) || null;
-      if (!deal) { fail("Deal record not found for this subscription."); return; }
+      if (!deal) { fail("Deal record not found for this agreement."); return; }
 
       const profile = (DB.getProfile && DB.getProfile()) || {};
-      const investorName = inv.investorName || (profile.firstName ? (profile.firstName + " " + (profile.lastName || "")).trim() : "Demo Investor");
-      const investorEmail = profile.email || "investor@demo.ng";
-      const investorTier = inv.kycTierAtSign || (deal.lane === "lane-b" ? 3 : 2);
+      // Change 6 — investor Company Profile embedded in the document body.
+      const investorCP = inv.investorCompanyProfile ||
+        (DB.companyProfileApi ? DB.companyProfileApi().get() : null);
+      const investorName = (investorCP && investorCP.legalName) || inv.investorName ||
+        (profile.firstName ? (profile.firstName + " " + (profile.lastName || "")).trim() : "Investor Corporate Entity");
+      const investorEmail = profile.email || "investor@corporate.ng";
+      const investorTier = inv.kycTierAtSign || 2;
       const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
       const signedDate = new Date(inv.signedAt).toLocaleString("en-GB");
       const countersignedDate = inv.countersignedAt ? new Date(inv.countersignedAt).toLocaleString("en-GB") : null;
@@ -140,7 +144,7 @@
                        : inv.countersignState === "declined" ? "declined"
                        : "pending";
 
-      document.title = "Bilateral Subscription Agreement · " + (deal.ticker || deal.company);
+      document.title = "Subscription Agreement · " + (deal.ticker || deal.company);
       document.getElementById("meta-ticker").textContent = " · " + (deal.ticker || "");
       document.getElementById("meta-state").innerHTML = ' · <strong>' + esc(stateLabel) + '</strong>';
 
@@ -178,7 +182,7 @@
           '<div>' +
             '<div class="sig-box-label">Investor</div>' +
             '<h3 class="sig-name">' + esc(investorName) + '</h3>' +
-            '<div class="sig-mode">Signed with 6-digit transaction PIN</div>' +
+            '<div class="sig-mode">Signed with 6-digit Vault PIN by authorized signatory</div>' +
           '</div>' +
           '<div class="sig-time">' + signedDate + '</div>' +
         '</div>'
@@ -210,10 +214,28 @@
              '<div class="sig-time">—</div>' +
            '</div>');
 
+      // Helpers to render a company-profile kv inside the printable agreement.
+      function cpRow(label, value) {
+        return '<dt>' + esc(label) + '</dt><dd>' + esc(value || "—") + '</dd>';
+      }
+      function joinDirectors(dirs) {
+        if (!Array.isArray(dirs) || !dirs.length) return "—";
+        return dirs.map(function (d) {
+          if (typeof d === "string") return d;
+          return (d.name || "") + (d.role ? " (" + d.role + ")" : "");
+        }).join("; ");
+      }
+      function joinAddress(cp) {
+        if (!cp) return "—";
+        return [cp.addressLine1, cp.addressLine2, cp.city, cp.state, cp.country].filter(Boolean).join(", ") || "—";
+      }
+      const issuerCacRc = "RC-" + (1000000 + ((deal.ticker || "NRG").charCodeAt(0) * 137 % 900000));
+      const issuerTin = (12340000 + ((deal.ticker || "NRG").charCodeAt(0) * 19)) + "-0001";
+
       document.getElementById("docRoot").innerHTML = (
-        '<div class="watermark"><span>Deal Room · Verified Copy</span></div>' +
+        '<div class="watermark"><span>Deal Room · Agreement Room Copy</span></div>' +
         '<header class="doc-head">' +
-          '<div class="doc-eyebrow">Bilateral Subscription Agreement · ' + esc(deal.laneLabel || "") + '</div>' +
+          '<div class="doc-eyebrow">Subscription Agreement · ' + esc(deal.laneLabel || "") + ' · Agreement Room</div>' +
           '<h1 class="doc-title">' + esc(deal.legalName || deal.company) + ' &mdash; ' + esc(deal.ticker || "") + '</h1>' +
           '<div class="doc-meta">Dated ' + today + ' · Governing law: Federal Republic of Nigeria · Jurisdiction: FCT, Abuja' +
             '<br/>Doc ID: <code>' + esc(inv.id) + '</code>' +
@@ -221,29 +243,56 @@
           '<span class="doc-state ' + stateClass + '">' + esc(stateLabel) + '</span>' +
         '</header>' +
 
+        // Change 5 — settlement-off-platform callout. Sits at the top of the agreement body.
         '<section class="clause">' +
-          '<h2>1. Issuer</h2>' +
-          '<dl class="kv">' +
-            '<dt>Legal name</dt><dd>' + esc(deal.legalName || deal.company) + '</dd>' +
-            '<dt>Trading name</dt><dd>' + esc(deal.tradingName || deal.company) + ' (' + esc(deal.ticker || "") + ')</dd>' +
-            '<dt>CAC RC</dt><dd>RC-' + (1000000 + ((deal.ticker || "NRG").charCodeAt(0) * 137 % 900000)) + '</dd>' +
-            '<dt>TIN</dt><dd>' + (12340000 + ((deal.ticker || "NRG").charCodeAt(0) * 19)) + '-0001</dd>' +
-            '<dt>Sector</dt><dd>' + esc(deal.sector || "—") + '</dd>' +
-            '<dt>Auditor</dt><dd>' + esc(deal.auditor || (deal.lane === "lane-a" ? "BDO Nigeria (FRCN registered)" : "KPMG Nigeria (FRCN registered)")) + '</dd>' +
-            '<dt>Lane</dt><dd>' + esc(deal.laneLabel || "—") + '</dd>' +
-          '</dl>' +
+          '<div class="risk-box" style="background:rgba(14,122,60,0.05);border-left-color:#0E7A3C">' +
+            '<p><strong>Settlement of funds is arranged directly between Issuer and Investor outside Deal Room.</strong> This document evidences intent and mutual agreement. Deal Room is the Agreement Room — it captures intent, runs KYB, layers the NEIIA Audit Overlay, and produces signed agreement papers. It does not process payments and never holds investor funds.</p>' +
+          '</div>' +
         '</section>' +
 
         '<section class="clause">' +
-          '<h2>2. Investor</h2>' +
+          '<h2>1. Issuer · Company Profile</h2>' +
           '<dl class="kv">' +
-            '<dt>Legal name</dt><dd>' + esc(investorName) + '</dd>' +
-            '<dt>Email</dt><dd>' + esc(investorEmail) + '</dd>' +
-            '<dt>NIN (verified)</dt><dd>••••-••••-' + (Math.abs(((investorEmail || "").charCodeAt(0) || 65) * 1337) % 9000 + 1000) + '</dd>' +
-            '<dt>BVN-verified bank</dt><dd>Access Bank ••••••' + (Math.abs(((investorEmail || "").charCodeAt(1) || 90) * 421) % 9000 + 1000) + '</dd>' +
-            '<dt>KYC tier</dt><dd>Tier ' + investorTier + '</dd>' +
-            '<dt>Accreditation</dt><dd>' + (investorTier >= 3 ? "Qualified (Lane B eligible)" : "Retail (Lane A eligible)") + '</dd>' +
+            cpRow("Legal name", deal.legalName || deal.company) +
+            cpRow("Trading name", (deal.tradingName || deal.company) + " (" + (deal.ticker || "") + ")") +
+            cpRow("CAC RC", issuerCacRc) +
+            cpRow("TIN", issuerTin) +
+            cpRow("Sector", deal.sector) +
+            cpRow("Auditor (issuer-engaged)", deal.auditor || (deal.lane === "lane-a" ? "BDO Nigeria (FRCN registered)" : "KPMG Nigeria (FRCN registered)")) +
+            cpRow("NEIIA Audit Overlay confidence", (deal.auditConfidence != null ? deal.auditConfidence : 82) + "/100") +
+            cpRow("Lane", deal.laneLabel) +
           '</dl>' +
+        '</section>' +
+
+        // Change 6 — investor Company Profile embedded in full inside the agreement body.
+        '<section class="clause">' +
+          '<h2>2. Investor · Company Profile</h2>' +
+          (investorCP
+            ? ('<dl class="kv">' +
+                cpRow("Legal name", investorCP.legalName) +
+                cpRow("CAC RC", investorCP.cacRC) +
+                cpRow("TIN", investorCP.tin) +
+                cpRow("Registered address", joinAddress(investorCP)) +
+                cpRow("Year incorporated", investorCP.yearIncorporated) +
+                cpRow("Sector / industry", investorCP.sector) +
+                cpRow("Company size", investorCP.companySize) +
+                cpRow("Annual revenue range", investorCP.revenueRange) +
+                cpRow("Directors", joinDirectors(investorCP.directors)) +
+                cpRow("Authorized signatory", investorCP.authorizedSignatory) +
+                cpRow("Audit firm", investorCP.auditFirm) +
+                cpRow("Fiscal year end", investorCP.fiscalYearEnd) +
+                cpRow("Investment mandate", investorCP.investmentMandate) +
+                cpRow("Website / LinkedIn", investorCP.website || investorCP.linkedin) +
+                cpRow("Workspace email", investorEmail) +
+                cpRow("KYB tier", "Tier " + investorTier) +
+              '</dl>')
+            : ('<dl class="kv">' +
+                cpRow("Legal name", investorName) +
+                cpRow("Workspace email", investorEmail) +
+                cpRow("KYB tier", "Tier " + investorTier) +
+                '<dt>Note</dt><dd style="color:var(--muted);font-style:italic">Investor had no Company Profile on file at signing.</dd>' +
+              '</dl>')
+          ) +
         '</section>' +
 
         '<section class="clause">' +
@@ -253,16 +302,14 @@
         '</section>' +
 
         '<section class="clause">' +
-          '<h2>4. Subscription</h2>' +
+          '<h2>4. Allocation &amp; off-platform settlement</h2>' +
           '<dl class="kv">' +
-            '<dt>Ticket size</dt><dd>' + fmtNgn(inv.ticketNGN) + '</dd>' +
-            '<dt>Source of funds</dt><dd>' + esc(inv.sourceOfFunds || "—") + '</dd>' +
-            '<dt>Escrow custodian</dt><dd>Stanbic IBTC Bank (CBN-licensed)</dd>' +
-            '<dt>Payment rail</dt><dd>NIBSS Instant Payment (NIP)</dd>' +
-            (inv.payment ? '<dt>Reference code</dt><dd><code>' + esc(inv.payment.refCode) + '</code></dd>' : '') +
-            (inv.payment ? '<dt>Escrow account</dt><dd><code>' + esc(inv.payment.escrowAcct) + '</code></dd>' : '') +
-            '<dt>Cooling-off</dt><dd>14 days from execution (full countersign)</dd>' +
+            cpRow("Proposed allocation", fmtNgn(inv.ticketNGN)) +
+            cpRow("Source of funds (investor-attested)", inv.sourceOfFunds || "Corporate treasury") +
+            cpRow("Settlement mechanism", "Arranged directly between Issuer and Investor outside Deal Room") +
+            cpRow("Cooling-off", "14 days from full execution") +
           '</dl>' +
+          (inv.investorThesis ? '<p class="body-text" style="margin-top:10px"><strong>Investor thesis:</strong> ' + esc(inv.investorThesis) + '</p>' : '') +
         '</section>' +
 
         '<section class="clause">' +
@@ -272,7 +319,7 @@
 
         '<section class="clause">' +
           '<h2>6. SEC-mandated risk disclosure</h2>' +
-          '<div class="risk-box"><p>Crowdfunding and private placement investments carry substantial risk, including total loss of capital. Past performance is not indicative of future results. This investment is illiquid; tokens are non-transferable until conversion or SEC-approved secondary window. The issuer has been verified by Deal Room compliance but Deal Room does not guarantee returns. You have a 14-day cooling-off period from the date of full execution during which you may withdraw without penalty; thereafter the subscription is binding subject to escrow threshold and SEC rules.</p></div>' +
+          '<div class="risk-box"><p>Crowdfunding and private placement investments carry substantial risk, including total loss of capital. Past performance is not indicative of future results. This investment is illiquid; instruments are non-transferable until conversion or SEC-approved secondary window. The issuer has been verified by Deal Room KYB but Deal Room does not guarantee returns and does not process payments. You have a 14-day cooling-off period from the date of full execution during which you may withdraw without penalty; thereafter the agreement is binding subject to SEC rules and the off-platform settlement arranged between the parties.</p></div>' +
         '</section>' +
 
         '<section class="clause">' +

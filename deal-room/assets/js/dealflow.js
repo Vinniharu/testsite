@@ -25,7 +25,7 @@
     { n: 2, key: "structure",  name: "Structure",  advance: "Lock terms →",          blurb: "Confirm vehicle and terms. Fees, carry, min check, target raise, close date." },
     { n: 3, key: "outreach",   name: "Outreach",   advance: "Open data room →",      blurb: "Send the teaser. Track soft → hard commits from subscribed investors." },
     { n: 4, key: "diligence",  name: "Diligence",  advance: "Open subscription →",   blurb: "Open the data room to committed investors. Manage Q&A and document access." },
-    { n: 5, key: "close",      name: "Close",      advance: "Activate vehicle →",    blurb: "Subscription docs, KYC/AML, e-sign, wire instructions, allocations." },
+    { n: 5, key: "close",      name: "Close",      advance: "Activate vehicle →",    blurb: "Subscription docs, KYB checks, e-sign, dual-signatory countersign, allocations. Settlement off-platform." },
     { n: 6, key: "administer", name: "Administer", advance: null,                    blurb: "Cap table, capital calls, distributions, NAV, LP reporting." },
   ];
 

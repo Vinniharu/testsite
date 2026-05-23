@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal review · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:6px;">
+          <a href="deal-feed.html" style="font-size:13px;color:var(--brand);font-weight:600;">← Back to deal feed</a>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;" id="deal-title">Deal review</h1>
+            <p style="margin:4px 0 0;color:var(--muted);" id="deal-subtitle"></p>
+          </div>
+          <div id="deal-status-badge"></div>
+        </div>
+
+        <div id="apex-inline-mount"></div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;" class="row-2">
+          <div>
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 12px;font-size:16px;">GP profile</h3>
+              <div id="gp-block"></div>
+            </div>
+
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 12px;font-size:16px;">Deal terms</h3>
+              <div id="terms-block"></div>
+            </div>
+
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 12px;font-size:16px;">Portfolio company</h3>
+              <div id="pc-block"></div>
+            </div>
+
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 12px;font-size:16px;">Negotiation history</h3>
+              <div id="nego-block"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card card-p" style="position:sticky;top:90px;">
+              <h3 style="margin:0 0 14px;font-size:15px;">Take action</h3>
+              <button class="btn btn-primary" id="accept-btn" style="width:100%;justify-content:center;margin-bottom:8px;padding:12px;"></button>
+              <button class="btn btn-secondary" id="counter-btn" style="width:100%;justify-content:center;margin-bottom:8px;padding:12px;">Counter-propose →</button>
+              <button class="btn btn-ghost" id="decline-btn" style="width:100%;justify-content:center;color:var(--red);padding:12px;">Decline</button>
+              <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px;font-size:12px;color:var(--muted);">Accepting will auto-generate a signed deal memo, copy it to your messages, and schedule settlement off-platform.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const dealId = params.get('dealId') || 'dt-1';
+    Portal.init({ role: 'lp', activeNav: 'deal-feed', pageContext: { dealId: dealId } });
+
+    function fmtCompact(n) {
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+      return '$' + (n || 0).toLocaleString();
+    }
+
+    const deal = NEIIA_DATA.dealTerms.find(function (d) { return d.id === dealId; }) || NEIIA_DATA.dealTerms[0];
+    const gp = NEIIA_DATA.personas.gp.find(function (g) { return g.id === deal.gpId; }) || NEIIA_DATA.personas.gp[0];
+    const pc = NEIIA_DATA.portfolio.find(function (p) { return p.name === deal.portfolioCompany; });
+
+    document.getElementById('deal-title').textContent = deal.title;
+    document.getElementById('deal-subtitle').textContent = 'From ' + deal.gpFirm + ' · issued ' + deal.issued;
+    document.getElementById('deal-status-badge').innerHTML = '<span class="deal-status deal-status-new">' + deal.status + '</span>';
+    document.getElementById('accept-btn').innerHTML = Portal.icon('check', 16) + ' Accept terms';
+
+    document.getElementById('apex-inline-mount').innerHTML = Portal.apexPanel({
+      title: 'Deal analysis',
+      dealId: deal.id,
+      bullets: [
+        'Allocation of ' + fmtCompact(deal.allocation) + ' at ' + fmtCompact(deal.valuation) + ' pre-money is within market for ' + deal.instrument + '.',
+        'Anti-dilution scope: ' + deal.governance.antiDilution + (deal.governance.antiDilution === 'Broad-based weighted average' ? ' (investor-friendly, typical for African PE).' : '.'),
+        deal.governance.boardSeat ? 'GP requests a board seat — common at this stage but worth negotiating an observer alternative.' : 'No board seat requested. Info rights only.',
+        'Recommendation: terms are reasonable. Consider counter-proposing quarterly (vs annual) info rights if not already specified.'
+      ]
+    });
+
+    // GP block
+    document.getElementById('gp-block').innerHTML =
+      '<div style="display:flex;gap:14px;align-items:center;">' +
+        '<span class="avatar avatar-md">' + gp.initials + '</span>' +
+        '<div><div style="font-weight:700;color:var(--ink);">' + gp.name + '</div>' +
+        '<div style="font-size:13px;color:var(--muted);">' + gp.role + ' · ' + gp.firm + '</div></div>' +
+      '</div>' +
+      '<div class="term-row" style="margin-top:14px;"><span class="term-label">Firm</span><span class="term-val">' + gp.firm + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Email</span><span class="term-val">' + gp.email + '</span></div>' +
+      '<div class="term-row" style="border-bottom:none;"><span class="term-label">Funds managed</span><span class="term-val">NEIIA Growth Fund I · NEIIA Tech Ventures · NEIIA Impact Fund</span></div>';
+
+    // Terms block
+    const g = deal.governance;
+    const milestones = (deal.milestones || []).map(function (m) { return '<li style="margin-bottom:2px;">' + m + '</li>'; }).join('');
+    document.getElementById('terms-block').innerHTML =
+      '<div class="term-row"><span class="term-label">Allocation</span><span class="term-val">' + fmtCompact(deal.allocation) + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Instrument</span><span class="term-val">' + deal.instrument + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Pre-money valuation</span><span class="term-val">' + fmtCompact(deal.valuation) + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Target raise</span><span class="term-val">' + fmtCompact(deal.targetAmount) + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Board seat</span><span class="term-val">' + (g.boardSeat ? 'Yes (GP)' : 'No') + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Info rights</span><span class="term-val">' + (g.infoRights ? 'Quarterly + audited annual' : 'No') + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Pro-rata</span><span class="term-val">' + (g.proRata ? 'Yes' : 'No') + '</span></div>' +
+      '<div class="term-row"><span class="term-label">ROFR</span><span class="term-val">' + (g.rofr ? 'Yes' : 'No') + '</span></div>' +
+      '<div class="term-row"><span class="term-label">Drag-along</span><span class="term-val">' + (g.dragAlong ? 'Yes' : 'No') + '</span></div>' +
+      '<div class="term-row" style="border-bottom:none;"><span class="term-label">Anti-dilution</span><span class="term-val">' + g.antiDilution + '</span></div>' +
+      '<div style="margin-top:14px;"><div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Milestones</div>' +
+      '<ul style="font-size:14px;color:var(--body);margin:0;padding-left:18px;">' + milestones + '</ul></div>';
+
+    // Portfolio company
+    if (pc) {
+      document.getElementById('pc-block').innerHTML =
+        '<div style="display:flex;gap:12px;align-items:flex-start;">' +
+          '<span class="avatar avatar-md avatar-blue">' + pc.initials + '</span>' +
+          '<div><div style="font-weight:700;color:var(--ink);">' + pc.name + '</div>' +
+          '<div style="font-size:13px;color:var(--muted);margin-bottom:8px;">' + pc.sector + ' · ' + pc.stage + ' · ' + pc.hq + '</div>' +
+          '<div style="font-size:14px;color:var(--body);">' + pc.blurb + '</div></div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;">' +
+          '<div class="kpi-card" style="padding:10px;"><div class="kpi-label">Invested</div><div class="kpi-value" style="font-size:16px;">' + fmtCompact(pc.invested) + '</div></div>' +
+          '<div class="kpi-card" style="padding:10px;"><div class="kpi-label">Valuation</div><div class="kpi-value" style="font-size:16px;">' + fmtCompact(pc.valuation) + '</div></div>' +
+          '<div class="kpi-card" style="padding:10px;"><div class="kpi-label">Ownership</div><div class="kpi-value" style="font-size:16px;">' + pc.ownership + '%</div></div>' +
+        '</div>';
+    } else {
+      document.getElementById('pc-block').innerHTML = '<div style="color:var(--muted);font-size:14px;">Portfolio company details available upon acceptance.</div>';
+    }
+
+    // Negotiation history
+    function renderNego() {
+      const turns = NEIIA_STATE.getDealTurns(deal.id);
+      if (!turns.length) {
+        document.getElementById('nego-block').innerHTML = '<div style="color:var(--muted);font-size:14px;">No history yet — the GP has just sent this deal to you.</div>';
+        return;
+      }
+      document.getElementById('nego-block').innerHTML = turns.map(function (t) {
+        const bg = t.from === 'gp' ? '#F1F5F9' : 'var(--brand-50)';
+        const color = t.from === 'gp' ? 'var(--ink)' : 'var(--brand)';
+        return '<div style="border-left:3px solid ' + color + ';background:' + bg + ';padding:10px 12px;border-radius:6px;margin-bottom:8px;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+            '<div style="font-weight:700;color:var(--ink);font-size:13px;">' + (t.from === 'gp' ? 'GP' : 'LP') + ' · ' + t.who + ' · ' + t.action + '</div>' +
+            '<div style="font-size:12px;color:var(--muted);">' + t.when + '</div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--body);">' + t.text + '</div>' +
+        '</div>';
+      }).join('');
+    }
+    renderNego();
+
+    // Actions
+    function doAccept() {
+      Portal.modal({
+        title: 'Accept these terms?',
+        body: '<p style="margin:0;">Accepting will auto-generate a signed deal memo for both parties, push it into your Messages, and schedule a settlement meeting off-platform.</p>',
+        primary: { label: 'Yes, accept', onClick: function (close) { close(); finalizeAccept(); } },
+        secondary: { label: 'Cancel' }
+      });
+    }
+    document.getElementById('accept-btn').addEventListener('click', doAccept);
+
+    function finalizeAccept() {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,0.85);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;';
+      overlay.innerHTML = '<div style="font-weight:700;color:var(--ink);font-size:18px;">Generating deal memo…</div><div style="color:var(--muted);">Pulling KYB, terms, and negotiation log.</div>';
+      document.body.appendChild(overlay);
+
+      // Append acceptance turn
+      NEIIA_STATE.addDealTurn(deal.id, { from: 'lp', who: 'Tunde Adeyemi', when: new Date().toISOString().slice(0, 16).replace('T', ' '), action: 'Accept', text: 'Accepted the proposed terms in full. Memo generation requested.' });
+
+      // Create memo
+      const memoId = 'dm-' + Date.now();
+      const lp = NEIIA_STATE.currentUser || NEIIA_DATA.personas.lp[0];
+      const lpFull = NEIIA_DATA.personas.lp.find(function (x) { return x.id === lp.id; }) || lp;
+      const memo = {
+        id: memoId,
+        dealId: deal.id,
+        generatedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
+        status: 'Approved',
+        gp: {
+          firm: deal.gpFirm,
+          cac: 'RC-1230945',
+          tin: 'NG-2210045-0001',
+          address: '14 Adeola Odeku Street, Victoria Island, Lagos, Nigeria',
+          vehicle: 'NEIIA Growth Fund I',
+          signatory: 'Adaobi Okonkwo · Managing Partner'
+        },
+        lp: {
+          name: lpFull.name,
+          firm: lpFull.name + ' Holdings',
+          lpType: lpFull.lpType || lpFull.type,
+          sector: lpFull.sector || 'Fintech',
+          mandate: 'African early-stage tech',
+          cac: 'RC-987212',
+          tin: 'NG-9871002-0001',
+          address: '34 Cooper Road, Ikoyi, ' + (lpFull.city || 'Lagos') + ', ' + (lpFull.country || 'Nigeria')
+        },
+        deal: {
+          title: deal.title,
+          allocation: deal.allocation,
+          instrument: deal.instrument,
+          valuation: deal.valuation,
+          milestones: deal.milestones,
+          governance: deal.governance,
+          portfolioCompany: deal.portfolioCompany
+        },
+        turns: NEIIA_STATE.getDealTurns(deal.id),
+        meeting: null
+      };
+      NEIIA_STATE.addDealMemo(memo);
+
+      setTimeout(function () {
+        Portal.toast('Deal approved. Memo generated and copied to your inbox + NEIIA + GP.', 'success');
+        window.location.href = '../deal-memo.html?id=' + memoId + '&role=lp';
+      }, 1000);
+    }
+
+    function doCounter() {
+      const body = document.createElement('div');
+      body.innerHTML =
+        '<p style="margin:0 0 12px;">Edit the fields you want to counter on. Any change becomes a counter-offer.</p>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+          '<div><label style="font-size:12px;font-weight:600;">Allocation (USD)</label><input id="cp-alloc" type="number" value="' + deal.allocation + '" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div><label style="font-size:12px;font-weight:600;">Valuation cap (USD)</label><input id="cp-val" type="number" value="' + deal.valuation + '" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:600;">Notes to GP</label><textarea id="cp-notes" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;min-height:80px;">Requesting quarterly info rights and a 10% reduction in pre-money.</textarea></div>' +
+        '</div>';
+      Portal.modal({
+        title: 'Counter-propose terms',
+        body: body,
+        primary: {
+          label: 'Send counter',
+          onClick: function (close) {
+            const alloc = parseInt(body.querySelector('#cp-alloc').value, 10) || 0;
+            const val = parseInt(body.querySelector('#cp-val').value, 10) || 0;
+            const notes = body.querySelector('#cp-notes').value || '';
+            NEIIA_STATE.addDealTurn(deal.id, {
+              from: 'lp', who: 'Tunde Adeyemi',
+              when: new Date().toISOString().slice(0, 16).replace('T', ' '),
+              action: 'Counter',
+              text: 'Counter at allocation $' + alloc.toLocaleString() + ', valuation $' + val.toLocaleString() + '. Notes: ' + notes
+            });
+            close();
+            Portal.toast('Counter-offer sent to GP.', 'success');
+            renderNego();
+          }
+        },
+        secondary: { label: 'Cancel' }
+      });
+    }
+    document.getElementById('counter-btn').addEventListener('click', doCounter);
+
+    document.getElementById('decline-btn').addEventListener('click', function () {
+      const body = document.createElement('div');
+      body.innerHTML =
+        '<p style="margin:0 0 10px;">Declining is final for this deal. Pick a reason so the GP can learn from it.</p>' +
+        '<select id="rsn" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;">' +
+          '<option>Outside my mandate</option>' +
+          '<option>Ticket size too large</option>' +
+          '<option>Valuation too high</option>' +
+          '<option>Sector not a fit</option>' +
+          '<option>Timing — not now</option>' +
+          '<option>Other</option>' +
+        '</select>';
+      Portal.modal({
+        title: 'Decline this deal',
+        body: body,
+        primary: {
+          label: 'Decline',
+          onClick: function (close) {
+            const r = body.querySelector('#rsn').value;
+            NEIIA_STATE.addDealTurn(deal.id, { from: 'lp', who: 'Tunde Adeyemi', when: new Date().toISOString().slice(0, 16).replace('T', ' '), action: 'Decline', text: 'Declined. Reason: ' + r });
+            close();
+            Portal.toast('Deal declined. GP has been notified.', 'success');
+            renderNego();
+          }
+        },
+        secondary: { label: 'Cancel' }
+      });
+    });
+  </script>
+  <style>
+    @media (max-width: 980px) { .row-2 { grid-template-columns: 1fr !important; } }
+  </style>
+</body>
+</html>

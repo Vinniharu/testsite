@@ -42,19 +42,19 @@
     const usdActive = ccy === "USD" ? " is-active" : "";
     const ngnActive = ccy === "NGN" ? " is-active" : "";
 
-    // v3 account state — drives Verified + Tier badges
-    const acc = (window.DataBank && window.DataBank.accountApi) ? window.DataBank.accountApi().get() : { verified: false, kycTier: 1, accountType: "individual" };
+    // Corporate KYB state — drives Verified + Tier badges (Change 1, Change 4)
+    const acc = (window.DataBank && window.DataBank.accountApi) ? window.DataBank.accountApi().get() : { verified: false, kycTier: 1, accountType: "corporate" };
     const tier = acc.kycTier || 1;
     const verifiedBadge = acc.verified
-      ? '<button type="button" class="t-verify-pill is-verified" data-action="open-account" title="Verified · ' + (acc.accountType === "corporate" ? "Corporate" : "Individual") + ' · ' + (acc.plan ? acc.plan.cycleLabel : "active") + '" aria-label="Verified account">' +
+      ? '<button type="button" class="t-verify-pill is-verified" data-action="open-account" title="KYB Verified · Corporate · ' + (acc.plan ? acc.plan.cycleLabel : "active") + '" aria-label="Verified account">' +
           '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
           '<span>Verified</span>' +
         '</button>'
-      : '<button type="button" class="t-verify-pill is-unverified" data-action="open-paywall" title="Verify your account to view deals and invest">' +
+      : '<button type="button" class="t-verify-pill is-unverified" data-action="open-paywall" title="Verify your company KYB (TIN + CAC) to view deals and submit intents">' +
           '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' +
           '<span>Verify</span>' +
         '</button>';
-    const tierBadge = '<span class="t-tier-pill t-tier-' + tier + '" title="KYC Tier ' + tier + (tier === 1 ? " — Retail (Lane A)" : tier === 2 ? " — Sophisticated" : " — Qualified (Lane B eligible)") + '">T' + tier + '</span>';
+    const tierBadge = '<span class="t-tier-pill t-tier-' + tier + '" title="KYB Tier ' + tier + (tier === 1 ? " — Unverified (signed up but KYB not complete)" : tier === 2 ? " — KYB Verified (TIN + CAC + CAC certificate)" : " — Institutional (audited financials on file)") + '">T' + tier + '</span>';
 
     return (
       '<header class="t-header" role="banner">' +
@@ -149,25 +149,26 @@
       }
     } catch (_) {}
 
-    // v3 account-aware sidebar. Individual = investor-only; Corporate = both lenses.
-    // All items show; gated items render with a padlock + intercept clicks to the right gate.
-    const sbAcc = (window.DataBank && window.DataBank.accountApi) ? window.DataBank.accountApi().get() : { accountType: "individual", verified: false };
-    const isCorp = sbAcc.accountType === "corporate";
+    // Corporate-only platform (Change 1). All accounts are companies — sidebar layout doesn't branch.
+    const sbAcc = (window.DataBank && window.DataBank.accountApi) ? window.DataBank.accountApi().get() : { accountType: "corporate", verified: false };
     const isVerified = !!sbAcc.verified;
+    const cpApi = window.DataBank && window.DataBank.companyProfileApi ? window.DataBank.companyProfileApi() : null;
+    const cpDone = cpApi ? cpApi.isComplete() : false;
 
     const items = [
-      { key: "home",       href: "index.html",      label: "Home",              icon: "dashboard" },
-      { key: "deals",      href: "deals.html",      label: "Deal room",         icon: "company" },
-      { key: "portfolio",  href: "portfolio.html",  label: "Portfolio",         icon: "watchlist" },
-      { key: "watchlist",  href: "watchlist.html",  label: "Watchlist",         icon: "watchlist" },
-      { key: "vault",      href: "vault.html",      label: "Data Vault",        icon: "datacell",  lockReason: isVerified ? null : "verify",  lensTag: "Investor" },
-      { key: "datacell",   href: "datacell.html",   label: "Data Cell",         icon: "datacell",  lockReason: isCorp ? null : "corporate",   lensTag: "Publisher" },
-      { key: "investors",  href: "investors.html",  label: "Investors",         icon: "deals",     lockReason: isCorp ? null : "corporate",   lensTag: "Publisher" },
-      { key: "compliance", href: "compliance.html", label: "Compliance review", icon: "deals",     lensTag: "Compliance" },
-      { key: "messages",   href: "messages.html",   label: "Messages",          icon: "messages",  badge: unreadMsgs, lockReason: isVerified ? null : "verify" },
-      { key: "alerts",     href: "#",               label: "Alerts",            icon: "alerts",    dataAction: "open-alerts", badge: aCount },
-      { key: "reports",    href: "#",               label: "Reports",           icon: "reports",   dataAction: "open-reports", lockReason: isCorp ? null : "corporate" },
-      { key: "settings",   href: "settings.html",   label: "Settings",          icon: "settings" }
+      { key: "home",            href: "index.html",            label: "Home",              icon: "dashboard" },
+      { key: "deals",           href: "deals.html",            label: "Deal room",         icon: "company" },
+      { key: "portfolio",       href: "portfolio.html",        label: "Portfolio",         icon: "watchlist" },
+      { key: "watchlist",       href: "watchlist.html",        label: "Watchlist",         icon: "watchlist" },
+      { key: "vault",           href: "vault.html",            label: "Data Vault",        icon: "datacell",  lockReason: isVerified ? null : "verify" },
+      { key: "company-profile", href: "company-profile.html",  label: "Company Profile",   icon: "company",   badge: cpDone ? 0 : 1 },
+      { key: "datacell",        href: "datacell.html",         label: "Data Cell",         icon: "datacell" },
+      { key: "investors",       href: "investors.html",        label: "Investors",         icon: "deals" },
+      { key: "compliance",      href: "compliance.html",       label: "Compliance review", icon: "deals" },
+      { key: "messages",        href: "messages.html",         label: "Messages",          icon: "messages",  badge: unreadMsgs, lockReason: isVerified ? null : "verify" },
+      { key: "alerts",          href: "#",                     label: "Alerts",            icon: "alerts",    dataAction: "open-alerts", badge: aCount },
+      { key: "reports",         href: "#",                     label: "Reports",           icon: "reports",   dataAction: "open-reports" },
+      { key: "settings",        href: "settings.html",         label: "Settings",          icon: "settings" }
     ];
 
     const LOCK_SVG = '<svg class="nav-lock" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
@@ -225,18 +226,18 @@
       '</div>'
     );
 
-    // v3 sidebar account block — mirrors the desktop profile dropdown with real badges + actions
-    const sbAcc2 = (window.DataBank && window.DataBank.accountApi) ? window.DataBank.accountApi().get() : { verified: false, kycTier: 1, accountType: "individual" };
+    // Corporate sidebar account block — mirrors the desktop profile dropdown with real badges + actions
+    const sbAcc2 = (window.DataBank && window.DataBank.accountApi) ? window.DataBank.accountApi().get() : { verified: false, kycTier: 1, accountType: "corporate" };
     const sbTier = sbAcc2.kycTier || 1;
     const sbBadges =
       (sbAcc2.verified
         ? '<span class="acct-mini-pill ok">' +
             '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>' +
-            'Verified' +
+            'KYB Verified' +
           '</span>'
-        : '<button type="button" class="acct-mini-pill warn" data-action="open-paywall" title="Verify your account">Verify →</button>'
+        : '<button type="button" class="acct-mini-pill warn" data-action="open-paywall" title="Verify your company KYB">Verify →</button>'
       ) +
-      '<span class="acct-mini-pill t-tier-' + sbTier + '" title="KYC Tier ' + sbTier + '">T' + sbTier + '</span>';
+      '<span class="acct-mini-pill t-tier-' + sbTier + '" title="KYB Tier ' + sbTier + '">T' + sbTier + '</span>';
 
     return (
       '<nav class="workspace-nav" aria-label="Workspace">' +

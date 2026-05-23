@@ -158,13 +158,13 @@
     if (m) m.classList.remove("is-open");
   }
 
-  // ---------- PIN pad (6-digit transaction PIN per v3 Part 10) ----------
-  // Validates against the user's stored salted hash. 3 wrong entries → 24h lockout.
-  // If no PIN has been set yet, accepts any 6 digits and recommends setup.
+  // ---------- PIN pad (6-digit Vault PIN — Change 2) ----------
+  // Renamed from "Transaction PIN" to "Vault PIN" because Deal Room does NOT process payments.
+  // The PIN exclusively gates the Data Vault. Underlying hash + lockout mechanism unchanged.
   function pinPad(opts) {
     opts = opts || {};
-    const title = opts.title || "Enter transaction PIN";
-    const baseSub = opts.subtitle || "Your 6-digit PIN is required to sign this subscription.";
+    const title = opts.title || "Enter Vault PIN";
+    const baseSub = opts.subtitle || "Your 6-digit Vault PIN is required to access encrypted vault contents.";
     const acctApi = window.DataBank && window.DataBank.accountApi ? window.DataBank.accountApi() : null;
     // Setup mode: capture PIN twice and store the hash (no verification).
     const setupMode = opts.mode === "setup";
@@ -177,21 +177,21 @@
     if (!setupMode && acctApi) {
       const lock = acctApi.lockoutState();
       if (lock.locked) {
-        modal("PIN locked", '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55">Too many failed attempts. PIN is locked until <strong>' + new Date(lock.until).toLocaleString("en-GB") + '</strong>. Real reset requires re-KYC (NIN + BVN + selfie liveness).</p>', { footer: '<button class="t-btn" data-modal-close>Close</button>' });
+        modal("Vault PIN locked", '<p style="font-size:13px;color:var(--text-secondary);line-height:1.55">Too many failed attempts. Your Vault PIN is locked until <strong>' + new Date(lock.until).toLocaleString("en-GB") + '</strong>. Reset requires re-KYB (TIN + CAC re-verification).</p>', { footer: '<button class="t-btn" data-modal-close>Close</button>' });
         return;
       }
     }
 
     function subText() {
-      if (setupMode) return confirmStage === "first" ? "Choose a 6-digit PIN. You'll be asked to confirm it on the next screen." : "Re-enter the same 6 digits to confirm.";
+      if (setupMode) return confirmStage === "first" ? "Choose a 6-digit Vault PIN. You'll be asked to confirm it on the next screen." : "Re-enter the same 6 digits to confirm.";
       return baseSub;
     }
     function helpText() {
       const lock = acctApi ? acctApi.lockoutState() : { attemptsLeft: 3 };
       const noPin = acctApi && !acctApi.hasPin();
-      if (setupMode) return "PIN is hashed with a per-user salt before storage. Real production stack also bcrypts server-side.";
-      if (noPin) return "No PIN set yet — any 6 digits accepted. Set a real PIN in Settings → Account & KYC.";
-      return "Attempts left: " + lock.attemptsLeft + ". 3 wrong entries trigger a 24-hour lockout.";
+      if (setupMode) return "Your Vault PIN protects your document vault. Deal Room does not process payments — your PIN never authorizes money movement. Stored as a salted hash; never plaintext.";
+      if (noPin) return "No Vault PIN set yet — any 6 digits accepted. Set a real PIN in Settings → Account & KYB.";
+      return "Attempts left: " + lock.attemptsLeft + ". 3 wrong entries trigger a 24-hour lockout. Your Vault PIN only protects vault access — no payments happen on Deal Room.";
     }
     function render() {
       const cells = Array.from({ length: 6 }).map(function (_, i) {
@@ -267,7 +267,7 @@
         }
         if (acctApi && acctApi.setPin(entered)) {
           closeModal();
-          toast("Transaction PIN set.");
+          toast("Vault PIN set.");
           if (typeof opts.onConfirm === "function") opts.onConfirm(entered);
         }
         return;
@@ -282,11 +282,11 @@
         }
         if (r.locked) {
           closeModal();
-          toast("Too many wrong attempts. PIN locked for 24h.");
+          toast("Too many wrong attempts. Vault PIN locked for 24h.");
           return;
         }
         pin = "";
-        errorMsg = "Wrong PIN. " + r.attemptsLeft + " attempt" + (r.attemptsLeft === 1 ? "" : "s") + " left.";
+        errorMsg = "Wrong Vault PIN. " + r.attemptsLeft + " attempt" + (r.attemptsLeft === 1 ? "" : "s") + " left.";
         render();
         return;
       }
@@ -671,14 +671,16 @@
     const DB = window.DataBank;
     const profile = (DB && DB.getProfile()) || {};
     const acctApi = DB && DB.accountApi ? DB.accountApi() : null;
-    const acc = acctApi ? acctApi.get() : { accountType: "individual", verified: false, kycTier: 1, plan: null };
+    const acc = acctApi ? acctApi.get() : { accountType: "corporate", verified: false, kycTier: 1, plan: null };
     const caps = acctApi ? acctApi.caps() : null;
     const inv = DB && DB.investmentsApi ? DB.investmentsApi() : null;
     const vault = DB && DB.vaultApi ? DB.vaultApi() : null;
+    const cpApi = DB && DB.companyProfileApi ? DB.companyProfileApi() : null;
+    const cp = cpApi ? cpApi.get() : null;
     const investments = inv ? inv.list() : [];
     const annualUsed = inv ? inv.annualSubscribedNGN() : 0;
     const vaultCount = vault ? vault.list().length : 0;
-    const fullName = ((profile.firstName || "") + " " + (profile.lastName || "")).trim() || "Deal Room user";
+    const fullName = (cp && cp.legalName) || ((profile.firstName || "") + " " + (profile.lastName || "")).trim() || "Corporate workspace";
     const email = profile.email || "—";
     function fmtNgn(n) {
       n = +n; if (!n || isNaN(n)) return "—";
@@ -694,7 +696,7 @@
         '</span>'
       : '<span class="acct-pill warn">Unverified · public-browse only</span>';
     const planLine = acc.verified && acc.plan
-      ? acc.plan.cycleLabel + ' · ' + (acc.plan.type === "corporate" ? "Corporate" : "Individual") + ' · ' + fmtNgn(acc.plan.priceNGN) +
+      ? acc.plan.cycleLabel + ' · Corporate · ' + fmtNgn(acc.plan.priceNGN) +
         (acc.plan.renewsAt ? ' · renews ' + new Date(acc.plan.renewsAt).toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }) : '')
       : "No active plan";
     const tierBadge = '<span class="t-tier-pill t-tier-' + acc.kycTier + '" style="margin-left:6px;cursor:default">T' + acc.kycTier + '</span>';
@@ -706,6 +708,9 @@
     const pinLine = acctApi && acctApi.hasPin()
       ? '<span class="acct-pill ok">Set</span>'
       : '<span class="acct-pill warn">Not set — any 6 digits accepted</span>';
+    const cpStatus = (cpApi && cpApi.isComplete())
+      ? '<span class="acct-pill ok">Complete</span>'
+      : '<span class="acct-pill warn">Incomplete — required to invest</span>';
 
     const body = (
       '<div class="acct-modal">' +
@@ -717,16 +722,18 @@
           '<div class="acct-modal-pills">' + verifiedPill + tierBadge + '</div>' +
         '</div>' +
         '<dl class="acct-modal-grid">' +
-          '<div><dt>Account type</dt><dd>' + (acc.accountType === "corporate" ? "Corporate (Issuer + Investor)" : "Individual (Investor only)") + '</dd></div>' +
-          '<div><dt>KYC tier</dt><dd>Tier ' + acc.kycTier + ' · ' + (caps ? caps.label : "—") + '</dd></div>' +
+          '<div><dt>Account type</dt><dd>Corporate (Issuer + Investor)</dd></div>' +
+          '<div><dt>KYB tier</dt><dd>Tier ' + acc.kycTier + ' · ' + (caps ? caps.label : "—") + '</dd></div>' +
           '<div><dt>Plan</dt><dd>' + esc(planLine) + '</dd></div>' +
-          '<div><dt>Transaction PIN</dt><dd>' + pinLine + '</dd></div>' +
+          '<div><dt>Vault PIN</dt><dd>' + pinLine + '</dd></div>' +
+          '<div><dt>Company Profile</dt><dd>' + cpStatus + '</dd></div>' +
           '<div class="full"><dt>Ticket caps</dt><dd>' + capLine + '</dd></div>' +
-          '<div><dt>Subscriptions</dt><dd>' + investments.length + (investments.length === 1 ? " position" : " positions") + '</dd></div>' +
+          '<div><dt>Deal agreements</dt><dd>' + investments.length + (investments.length === 1 ? " agreement" : " agreements") + '</dd></div>' +
           '<div><dt>Data Vault</dt><dd>' + vaultCount + (vaultCount === 1 ? " document" : " documents") + '</dd></div>' +
         '</dl>' +
         '<div class="acct-modal-actions">' +
           '<a class="t-btn" href="settings.html#account">Open settings →</a>' +
+          '<a class="t-btn" href="company-profile.html">Company Profile →</a>' +
           (acc.verified
             ? '<button type="button" class="t-btn" data-action="open-paywall">Change plan</button>'
             : '<button type="button" class="t-btn t-btn-primary" data-action="open-paywall">Verify account</button>') +
@@ -775,7 +782,7 @@
     if (!accountApi) return;
     const acc = accountApi.get();
     const PLANS = window.DataBank.VERIFICATION_PLANS;
-    let selectedType = acc.accountType || "individual";
+    const selectedType = "corporate"; // Change 1 — only one account type exists.
     let selectedCycle = "annual"; // default to highest commitment for demo
 
     function fmtNgn(n) {
@@ -785,10 +792,8 @@
     }
     function planCard(type, cycle) {
       const p = PLANS[type][cycle];
-      const monthlyEquivUSD = type === "individual" ? 70 : 150;
-      const baseAnnualUSD = monthlyEquivUSD * 12;
       const savePct = cycle === "monthly" ? 0 : cycle === "quarterly" ? 10 : 20;
-      const isSel = selectedType === type && selectedCycle === cycle;
+      const isSel = selectedCycle === cycle;
       return (
         '<button type="button" class="pw-card' + (isSel ? ' is-selected' : '') + '" data-pw-pick="' + type + ':' + cycle + '">' +
           '<div class="pw-card-head">' +
@@ -806,18 +811,6 @@
       );
     }
     function render() {
-      const switcher = (
-        '<div class="pw-switch" role="tablist">' +
-          '<button type="button" class="pw-switch-btn' + (selectedType === "individual" ? " is-active" : "") + '" data-pw-type="individual">' +
-            '<strong>Individual</strong>' +
-            '<span>NIN + BVN + selfie. Invest only.</span>' +
-          '</button>' +
-          '<button type="button" class="pw-switch-btn' + (selectedType === "corporate" ? " is-active" : "") + '" data-pw-type="corporate">' +
-            '<strong>Corporate</strong>' +
-            '<span>CAC + TIN + 2 signatories. Issue + invest.</span>' +
-          '</button>' +
-        '</div>'
-      );
       const cards = (
         '<div class="pw-grid">' +
           planCard(selectedType, "monthly") +
@@ -828,41 +821,37 @@
       const includes = (
         '<ul class="pw-includes">' +
           '<li>Verified badge across the platform</li>' +
-          '<li>KYC Tier 1 floor (Lane A retail access)</li>' +
-          '<li>Encrypted Data Vault with PIN-gated documents</li>' +
+          '<li>KYB Tier 2 floor — TIN + CAC verified</li>' +
+          '<li>Encrypted Data Vault with Vault-PIN-gated documents</li>' +
           '<li>Full deal data, financials, structured Q&amp;A</li>' +
-          '<li>NIBSS NIP escrow rail for subscriptions</li>' +
-          (selectedType === "corporate" ? '<li>Publisher Workspace + List-a-Deal flow (dual-signatory)</li>' : '') +
+          '<li>Submit Intent to Invest · Issuer countersign queue · Signed agreement PDF</li>' +
+          '<li>Publisher Workspace + List-a-Deal flow (dual-signatory)</li>' +
         '</ul>'
       );
       const body = (
         '<div class="pw-wrap">' +
-          '<div class="pw-lede">SEC Nigeria requires verification before you can view deal data or transact. Pre-paywall users see anonymized headlines only.</div>' +
-          switcher +
+          '<div class="pw-lede">SEC Nigeria requires Corporate KYB before you can view deal data or submit an intent. Deal Room is corporate-only — every account is a Nigerian-registered entity.</div>' +
           cards +
-          '<div class="pw-foot-note">All fees billed in NGN at the prevailing CBN rate. USD shown for transparency. No free tier per v3 Part 12.</div>' +
+          '<div class="pw-foot-note">All fees billed in NGN at the prevailing CBN rate. USD shown for transparency. Deal Room does not process payments on platform — settlement is arranged off-platform between issuer and investor.</div>' +
           '<details class="pw-details"><summary>What\'s included</summary>' + includes + '</details>' +
         '</div>'
       );
-      modal("Verify your account", body, {
+      modal("Onboard your company to Deal Room", body, {
         footer:
           '<button type="button" class="t-btn" data-modal-close>Maybe later</button>' +
           '<button type="button" class="t-btn t-btn-primary" id="pw-confirm">Pay ' + fmtNgn(PLANS[selectedType][selectedCycle].priceNGN) + ' & verify →</button>'
       });
       const root = document.querySelector("[data-modal-root]");
-      root.querySelectorAll("[data-pw-type]").forEach(function (b) {
-        b.addEventListener("click", function () { selectedType = b.getAttribute("data-pw-type"); render(); });
-      });
       root.querySelectorAll("[data-pw-pick]").forEach(function (b) {
         b.addEventListener("click", function () {
           const parts = b.getAttribute("data-pw-pick").split(":");
-          selectedType = parts[0]; selectedCycle = parts[1]; render();
+          selectedCycle = parts[1]; render();
         });
       });
       root.querySelector("#pw-confirm").addEventListener("click", function () {
         accountApi.verify(selectedType, selectedCycle);
         alerts().add({
-          symbol: "ACCT", label: "Verified · " + selectedType + " · " + PLANS[selectedType][selectedCycle].cycleLabel,
+          symbol: "ACCT", label: "KYB verified · Corporate · " + PLANS[selectedType][selectedCycle].cycleLabel,
           value: "", unit: "", templateId: "verification"
         });
         // Drop a verification receipt into the Data Vault.
@@ -870,7 +859,7 @@
           window.DataBank.vaultApi().add({
             kind: "receipt",
             title: "Verification receipt · " + PLANS[selectedType][selectedCycle].cycleLabel,
-            subtitle: (selectedType === "corporate" ? "Corporate" : "Individual") + " plan · ₦" + PLANS[selectedType][selectedCycle].priceNGN.toLocaleString() + " ($" + PLANS[selectedType][selectedCycle].priceUSD + ")",
+            subtitle: "Corporate plan · ₦" + PLANS[selectedType][selectedCycle].priceNGN.toLocaleString() + " ($" + PLANS[selectedType][selectedCycle].priceUSD + ")",
             payload: { type: selectedType, cycle: selectedCycle, priceUSD: PLANS[selectedType][selectedCycle].priceUSD, priceNGN: PLANS[selectedType][selectedCycle].priceNGN }
           });
         }
@@ -884,27 +873,12 @@
     render();
   }
 
-  // v3 KYC tier upgrade — mocks the attestation step per Part 5.
-  // T1→T2 needs income/asset evidence; T2→T3 needs net-worth / institutional status.
-  // ---------- Live-validating identifier fields (BVN / NIN / TIN / CAC) ----------
+  // Corporate KYB upgrade — Change 4: only TIN + CAC are accepted; BVN/NIN paths removed.
+  // ---------- Live-validating identifier fields (TIN / CAC) ----------
   // Auto-checks on input once the length hits the expected count, shows a spinner for ~700ms,
-  // then a green check (valid) or red X (invalid). Mock validators stand in for NIMC/NIBSS/CAC/FIRS APIs.
+  // then a green check (valid) or red X (invalid). Mock validators stand in for FIRS/CAC APIs.
   function validateIdValue(kind, raw) {
     const v = String(raw || "").toUpperCase().replace(/[^0-9A-Z]/g, "");
-    if (kind === "bvn" || kind === "nin") {
-      const digits = v.replace(/[^0-9]/g, "");
-      const need = 11;
-      if (!digits.length) return null;
-      if (digits.length < need) return { state: "typing", remaining: need - digits.length };
-      if (digits.length > need) return { state: "invalid", reason: kind.toUpperCase() + " must be exactly 11 digits" };
-      if (/^(.)\1+$/.test(digits) || digits === "12345678901") return { state: "invalid", reason: "Looks like a placeholder, not a real ID" };
-      return {
-        state: "valid",
-        reason: kind === "bvn"
-          ? "BVN matched · NIBSS · Access Bank ****" + digits.slice(-4)
-          : "NIN matched · NIMC ****" + digits.slice(-4)
-      };
-    }
     if (kind === "tin") {
       const digits = v.replace(/[A-Z]/g, "");
       const need = 10;
@@ -975,30 +949,23 @@
     if (target <= current) { toast("Already at Tier " + current); return; }
     const reason = opts.reason || "Unlock higher per-deal caps and broader lane access.";
 
-    // Each evidence option now declares the files and ID fields it requires.
+    // Change 4 — Corporate KYB only needs TIN + CAC + CAC certificate.
     // files: [{ id, label, accept, required }]
     // fields: [{ id, kind, label, hint }] (live-validated)
     const T2_OPTIONS = [
-      { id: "bank", label: "Bank statements (last 6 months)", hint: "Two account-holder Nigerian bank accounts, downloaded as PDFs.",
-        files: [{ id: "bank-stmt", label: "Bank statements PDF (6 months)", accept: ".pdf", required: true }],
-        fields: [{ id: "bvn", kind: "bvn", label: "BVN", hint: "11-digit Bank Verification Number. Auto-verified against NIBSS." }] },
-      { id: "pay",  label: "Payslips (last 3 months)", hint: "Salary stubs from PAYE-registered employer.",
-        files: [{ id: "payslips", label: "Payslips PDF (3 months)", accept: ".pdf,.jpg,.jpeg,.png", required: true }],
-        fields: [] },
-      { id: "tax",  label: "Tax returns (last fiscal year)", hint: "FIRS-stamped Form A or Self-Assessment receipt.",
-        files: [{ id: "tax-pdf", label: "Tax return PDF", accept: ".pdf", required: true }],
-        fields: [{ id: "tin", kind: "tin", label: "TIN", hint: "10-digit Tax Identification Number. Auto-verified against FIRS." }] }
+      { id: "kyb", label: "Corporate KYB — TIN + CAC certificate",
+        hint: "Enter your 10-digit FIRS TIN and your CAC RC number, then upload your CAC certificate of incorporation. That's all KYB needs.",
+        files: [{ id: "cac-cert", label: "CAC certificate of incorporation (PDF)", accept: ".pdf", required: true }],
+        fields: [
+          { id: "tin", kind: "tin", label: "TIN", hint: "10-digit Tax Identification Number. Auto-verified against FIRS." },
+          { id: "cac", kind: "cac", label: "CAC RC number", hint: "6–8 digit CAC registration number. Auto-verified against BAILEY API." }
+        ] }
     ];
     const T3_OPTIONS = [
-      { id: "net",  label: "Net worth attestation — ₦100m+", hint: "Statement of assets countersigned by your auditor (FRCN-registered).",
-        files: [{ id: "net-pdf", label: "Net-worth attestation (signed)", accept: ".pdf", required: true }],
-        fields: [] },
-      { id: "inc",  label: "Annual income — ₦20m+", hint: "Two consecutive years of audited income statements.",
-        files: [{ id: "inc-pdf", label: "Audited income statements (2 years)", accept: ".pdf", required: true }],
-        fields: [] },
-      { id: "inst", label: "SEC-registered institutional", hint: "Upload your SEC certificate of registration (fund manager, PFA, broker).",
-        files: [{ id: "sec-cert", label: "SEC certificate of registration", accept: ".pdf", required: true }],
-        fields: [{ id: "cac", kind: "cac", label: "CAC RC number", hint: "6–8 digit CAC registration number. Auto-verified against BAILEY API." }] }
+      { id: "inst", label: "Institutional uplift — audited financials",
+        hint: "Optional. Upload two consecutive years of audited financials signed by an FRCN-registered firm. Required only for institutional investor caps.",
+        files: [{ id: "audited", label: "Audited financials (2 years)", accept: ".pdf", required: true }],
+        fields: [] }
     ];
     const options = target === 2 ? T2_OPTIONS : T3_OPTIONS;
 
@@ -1050,11 +1017,11 @@
             '</div>' +
             '<div class="tier-reason">' + reason + '</div>' +
           '</div>' +
-          '<div class="tier-lede">Pick one evidence type, upload supporting documents, and confirm any required IDs. Compliance verifies within 5 business days. IDs auto-check against NIMC / NIBSS / FIRS / CAC.</div>' +
+          '<div class="tier-lede">Corporate KYB needs only your TIN, CAC RC number, and your CAC certificate. Identifiers auto-check live against FIRS and the CAC BAILEY API. Compliance counter-signs within 5 business days.</div>' +
           '<div class="tier-opts">' + items + '</div>' +
         '</div>'
       );
-      modal("Upgrade to KYC Tier " + target, body, {
+      modal("Upgrade to KYB Tier " + target, body, {
         footer:
           '<button type="button" class="t-btn" data-modal-close>Cancel</button>' +
           '<button type="button" class="t-btn t-btn-primary" id="tier-confirm" ' + (isComplete() ? '' : 'disabled') + '>Submit attestation →</button>'
@@ -1104,7 +1071,7 @@
         const opt = options.find(function (o) { return o.id === state.selected; });
         accountApi.upgradeTier(target);
         alerts().add({
-          symbol: "ACCT", label: "KYC Tier " + target + " granted · " + opt.label,
+          symbol: "ACCT", label: "KYB Tier " + target + " granted · " + opt.label,
           value: "", unit: "", templateId: "tier-upgrade"
         });
         if (window.DataBank && window.DataBank.vaultApi) {
@@ -1118,14 +1085,14 @@
           const fileDump = {};
           opt.files.forEach(function (f) { fileDump[f.id] = state.files[f.id]; });
           window.DataBank.vaultApi().add({
-            kind: "kyc",
-            title: "KYC Tier " + target + " attestation",
+            kind: "kyb",
+            title: "KYB Tier " + target + " attestation",
             subtitle: "Evidence: " + opt.label,
             payload: { fromTier: current, toTier: target, evidence: state.selected, evidenceLabel: opt.label, fields: fieldDump, files: fileDump }
           });
         }
         closeModal();
-        toast("KYC Tier " + target + " granted.");
+        toast("KYB Tier " + target + " granted.");
         if (window.WorkspaceShell && window.WorkspaceShell.refresh) window.WorkspaceShell.refresh();
       });
     }
@@ -1181,6 +1148,54 @@
     }
 
     render();
+  }
+
+  // Inject CSS for new UI blocks (NEIIA fee block, Audit Confidence chip, intent modal)
+  // once per page. Reuses .panel / .lane-chip palette where possible.
+  (function injectChangeStyles() {
+    if (document.getElementById("dr-change-styles")) return;
+    const s = document.createElement("style");
+    s.id = "dr-change-styles";
+    s.textContent = (
+      ".ld-fee{margin-top:14px;padding:14px 16px;border-radius:8px;border:1px solid var(--border-t);background:var(--bg-panel)}" +
+      ".ld-fee-title{font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:10px;letter-spacing:0.02em;text-transform:uppercase}" +
+      ".ld-fee-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text-secondary)}" +
+      ".ld-fee-row strong{color:var(--text-primary);font-feature-settings:'tnum'}" +
+      ".ld-fee-total{border-top:1px solid var(--border-t-soft);margin-top:6px;padding-top:10px;font-weight:600}" +
+      ".ld-fee-note{font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.55}" +
+      // Audit Confidence chip — green palette per brand
+      ".audit-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:9999px;background:rgba(14,122,60,0.08);border:1px solid rgba(14,122,60,0.32);color:#0E7A3C;font-size:11px;font-weight:600;font-feature-settings:'tnum';cursor:help;line-height:1.4}" +
+      ".audit-chip-num{font-feature-settings:'tnum'}" +
+      ".audit-chip svg{width:11px;height:11px;flex-shrink:0}" +
+      // Intent modal styles
+      ".intent-callout{padding:12px 14px;border-radius:8px;background:rgba(14,122,60,0.05);border-left:3px solid #0E7A3C;font-size:12px;color:var(--text-secondary);line-height:1.55;margin:10px 0}" +
+      ".intent-cp{padding:12px 14px;border-radius:8px;background:var(--bg-panel);border:1px solid var(--border-t);margin-top:12px}" +
+      ".intent-cp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.06em}" +
+      ".intent-cp-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--text-secondary)}" +
+      ".intent-cp-row strong{color:var(--text-primary);font-weight:500}" +
+      // Countersign queue Company Profile expander
+      ".cs-cp-expander{margin-top:6px}" +
+      ".cs-cp-expander summary{cursor:pointer;font-size:11px;color:var(--text-secondary);padding:4px 0;list-style:none}" +
+      ".cs-cp-expander summary::before{content:'▸ ';color:var(--text-muted)}" +
+      ".cs-cp-expander[open] summary::before{content:'▾ '}" +
+      ".cs-cp-body{margin-top:8px;padding:12px;background:var(--bg-base);border:1px solid var(--border-t);border-radius:6px;font-size:12px;line-height:1.55}" +
+      ".cs-cp-body dt{color:var(--text-muted);font-weight:500;float:left;width:170px}" +
+      ".cs-cp-body dd{margin-left:170px;color:var(--text-primary);padding-bottom:4px}"
+    );
+    document.head.appendChild(s);
+  })();
+
+  // Reusable Audit Confidence chip HTML (Change 3).
+  function auditConfidenceChip(score, opts) {
+    opts = opts || {};
+    const n = score == null ? 78 + Math.floor(Math.random() * 15) : (+score | 0);
+    const tip = "Independent overlay audit funded by NEIIA's 20% audit surcharge. Cross-checks issuer's own auditor's filings. Not a guarantee.";
+    return (
+      '<span class="audit-chip" title="' + tip + '" data-tip="' + tip + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>' +
+        '<span>Audit Confidence · <span class="audit-chip-num">' + n + '/100</span> · NEIIA</span>' +
+      '</span>'
+    );
   }
 
   // v3 issuer-side "List a Deal" flow (5 steps).
@@ -1432,6 +1447,23 @@
 
     function step5() {
       const s = draft.smedan || {};
+      // Change 3 — NEIIA Audit Surcharge breakdown on listing.
+      // Base listing fee = 0.5% of raise target, capped at ₦500k floor at ₦50k for demo.
+      const raiseN = +draft.raiseNGN || 0;
+      const baseListing = Math.min(500000, Math.max(50000, Math.round(raiseN * 0.005)));
+      const fee = (window.DataBank && window.DataBank.computeRegistrationFee)
+        ? window.DataBank.computeRegistrationFee({ base: baseListing })
+        : { base: baseListing, auditSurcharge: Math.round(baseListing * 0.2), total: Math.round(baseListing * 1.2), rate: 0.2 };
+      draft._fee = fee;
+      const feeBlock = (
+        '<div class="ld-fee">' +
+          '<div class="ld-fee-title">Fees payable to NEIIA</div>' +
+          '<div class="ld-fee-row"><span>Listing base fee</span><strong>' + fmtNgn(fee.base) + '</strong></div>' +
+          '<div class="ld-fee-row"><span>NEIIA Audit Surcharge (20%)</span><strong>' + fmtNgn(fee.auditSurcharge) + '</strong></div>' +
+          '<div class="ld-fee-row ld-fee-total"><span>Total payable to NEIIA</span><strong>' + fmtNgn(fee.total) + '</strong></div>' +
+          '<div class="ld-fee-note">The 20% surcharge funds NEIIA\'s independent Audit Overlay — an external cross-check on your own auditor\'s filings. It produces the NEIIA Audit Confidence Score that appears on your live deal. Settlement of investor funds is arranged off-platform; this fee is the only transaction on Deal Room.</div>' +
+        '</div>'
+      );
       const summary = (
         '<dl class="ld-review">' +
           '<div><dt>Caliber → Lane</dt><dd>' + esc(s.caliber || "—") + ' → ' + esc(s.laneLabel || "—") + '</dd></div>' +
@@ -1460,9 +1492,9 @@
       return (
         header() +
         '<div class="ld-step">' +
-          '<h3 class="ld-h3">Review &amp; dual-signatory sign-off</h3>' +
-          '<p class="ld-sub">v3 Part 3 requires two authorized signatories to sign every corporate action. Both must enter their PIN before the deal submits.</p>' +
-          summary + sigState +
+          '<h3 class="ld-h3">Review, NEIIA fee &amp; dual-signatory sign-off</h3>' +
+          '<p class="ld-sub">v3 Part 3 requires two authorized signatories to sign every corporate action. Both must enter their Vault PIN before the deal submits. NEIIA charges a base listing fee plus a 20% Audit Surcharge that funds the platform-wide Audit Overlay.</p>' +
+          summary + feeBlock + sigState +
         '</div>'
       );
     }
@@ -2466,6 +2498,198 @@
     })).render();
   }
 
+  // ---------- Change 5 + 6 — Intent-to-Invest flow (no payments) ----------
+  // Replaces the prior subscribe/payment instruction modals. Auto-attaches the investor's
+  // full Company Profile and emits a signed-PDF agreement-only intent. Money flow happens
+  // off-platform; Deal Room captures intent + countersign only.
+  function _esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function _fmtNgnInline(n) {
+    n = +n; if (!n || isNaN(n)) return "—";
+    if (n >= 1e9) return "₦" + (n / 1e9).toFixed(2) + "bn";
+    if (n >= 1e6) return "₦" + (n / 1e6).toFixed(0) + "m";
+    if (n >= 1e3) return "₦" + (n / 1e3).toFixed(0) + "k";
+    return "₦" + n;
+  }
+  // Renders a read-only Company Profile summary block. Used inside Intent modal,
+  // countersign queue expander, and the printable agreement page.
+  function renderCompanyProfileBlock(cp, opts) {
+    opts = opts || {};
+    if (!cp) {
+      return '<div class="intent-cp"><div class="intent-cp-head">Company Profile</div><div style="font-size:12px;color:var(--text-muted)">Not on file.</div></div>';
+    }
+    const dirs = Array.isArray(cp.directors)
+      ? cp.directors.map(function (d) { return typeof d === "string" ? d : (d.name + (d.role ? " (" + d.role + ")" : "")); }).join("; ")
+      : (cp.directors || "—");
+    const addr = [cp.addressLine1, cp.addressLine2, cp.city, cp.state, cp.country].filter(Boolean).join(", ");
+    return (
+      '<div class="intent-cp">' +
+        '<div class="intent-cp-head"><span>' + (opts.title || "Investor Company Profile") + '</span><span style="font-weight:400;color:var(--text-muted);font-size:11px">auto-attached</span></div>' +
+        '<div class="intent-cp-row"><span>Legal name</span><strong>' + _esc(cp.legalName || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>CAC RC</span><strong>' + _esc(cp.cacRC || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>TIN</span><strong>' + _esc(cp.tin || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Registered address</span><strong>' + _esc(addr || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Year incorporated</span><strong>' + _esc(cp.yearIncorporated || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Sector / industry</span><strong>' + _esc(cp.sector || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Company size</span><strong>' + _esc(cp.companySize || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Annual revenue range</span><strong>' + _esc(cp.revenueRange || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Directors</span><strong>' + _esc(dirs) + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Authorized signatory</span><strong>' + _esc(cp.authorizedSignatory || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Audit firm</span><strong>' + _esc(cp.auditFirm || "—") + '</strong></div>' +
+        '<div class="intent-cp-row"><span>Fiscal year end</span><strong>' + _esc(cp.fiscalYearEnd || "—") + '</strong></div>' +
+        (cp.investmentMandate ? '<div class="intent-cp-row" style="flex-direction:column;gap:2px;align-items:flex-start"><span>Investment mandate</span><strong style="font-weight:400">' + _esc(cp.investmentMandate) + '</strong></div>' : '') +
+        '<div class="intent-cp-row"><span>Website / LinkedIn</span><strong>' + _esc(cp.website || cp.linkedin || "—") + '</strong></div>' +
+      '</div>'
+    );
+  }
+
+  // Submit Intent to Invest — the only path to "invest" on Deal Room.
+  // NO payment instructions. Generates an intent that goes to the issuer's countersign queue
+  // with the investor's complete Company Profile auto-attached. On accept, both parties get
+  // a printable Subscription Agreement; settlement is arranged off-platform.
+  function openIntentModal(deal) {
+    if (!deal) return;
+    const DB = window.DataBank;
+    const acctApi = DB && DB.accountApi ? DB.accountApi() : null;
+    const cpApi = DB && DB.companyProfileApi ? DB.companyProfileApi() : null;
+    const investmentsApi = DB && DB.investmentsApi ? DB.investmentsApi() : null;
+    const cp = cpApi ? cpApi.get() : null;
+    const acc = acctApi ? acctApi.get() : { kycTier: 1 };
+
+    // Gate on Company Profile completeness (Change 6).
+    if (!cpApi || !cpApi.isComplete()) {
+      const body = (
+        '<div style="font-size:13px;color:var(--text-secondary);line-height:1.55">' +
+          '<p style="margin:0 0 10px">Every Intent to Invest auto-attaches your Company Profile so the issuer can decide whether to countersign. Your profile is currently incomplete.</p>' +
+          '<p style="margin:0;color:var(--text-muted);font-size:12px">Required: legal name, CAC RC, TIN, registered address, year of incorporation, sector, size, directors, authorized signatory.</p>' +
+        '</div>'
+      );
+      modal("Complete your Company Profile to invest", body, {
+        footer:
+          '<button type="button" class="t-btn" data-modal-close>Not now</button>' +
+          '<a class="t-btn t-btn-primary" href="company-profile.html">Complete Company Profile →</a>'
+      });
+      return;
+    }
+    if (!acc.verified) {
+      if (openPaywallModal) openPaywallModal();
+      return;
+    }
+
+    const caps = acctApi ? acctApi.caps() : { perDealMinNGN: 100000, perDealMaxNGN: 50000000 };
+    const effMin = Math.max(+deal.ticketMinNGN || 0, caps.perDealMinNGN || 0);
+    const effMax = Math.min(+deal.ticketMaxNGN || Infinity, caps.perDealMaxNGN || Infinity);
+    const auditScore = deal.auditConfidence != null ? deal.auditConfidence : 82;
+
+    const body = (
+      '<div>' +
+        '<div class="intent-callout">' +
+          '<strong>Agreement Room — not a payment platform.</strong> ' +
+          'Submitting captures your formal intent to deal at the proposed allocation. On issuer countersign, both parties get a downloadable Subscription Agreement. Settlement is arranged off-platform directly between issuer and investor.' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;align-items:center;margin:8px 0 12px;flex-wrap:wrap">' +
+          '<strong style="font-size:14px;color:var(--text-primary)">' + _esc(deal.legalName || deal.company) + '</strong>' +
+          '<span style="color:var(--text-muted);font-size:12px">· ' + _esc(deal.ticker || "") + ' · ' + _esc(deal.wrapper || "") + '</span>' +
+          auditConfidenceChip(auditScore) +
+        '</div>' +
+        '<div class="intent-callout" style="background:rgba(15,23,42,0.04);border-left-color:#475569;color:var(--text-secondary)">' +
+          'Target raise: <strong style="color:var(--text-primary)">' + _fmtNgnInline(deal.raiseNGN) + '</strong> · ' +
+          'Subscribed: <strong style="color:var(--text-primary)">' + (deal.allocationPct || 0) + '%</strong> · ' +
+          'Ticket window: <strong style="color:var(--text-primary)">' + _fmtNgnInline(effMin) + ' – ' + (isFinite(effMax) ? _fmtNgnInline(effMax) : "no cap") + '</strong>' +
+        '</div>' +
+        '<label style="display:block;font-size:12px;font-weight:500;color:var(--text-primary);margin:14px 0 6px">Proposed allocation (NGN)</label>' +
+        '<input class="t-input" id="intent-ticket" type="number" min="' + effMin + '" ' + (isFinite(effMax) ? 'max="' + effMax + '" ' : '') + 'placeholder="' + (effMin || 100000) + '" style="width:100%" />' +
+        '<label style="display:block;font-size:12px;font-weight:500;color:var(--text-primary);margin:12px 0 6px">Investment thesis (optional, visible to issuer)</label>' +
+        '<textarea class="t-input" id="intent-thesis" rows="3" placeholder="Why your company wants to participate in this deal." style="width:100%"></textarea>' +
+        renderCompanyProfileBlock(cp) +
+        '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:12px;color:var(--text-secondary);line-height:1.5">' +
+          '<input type="checkbox" id="intent-ack" style="margin-top:3px" /> ' +
+          '<span>I confirm settlement of funds will be arranged off-platform between issuer and investor. Deal Room is the agreement room — not the payment processor.</span>' +
+        '</label>' +
+      '</div>'
+    );
+    modal("Submit Intent to Invest · " + (deal.ticker || deal.company), body, {
+      footer:
+        '<button type="button" class="t-btn" data-modal-close>Cancel</button>' +
+        '<button type="button" class="t-btn t-btn-primary" id="intent-submit">Sign &amp; submit intent →</button>'
+    });
+    document.getElementById("intent-submit").addEventListener("click", function () {
+      const ticket = +(document.getElementById("intent-ticket").value || 0);
+      const thesis = document.getElementById("intent-thesis").value.trim();
+      const ack = document.getElementById("intent-ack").checked;
+      if (!ticket || ticket < effMin) { toast("Ticket below minimum " + _fmtNgnInline(effMin)); return; }
+      if (isFinite(effMax) && ticket > effMax) { toast("Ticket exceeds your tier cap " + _fmtNgnInline(effMax)); return; }
+      if (!ack) { toast("Off-platform settlement acknowledgement is required"); return; }
+      closeModal();
+      pinPad({
+        title: "Sign intent with Vault PIN · " + (deal.ticker || deal.company),
+        subtitle: "Your 6-digit Vault PIN signs this Intent to Invest. No money moves on Deal Room — your PIN evidences your signature on the formal intent.",
+        onConfirm: function () {
+          if (!investmentsApi) { toast("Unable to record intent"); return; }
+          const inv = investmentsApi.add({
+            dealId: deal.id,
+            ticker: deal.ticker,
+            legalName: deal.legalName || deal.company,
+            tradingName: deal.tradingName || deal.company,
+            wrapper: deal.wrapper,
+            lane: deal.lane,
+            laneLabel: deal.laneLabel,
+            sector: deal.sector,
+            ticketNGN: ticket,
+            sourceOfFunds: "Corporate treasury",
+            investorThesis: thesis,
+            investorCompanyProfile: cp,
+            investorName: cp.legalName,
+            dealStatus: deal.status === "Closed" ? "Active" : deal.status,
+            valuationCapNGN: Math.round((deal.raiseNGN || 50000000) * 5),
+            kycTierAtSign: acc.kycTier || 2,
+            agreementPacket: {
+              version: 1,
+              kind: "intent-to-invest",
+              dealId: deal.id,
+              issuerLegalName: deal.legalName || deal.company,
+              investorLegalName: cp.legalName,
+              ticketNGN: ticket,
+              signedAt: new Date().toISOString(),
+              settlement: "Off-platform — arranged directly between Issuer and Investor"
+            }
+            // countersignState defaults to "pending"
+          });
+          // File a draft agreement entry into the Vault.
+          if (DB.vaultApi) {
+            DB.vaultApi().add({
+              kind: "agreement",
+              title: "Intent to Invest · " + deal.ticker + " · pending issuer countersign",
+              subtitle: (deal.legalName || deal.company) + " · " + (deal.wrapper || "") + " · " + _fmtNgnInline(ticket),
+              dealId: deal.id,
+              investmentId: inv.id,
+              payload: {
+                ticker: deal.ticker, wrapper: deal.wrapper, ticketNGN: ticket,
+                lane: deal.laneLabel,
+                governing: "Federal Republic of Nigeria · FCT Abuja",
+                settlement: "Off-platform — arranged directly between Issuer and Investor",
+                investorCompanyProfile: cp,
+                countersignState: "pending"
+              }
+            });
+          }
+          alerts().add({
+            symbol: deal.ticker,
+            label: "Intent submitted · " + _fmtNgnInline(ticket) + " · awaiting issuer countersign",
+            value: "", unit: "",
+            templateId: "intent",
+            severity: "critical",
+            href: "portfolio.html"
+          });
+          toast(deal.ticker + " · intent submitted · awaiting issuer countersign");
+        }
+      });
+    });
+  }
+
   // ---------- exports ----------
   window.Terminal = {
     bindShell: bindShell,
@@ -2494,6 +2718,9 @@
     openTierUpgradeModal: openTierUpgradeModal,
     openListDealFlow: openListDealFlow,
     openReportsModal: openReportsModal,
+    openIntentModal: openIntentModal,
+    auditConfidenceChip: auditConfidenceChip,
+    renderCompanyProfileBlock: renderCompanyProfileBlock,
     executeCommand: executeCommand,
     charts: { indexAreaChart: indexAreaChart, priceChart: priceChart, volumeChart: volumeChart, radarChart: radarChart }
   };

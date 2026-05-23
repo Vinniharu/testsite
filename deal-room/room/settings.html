@@ -669,7 +669,7 @@
         const tierBadge = '<span class="t-tier-pill t-tier-' + acc.kycTier + '" style="margin-left:8px;cursor:default">T' + acc.kycTier + '</span>';
         const tierLabel = caps.label || "";
         const planLine = acc.verified && acc.plan
-          ? '<div><strong>' + acc.plan.cycleLabel + '</strong> · ' + (acc.plan.type === 'corporate' ? 'Corporate' : 'Individual') + ' · ' + fmtNgn(acc.plan.priceNGN) + ' ($' + acc.plan.priceUSD + ')' +
+          ? '<div><strong>' + acc.plan.cycleLabel + '</strong> · Corporate · ' + fmtNgn(acc.plan.priceNGN) + ' ($' + acc.plan.priceUSD + ')' +
             (acc.plan.renewsAt ? ' · renews ' + new Date(acc.plan.renewsAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '') +
             '</div>'
           : '<div style="color:var(--text-muted)">No active plan</div>';
@@ -685,36 +685,43 @@
           ? '<button class="t-btn" type="button" id="acct-cancel" style="color:var(--down)">Cancel verification</button>'
           : '';
         const pinBtn = acctApi.hasPin()
-          ? '<button class="t-btn" type="button" id="acct-pin-reset">Reset transaction PIN</button>'
-          : (acc.verified ? '<button class="t-btn t-btn-primary" type="button" id="acct-pin-set">Set transaction PIN</button>' : '');
+          ? '<button class="t-btn" type="button" id="acct-pin-reset">Reset Vault PIN</button>'
+          : (acc.verified ? '<button class="t-btn t-btn-primary" type="button" id="acct-pin-set">Set Vault PIN</button>' : '');
         const lock = acctApi.lockoutState();
         const pinLine = !acc.verified ? ''
           : acctApi.hasPin()
-            ? '<div class="acct-cell"><div class="acct-label">Transaction PIN</div><div class="acct-val">' +
+            ? '<div class="acct-cell"><div class="acct-label">Vault PIN</div><div class="acct-val">' +
                 '<span class="acct-pill ok">Set</span>' +
                 (lock.locked ? ' <span class="acct-pill warn">Locked until ' + new Date(lock.until).toLocaleString("en-GB") + '</span>' : '') +
               '</div></div>'
-            : '<div class="acct-cell"><div class="acct-label">Transaction PIN</div><div class="acct-val"><span class="acct-pill warn">Not set — any 6 digits accepted</span></div></div>';
+            : '<div class="acct-cell"><div class="acct-label">Vault PIN</div><div class="acct-val"><span class="acct-pill warn">Not set — any 6 digits accepted</span></div></div>';
+        // Change 6 — link to the Company Profile page.
+        const cpApi = DB.companyProfileApi ? DB.companyProfileApi() : null;
+        const cpComplete = cpApi ? cpApi.isComplete() : false;
+        const cpLine = '<div class="acct-cell"><div class="acct-label">Company Profile</div><div class="acct-val">' +
+          (cpComplete ? '<span class="acct-pill ok">Complete</span>' : '<span class="acct-pill warn">Incomplete — required to invest</span>') +
+          ' <a href="company-profile.html" style="margin-left:8px;font-size:12px;color:var(--accent);text-decoration:none">Manage →</a></div></div>';
         document.getElementById("acctSummary").innerHTML = (
           '<div class="acct-grid">' +
             '<div class="acct-cell"><div class="acct-label">Status</div><div class="acct-val">' + verifiedLine + '</div></div>' +
-            '<div class="acct-cell"><div class="acct-label">Account type</div><div class="acct-val">' + (acc.accountType === 'corporate' ? 'Corporate (Issuer + Investor)' : 'Individual (Investor)') + '</div></div>' +
-            '<div class="acct-cell"><div class="acct-label">KYC tier</div><div class="acct-val">Tier ' + acc.kycTier + tierBadge + ' <span style="color:var(--text-muted);font-size:12px;margin-left:6px">' + tierLabel + '</span></div></div>' +
+            '<div class="acct-cell"><div class="acct-label">Account type</div><div class="acct-val">Corporate (Issuer + Investor)</div></div>' +
+            '<div class="acct-cell"><div class="acct-label">KYB tier</div><div class="acct-val">Tier ' + acc.kycTier + tierBadge + ' <span style="color:var(--text-muted);font-size:12px;margin-left:6px">' + tierLabel + '</span></div></div>' +
             '<div class="acct-cell"><div class="acct-label">Plan</div><div class="acct-val">' + planLine + '</div></div>' +
             '<div class="acct-cell acct-cell-wide"><div class="acct-label">Ticket caps</div><div class="acct-val">' + capLine + '</div></div>' +
+            cpLine +
             pinLine +
           '</div>' +
           '<div class="acct-actions">' + verifyBtn + upgradeBtn + pinBtn + cancelBtn + '</div>'
         );
         const pinSet = document.getElementById("acct-pin-set");
         if (pinSet) pinSet.addEventListener("click", function () {
-          T.pinPad({ mode: "setup", title: "Set transaction PIN", onConfirm: function () { renderAccount(); } });
+          T.pinPad({ mode: "setup", title: "Set Vault PIN", onConfirm: function () { renderAccount(); } });
         });
         const pinReset = document.getElementById("acct-pin-reset");
         if (pinReset) pinReset.addEventListener("click", function () {
-          if (!confirm("Reset your transaction PIN? In production this requires a fresh KYC liveness check.")) return;
+          if (!confirm("Reset your Vault PIN? In production this requires re-KYB (TIN + CAC re-verification).")) return;
           acctApi.clearPin();
-          T.pinPad({ mode: "setup", title: "Set new transaction PIN", onConfirm: function () { renderAccount(); } });
+          T.pinPad({ mode: "setup", title: "Set new Vault PIN", onConfirm: function () { renderAccount(); } });
         });
         const cancel = document.getElementById("acct-cancel");
         if (cancel) cancel.addEventListener("click", function () {
