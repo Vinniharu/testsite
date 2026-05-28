@@ -12,40 +12,94 @@
     <style>
         :root {
             --ab-ink: #0B1F24;
-            --ab-paper: #F8F5EE;     /* warm cream — government document */
+            --ab-paper: #F8F5EE;
+            /* warm cream — government document */
             --ab-paper-2: #EFEAE0;
             --ab-rule: #1F2A2E;
             --ab-rule-soft: #D9D0BE;
             --ab-text: #1F2A2E;
             --ab-muted: #6B6256;
-            --ab-accent: #C03E2A;    /* official red */
+            --ab-accent: #C03E2A;
+            /* official red */
             --ab-green: #4D7C0F;
         }
 
-        body { background: var(--ab-paper); }
+        body {
+            background: var(--ab-paper);
+        }
 
         /* Force project font on most elements; the serif is opt-in via .ab-serif */
-        body, p, li, a, span:not(.ab-serif), div, button, input, label {
+        body,
+        p,
+        li,
+        a,
+        span:not(.ab-serif),
+        div,
+        button,
+        input,
+        label {
             font-family: "Mulish", "Inter", system-ui, -apple-system, sans-serif;
         }
-        h1, h2, h3, h4, h5, h6 { font-family: "Mulish", system-ui, sans-serif; letter-spacing: -0.01em; }
 
-        .ab-serif, .ab-serif * { font-family: "Instrument Serif", "GT Super", Georgia, serif !important; font-weight: 400 !important; }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Mulish", system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        .ab-serif,
+        .ab-serif * {
+            font-family: "Instrument Serif", "GT Super", Georgia, serif !important;
+            font-weight: 400 !important;
+        }
 
         /* ------- ANATOMY: SHARED ------- */
-        .ab-shell { max-width: 1280px; margin: 0 auto; padding: 0 2rem; }
-        .ab-rule { border: 0; border-top: 1px solid var(--ab-rule-soft); margin: 0; }
+        .ab-shell {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .ab-rule {
+            border: 0;
+            border-top: 1px solid var(--ab-rule-soft);
+            margin: 0;
+        }
+
         .ab-rule-double {
-            height: 6px; border: 0; border-top: 1px solid var(--ab-rule);
-            border-bottom: 1px solid var(--ab-rule); background: transparent;
+            height: 6px;
+            border: 0;
+            border-top: 1px solid var(--ab-rule);
+            border-bottom: 1px solid var(--ab-rule);
+            background: transparent;
         }
+
         .ab-eyebrow {
-            display: inline-flex; align-items: center; gap: 10px;
-            font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-            color: var(--ab-accent); font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ab-accent);
+            font-weight: 700;
         }
-        .ab-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ab-accent); }
-        .ab-mono { font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace; font-feature-settings: "tnum"; }
+
+        .ab-eyebrow .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--ab-accent);
+        }
+
+        .ab-mono {
+            font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+            font-feature-settings: "tnum";
+        }
 
         /* ------- HERO (asymmetric editorial) ------- */
         .ab-hero {
@@ -54,23 +108,37 @@
             padding: 96px 0 64px;
             overflow: hidden;
         }
+
         .ab-hero::before {
             content: '';
-            position: absolute; inset: 0;
+            position: absolute;
+            inset: 0;
             background: url('assets/images/nigerian_coat_of_arms.png') right 5% center / 380px no-repeat;
             opacity: 0.05;
             pointer-events: none;
         }
-        @media (max-width: 768px) { .ab-hero::before { background-size: 240px; background-position: right -40px top 60px; } }
+
+        @media (max-width: 768px) {
+            .ab-hero::before {
+                background-size: 240px;
+                background-position: right -40px top 60px;
+            }
+        }
+
         .ab-hero-inner {
             display: grid;
             grid-template-columns: 1.5fr 1fr;
             gap: 60px;
             align-items: end;
         }
+
         @media (max-width: 900px) {
-            .ab-hero-inner { grid-template-columns: 1fr; gap: 40px; }
+            .ab-hero-inner {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
         }
+
         .ab-hero h1 {
             font-size: clamp(2.4rem, 5.5vw, 4.5rem);
             line-height: 1.02;
@@ -79,50 +147,115 @@
             margin: 24px 0 28px;
             font-weight: 700;
         }
-        .ab-hero h1 em { font-style: italic; color: var(--ab-accent); font-weight: 400; font-family: "Instrument Serif", Georgia, serif; }
+
+        .ab-hero h1 em {
+            font-style: italic;
+            color: var(--ab-accent);
+            font-weight: 400;
+            font-family: "Instrument Serif", Georgia, serif;
+        }
+
         .ab-hero p.lede {
-            font-size: 1.05rem; line-height: 1.6;
-            color: var(--ab-text); max-width: 55ch;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--ab-text);
+            max-width: 55ch;
             margin-bottom: 36px;
         }
-        .ab-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .ab-hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         .ab-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 14px 22px; font-weight: 600; font-size: 0.95rem;
-            border-radius: 6px; text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 22px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            text-decoration: none;
             transition: transform 150ms ease, background 150ms ease;
         }
-        .ab-btn-primary { background: var(--ab-ink); color: #fff; }
-        .ab-btn-primary:hover { background: #000; transform: translateY(-1px); }
-        .ab-btn-ghost { background: transparent; color: var(--ab-ink); border: 1px solid var(--ab-rule); }
-        .ab-btn-ghost:hover { background: var(--ab-ink); color: #fff; }
+
+        .ab-btn-primary {
+            background: var(--ab-ink);
+            color: #fff;
+        }
+
+        .ab-btn-primary:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        .ab-btn-ghost {
+            background: transparent;
+            color: var(--ab-ink);
+            border: 1px solid var(--ab-rule);
+        }
+
+        .ab-btn-ghost:hover {
+            background: var(--ab-ink);
+            color: #fff;
+        }
 
         /* Authority stamp — sits in the right column of the hero */
         .ab-stamp {
             border: 1px solid var(--ab-rule);
             padding: 22px 22px 20px;
-            background: rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.4);
             position: relative;
         }
+
         .ab-stamp .ab-stamp-head {
-            font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-            color: var(--ab-muted); font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ab-muted);
+            font-weight: 700;
             border-bottom: 1px solid var(--ab-rule-soft);
-            padding-bottom: 10px; margin-bottom: 14px;
+            padding-bottom: 10px;
+            margin-bottom: 14px;
         }
-        .ab-stamp .ab-stamp-body { font-size: 0.95rem; color: var(--ab-text); line-height: 1.55; }
-        .ab-stamp .ab-stamp-meta { margin-top: 18px; display: flex; justify-content: space-between; font-size: 11px; color: var(--ab-muted); }
-        .ab-stamp .ab-stamp-meta .ab-mono { color: var(--ab-ink); font-weight: 600; }
+
+        .ab-stamp .ab-stamp-body {
+            font-size: 0.95rem;
+            color: var(--ab-text);
+            line-height: 1.55;
+        }
+
+        .ab-stamp .ab-stamp-meta {
+            margin-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--ab-muted);
+        }
+
+        .ab-stamp .ab-stamp-meta .ab-mono {
+            color: var(--ab-ink);
+            font-weight: 600;
+        }
+
         .ab-stamp .ab-stamp-sig {
             margin-top: 16px;
             font-family: "Instrument Serif", Georgia, serif;
-            font-style: italic; font-size: 1.25rem; color: var(--ab-accent);
+            font-style: italic;
+            font-size: 1.25rem;
+            color: var(--ab-accent);
             line-height: 1;
         }
+
         .ab-stamp::after {
-            content: ''; position: absolute;
-            right: -1px; top: -1px;
-            width: 22px; height: 22px;
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: -1px;
+            width: 22px;
+            height: 22px;
             background: var(--ab-accent);
         }
 
@@ -136,37 +269,61 @@
             overflow: hidden;
             position: relative;
         }
+
         .ab-authority-inner {
-            display: flex; align-items: center; gap: 0;
+            display: flex;
+            align-items: center;
+            gap: 0;
             flex-wrap: nowrap;
         }
+
         .ab-authority-label {
-            font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-            color: var(--ab-muted); font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ab-muted);
+            font-weight: 700;
             padding: 0 2rem 0 2rem;
             flex-shrink: 0;
             border-right: 1px solid var(--ab-rule-soft);
             background: var(--ab-paper-2);
-            position: relative; z-index: 2;
+            position: relative;
+            z-index: 2;
         }
+
         .ab-marquee {
-            flex: 1; overflow: hidden;
+            flex: 1;
+            overflow: hidden;
             position: relative;
             -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
             mask-image: linear-gradient(90deg, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
         }
+
         .ab-marquee-track {
-            display: flex; gap: 0;
+            display: flex;
+            gap: 0;
             animation: ab-marquee 45s linear infinite;
             width: max-content;
         }
-        .ab-marquee:hover .ab-marquee-track { animation-play-state: paused; }
-        @keyframes ab-marquee {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
+
+        .ab-marquee:hover .ab-marquee-track {
+            animation-play-state: paused;
         }
+
+        @keyframes ab-marquee {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
         .ab-agency {
-            display: inline-flex; align-items: center; gap: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
             padding: 0 2rem;
             border-right: 1px solid var(--ab-rule-soft);
             color: var(--ab-text);
@@ -174,41 +331,64 @@
             flex-shrink: 0;
             min-height: 44px;
         }
+
         .ab-agency-seal {
-            width: 36px; height: 36px; flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
             border-radius: 6px;
-            display: inline-flex; align-items: center; justify-content: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             font-family: "Instrument Serif", serif;
-            font-size: 11px; font-weight: 600; color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
             letter-spacing: 0.02em;
             position: relative;
             object-fit: contain;
             background: #fff;
         }
+
         img.ab-agency-seal {
             object-fit: contain;
             padding: 2px;
         }
+
         .ab-agency-seal::before {
-            content: ''; position: absolute; inset: 3px;
-            border: 1px solid rgba(255,255,255,0.4); border-radius: 4px;
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
         }
+
         img.ab-agency-seal::before {
             display: none;
         }
+
         .ab-agency-name {
-            font-size: 12px; font-weight: 600; color: var(--ab-ink);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ab-ink);
             letter-spacing: 0.02em;
             white-space: nowrap;
         }
+
         .ab-agency-sub {
             display: block;
-            font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
-            color: var(--ab-muted); font-weight: 700;
+            font-size: 9px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ab-muted);
+            font-weight: 700;
             margin-top: 2px;
         }
+
         @media (max-width: 768px) {
-            .ab-authority-label { display: none; }
+            .ab-authority-label {
+                display: none;
+            }
         }
 
         /* ------- MANDATE PULL-QUOTE ------- */
@@ -217,22 +397,36 @@
             background: var(--ab-paper);
             border-bottom: 1px solid var(--ab-rule-soft);
         }
+
         .ab-mandate-inner {
             display: grid;
             grid-template-columns: 200px 1fr;
             gap: 60px;
             align-items: start;
         }
+
         @media (max-width: 768px) {
-            .ab-mandate { padding: 60px 0; }
-            .ab-mandate-inner { grid-template-columns: 1fr; gap: 24px; }
+            .ab-mandate {
+                padding: 60px 0;
+            }
+
+            .ab-mandate-inner {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
         }
+
         .ab-mandate-label {
-            font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-            color: var(--ab-accent); font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ab-accent);
+            font-weight: 700;
             padding-top: 14px;
-            position: sticky; top: 100px;
+            position: sticky;
+            top: 100px;
         }
+
         .ab-mandate-quote {
             font-family: "Instrument Serif", Georgia, serif;
             font-size: clamp(1.6rem, 3vw, 2.4rem);
@@ -241,17 +435,31 @@
             letter-spacing: -0.01em;
             margin: 0;
         }
-        .ab-mandate-quote .pull { color: var(--ab-accent); }
-        .ab-mandate-attr {
-            margin-top: 32px; padding-top: 20px;
-            border-top: 1px solid var(--ab-rule-soft);
-            display: flex; align-items: center; gap: 14px;
-            font-size: 13px; color: var(--ab-muted);
+
+        .ab-mandate-quote .pull {
+            color: var(--ab-accent);
         }
-        .ab-mandate-attr strong { color: var(--ab-ink); font-weight: 600; }
+
+        .ab-mandate-attr {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--ab-rule-soft);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 13px;
+            color: var(--ab-muted);
+        }
+
+        .ab-mandate-attr strong {
+            color: var(--ab-ink);
+            font-weight: 600;
+        }
+
         .ab-mandate-attr-sig {
             font-family: "Instrument Serif", Georgia, serif;
-            font-style: italic; color: var(--ab-accent);
+            font-style: italic;
+            color: var(--ab-accent);
             font-size: 1.1rem;
         }
 
@@ -261,6 +469,7 @@
             background: var(--ab-paper-2);
             border-bottom: 1px solid var(--ab-rule-soft);
         }
+
         .ab-stack h2 {
             font-size: clamp(2rem, 3.5vw, 2.8rem);
             line-height: 1.1;
@@ -268,12 +477,20 @@
             max-width: 18ch;
             margin: 16px 0 48px;
         }
-        .ab-stack h2 em { font-style: italic; color: var(--ab-accent); font-family: "Instrument Serif", Georgia, serif; font-weight: 400; }
+
+        .ab-stack h2 em {
+            font-style: italic;
+            color: var(--ab-accent);
+            font-family: "Instrument Serif", Georgia, serif;
+            font-weight: 400;
+        }
+
         .ab-stack-grid {
             display: grid;
             grid-template-rows: auto auto auto;
             gap: 18px;
         }
+
         .ab-stack-row {
             border: 1px solid var(--ab-rule);
             border-radius: 0;
@@ -284,26 +501,55 @@
             align-items: center;
             gap: 24px;
         }
-        @media (max-width: 768px) { .ab-stack-row { grid-template-columns: 1fr; gap: 8px; } }
+
+        @media (max-width: 768px) {
+            .ab-stack-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
         .ab-stack-row.is-feature {
             background: var(--ab-ink);
             color: #fff;
             border-color: var(--ab-ink);
         }
+
         .ab-stack-tier {
-            font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
-            font-weight: 700; color: var(--ab-muted);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--ab-muted);
         }
-        .ab-stack-row.is-feature .ab-stack-tier { color: rgba(255,255,255,0.65); }
-        .ab-stack-row.is-feature .ab-stack-tier::before { content: '★ '; color: #fcd34d; }
-        .ab-stack-bodies { display: flex; gap: 12px 24px; flex-wrap: wrap; font-size: 14px; font-weight: 500; }
+
+        .ab-stack-row.is-feature .ab-stack-tier {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .ab-stack-row.is-feature .ab-stack-tier::before {
+            content: '★ ';
+            color: #fcd34d;
+        }
+
+        .ab-stack-bodies {
+            display: flex;
+            gap: 12px 24px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
         .ab-stack-body {
             padding: 6px 12px;
-            background: rgba(11,31,36,0.04);
+            background: rgba(11, 31, 36, 0.04);
             border-radius: 4px;
             font-family: "Mulish", sans-serif;
         }
-        .ab-stack-row.is-feature .ab-stack-body { background: rgba(255,255,255,0.1); }
+
+        .ab-stack-row.is-feature .ab-stack-body {
+            background: rgba(255, 255, 255, 0.1);
+        }
 
         /* ------- LIVE KPI STRIP ------- */
         .ab-kpi {
@@ -311,34 +557,99 @@
             color: #fff;
             padding: 64px 0;
         }
-        .ab-kpi-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
-        @media (max-width: 768px) { .ab-kpi-inner { grid-template-columns: repeat(2, 1fr); gap: 28px; } }
-        .ab-kpi-cell { border-left: 1px solid rgba(255,255,255,0.15); padding-left: 22px; }
+
+        .ab-kpi-inner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 36px;
+        }
+
+        @media (max-width: 768px) {
+            .ab-kpi-inner {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 28px;
+            }
+        }
+
+        .ab-kpi-cell {
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            padding-left: 22px;
+        }
+
         .ab-kpi-num {
             font-family: "Instrument Serif", Georgia, serif;
             font-size: clamp(2.2rem, 4vw, 3rem);
-            font-weight: 400; line-height: 1;
+            font-weight: 400;
+            line-height: 1;
             color: #fff;
             font-feature-settings: "tnum";
             letter-spacing: -0.02em;
         }
-        .ab-kpi-unit { font-size: 0.55em; color: rgba(255,255,255,0.55); margin-left: 4px; font-family: "Mulish", sans-serif; font-weight: 500; }
-        .ab-kpi-label { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 14px; line-height: 1.4; }
-        .ab-kpi-source { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 6px; font-weight: 600; }
+
+        .ab-kpi-unit {
+            font-size: 0.55em;
+            color: rgba(255, 255, 255, 0.55);
+            margin-left: 4px;
+            font-family: "Mulish", sans-serif;
+            font-weight: 500;
+        }
+
+        .ab-kpi-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.55);
+            margin-top: 14px;
+            line-height: 1.4;
+        }
+
+        .ab-kpi-source {
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 6px;
+            font-weight: 600;
+        }
 
         /* ------- ECOSYSTEM REGISTER (numbered list, not cards) ------- */
-        .ab-register { padding: 100px 0; background: var(--ab-paper); border-bottom: 1px solid var(--ab-rule-soft); }
-        .ab-register-head { margin-bottom: 48px; max-width: 720px; }
+        .ab-register {
+            padding: 100px 0;
+            background: var(--ab-paper);
+            border-bottom: 1px solid var(--ab-rule-soft);
+        }
+
+        .ab-register-head {
+            margin-bottom: 48px;
+            max-width: 720px;
+        }
+
         .ab-register-head h2 {
             font-size: clamp(2rem, 3.5vw, 2.8rem);
             line-height: 1.1;
             color: var(--ab-ink);
             margin: 16px 0 16px;
         }
-        .ab-register-head h2 em { font-style: italic; color: var(--ab-accent); font-family: "Instrument Serif", Georgia, serif; font-weight: 400; }
-        .ab-register-head p { font-size: 1rem; color: var(--ab-text); line-height: 1.55; max-width: 60ch; }
 
-        .ab-register-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ab-rule); }
+        .ab-register-head h2 em {
+            font-style: italic;
+            color: var(--ab-accent);
+            font-family: "Instrument Serif", Georgia, serif;
+            font-weight: 400;
+        }
+
+        .ab-register-head p {
+            font-size: 1rem;
+            color: var(--ab-text);
+            line-height: 1.55;
+            max-width: 60ch;
+        }
+
+        .ab-register-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            border-top: 1px solid var(--ab-rule);
+        }
+
         .ab-register-item {
             display: grid;
             grid-template-columns: 80px 1fr auto;
@@ -350,75 +661,177 @@
             transition: background 200ms ease, padding 200ms ease;
             align-items: baseline;
         }
-        .ab-register-item:hover { background: var(--ab-paper-2); padding-left: 18px; }
+
+        .ab-register-item:hover {
+            background: var(--ab-paper-2);
+            padding-left: 18px;
+        }
+
         .ab-register-num {
             font-family: "Instrument Serif", Georgia, serif;
-            font-size: 2rem; color: var(--ab-accent);
+            font-size: 2rem;
+            color: var(--ab-accent);
             line-height: 1;
             font-weight: 400;
         }
+
         .ab-register-body h3 {
-            font-size: 1.35rem; color: var(--ab-ink);
+            font-size: 1.35rem;
+            color: var(--ab-ink);
             margin: 0 0 6px;
             font-weight: 700;
             letter-spacing: -0.015em;
         }
+
         .ab-register-body h3 .beta-pill {
-            display: inline-block; font-size: 9px; font-weight: 700;
-            letter-spacing: 0.08em; background: #fef3c7; color: #92400e;
-            padding: 2px 6px; border-radius: 2px; margin-left: 8px;
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 6px;
+            border-radius: 2px;
+            margin-left: 8px;
             vertical-align: middle;
         }
+
         .ab-register-body p {
-            font-size: 0.95rem; color: var(--ab-text);
-            line-height: 1.55; margin: 0; max-width: 60ch;
+            font-size: 0.95rem;
+            color: var(--ab-text);
+            line-height: 1.55;
+            margin: 0;
+            max-width: 60ch;
         }
+
         .ab-register-arrow {
             font-family: "Instrument Serif", Georgia, serif;
-            font-size: 1.4rem; color: var(--ab-accent);
+            font-size: 1.4rem;
+            color: var(--ab-accent);
             font-weight: 400;
         }
+
         @media (max-width: 768px) {
-            .ab-register-item { grid-template-columns: 50px 1fr; gap: 16px; padding: 22px 0; }
-            .ab-register-num { font-size: 1.5rem; }
-            .ab-register-arrow { display: none; }
+            .ab-register-item {
+                grid-template-columns: 50px 1fr;
+                gap: 16px;
+                padding: 22px 0;
+            }
+
+            .ab-register-num {
+                font-size: 1.5rem;
+            }
+
+            .ab-register-arrow {
+                display: none;
+            }
         }
 
         /* ------- TIMELINE ------- */
-        .ab-timeline { padding: 100px 0; background: var(--ab-paper-2); border-bottom: 1px solid var(--ab-rule-soft); }
-        .ab-timeline h2 { font-size: clamp(2rem, 3.5vw, 2.8rem); line-height: 1.1; color: var(--ab-ink); margin: 16px 0 48px; max-width: 18ch; }
-        .ab-timeline h2 em { font-style: italic; color: var(--ab-accent); font-family: "Instrument Serif", Georgia, serif; font-weight: 400; }
-        .ab-tl-track {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px;
-            position: relative; padding-top: 24px;
+        .ab-timeline {
+            padding: 100px 0;
+            background: var(--ab-paper-2);
+            border-bottom: 1px solid var(--ab-rule-soft);
         }
+
+        .ab-timeline h2 {
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            line-height: 1.1;
+            color: var(--ab-ink);
+            margin: 16px 0 48px;
+            max-width: 18ch;
+        }
+
+        .ab-timeline h2 em {
+            font-style: italic;
+            color: var(--ab-accent);
+            font-family: "Instrument Serif", Georgia, serif;
+            font-weight: 400;
+        }
+
+        .ab-tl-track {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+            position: relative;
+            padding-top: 24px;
+        }
+
         .ab-tl-track::before {
-            content: ''; position: absolute; top: 28px; left: 0; right: 0; height: 1px;
+            content: '';
+            position: absolute;
+            top: 28px;
+            left: 0;
+            right: 0;
+            height: 1px;
             background: var(--ab-rule-soft);
         }
+
         @media (max-width: 768px) {
-            .ab-tl-track { grid-template-columns: 1fr; gap: 16px; padding-top: 0; }
-            .ab-tl-track::before { display: none; }
+            .ab-tl-track {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding-top: 0;
+            }
+
+            .ab-tl-track::before {
+                display: none;
+            }
         }
-        .ab-tl-item { position: relative; padding-top: 28px; font-size: 0.95rem; }
+
+        .ab-tl-item {
+            position: relative;
+            padding-top: 28px;
+            font-size: 0.95rem;
+        }
+
         .ab-tl-item::before {
-            content: ''; position: absolute; top: 22px; left: 0;
-            width: 12px; height: 12px; border-radius: 50%;
-            background: var(--ab-paper-2); border: 2px solid var(--ab-rule);
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--ab-paper-2);
+            border: 2px solid var(--ab-rule);
         }
-        .ab-tl-item.is-now::before { background: var(--ab-accent); border-color: var(--ab-accent); }
+
+        .ab-tl-item.is-now::before {
+            background: var(--ab-accent);
+            border-color: var(--ab-accent);
+        }
+
         .ab-tl-year {
             font-family: "Instrument Serif", Georgia, serif;
-            font-size: 1.6rem; color: var(--ab-ink);
-            font-weight: 400; margin-bottom: 6px;
+            font-size: 1.6rem;
+            color: var(--ab-ink);
+            font-weight: 400;
+            margin-bottom: 6px;
         }
-        .ab-tl-item.is-now .ab-tl-year { color: var(--ab-accent); }
+
+        .ab-tl-item.is-now .ab-tl-year {
+            color: var(--ab-accent);
+        }
+
         .ab-tl-event {
-            font-size: 0.9rem; color: var(--ab-text); line-height: 1.45;
+            font-size: 0.9rem;
+            color: var(--ab-text);
+            line-height: 1.45;
         }
+
         @media (max-width: 768px) {
-            .ab-tl-item { padding-top: 0; padding-left: 22px; padding-bottom: 16px; border-left: 1px solid var(--ab-rule-soft); }
-            .ab-tl-item::before { top: 6px; left: -7px; }
+            .ab-tl-item {
+                padding-top: 0;
+                padding-left: 22px;
+                padding-bottom: 16px;
+                border-left: 1px solid var(--ab-rule-soft);
+            }
+
+            .ab-tl-item::before {
+                top: 6px;
+                left: -7px;
+            }
         }
 
         /* ------- CLOSING SEAL ------- */
@@ -428,23 +841,50 @@
             text-align: center;
             position: relative;
         }
+
         .ab-seal::before {
-            content: ''; position: absolute; inset: 0;
+            content: '';
+            position: absolute;
+            inset: 0;
             background: url('assets/images/Coat_of_arms_of_Nigeria.svg') center / 220px no-repeat;
             opacity: 0.04;
             pointer-events: none;
         }
+
         .ab-seal-eyebrow {
-            font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-            color: var(--ab-accent); font-weight: 700; margin-bottom: 14px;
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ab-accent);
+            font-weight: 700;
+            margin-bottom: 14px;
         }
+
         .ab-seal h2 {
             font-family: "Instrument Serif", Georgia, serif;
-            font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; line-height: 1.15;
-            color: var(--ab-ink); max-width: 22ch; margin: 0 auto 14px;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 400;
+            line-height: 1.15;
+            color: var(--ab-ink);
+            max-width: 22ch;
+            margin: 0 auto 14px;
         }
-        .ab-seal p { font-size: 1rem; color: var(--ab-text); max-width: 50ch; margin: 0 auto 28px; line-height: 1.55; }
-        .ab-seal-meta { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ab-muted); font-weight: 600; }
+
+        .ab-seal p {
+            font-size: 1rem;
+            color: var(--ab-text);
+            max-width: 50ch;
+            margin: 0 auto 28px;
+            line-height: 1.55;
+        }
+
+        .ab-seal-meta {
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ab-muted);
+            font-weight: 600;
+        }
     </style>
     <script src="auth-check.js"></script>
     <link rel="icon" type="image/svg+xml" href="./assets/images/Coat_of_arms_of_Nigeria.svg" sizes="50x50">
@@ -476,7 +916,9 @@
                             <div style="margin-top: 24px;">
                                 <h4>Intelligence</h4>
                                 <ul class="mm-list">
-                                    <li><a href="apex/apex.html">Apex AI <span style="font-size: 10px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">BETA</span></a></li>
+                                    <li><a href="apex/apex.html">Apex AI <span
+                                                style="font-size: 10px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">BETA</span></a>
+                                    </li>
                                     <li><a href="edu-center/educenter.html">Edu Center</a></li>
                                 </ul>
                             </div>
@@ -560,19 +1002,24 @@
                     <div class="ab-eyebrow"><span class="dot"></span><span>About NEIIA</span></div>
                     <h1>The energy intelligence layer for <em>Nigeria.</em></h1>
                     <p class="lede">
-                        The National Energy Investment &amp; Intelligence Administration (NEIIA) consolidates capital, asset visibility, and strategic coordination for Nigeria's energy sector &mdash; bridging private capital and federal mandate under one operating system.
+                        The National Energy Investment &amp; Intelligence Administration (NEIIA) consolidates capital,
+                        asset visibility, and strategic coordination for Nigeria's energy sector &mdash; bridging
+                        private capital and federal mandate under one operating system.
                     </p>
                     <div class="ab-hero-actions">
-                        <a href="deal-room/index.html" class="ab-btn ab-btn-primary">Open Deal Room <span aria-hidden="true">&rarr;</span></a>
-                        <a href="#register" class="ab-btn ab-btn-ghost">The 6 modules</a>
+                        <a href="deal-room/index.html" class="ab-btn ab-btn-primary">Open Deal Room <span
+                                aria-hidden="true">&rarr;</span></a>
+                        <a href="#register" class="ab-btn ab-btn-ghost">The 8 modules</a>
                     </div>
                 </div>
 
                 <aside class="ab-stamp">
                     <div class="ab-stamp-head">OFFICE OF THE PRESIDENT OF NIGERIA</div>
                     <div class="ab-stamp-body">
-                        <img src="assets/images/leaders/president-tinubu.jpg" alt="President of Nigeria" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
-                        Established by Executive Order under the Federal Ministry of Petroleum Resources, with concurrent mandate from the Federal Ministry of Power.
+                        <img src="assets/images/leaders/president-tinubu.jpg" alt="President of Nigeria"
+                            style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
+                        Established by Executive Order under the Federal Ministry of Petroleum Resources, with
+                        concurrent mandate from the Federal Ministry of Power.
                     </div>
                     <div class="ab-stamp-sig">Office of the President</div>
                 </aside>
@@ -585,24 +1032,76 @@
                     <div class="ab-marquee">
                         <div class="ab-marquee-track">
                             <!-- Agency set 1 -->
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/Coat_of_arms_of_Nigeria.svg" alt="Federal Ministry of Petroleum Resources" style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of Petroleum</span><span class="ab-agency-sub">Resources</span></span></span>
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/logos/federal-ministry-power.png" alt="Federal Ministry of Power" style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of Power</span><span class="ab-agency-sub">Federal Republic of Nigeria</span></span></span>
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/logos/nuprc-official.png" alt="NUPRC" style="border-radius: 6px;"><span><span class="ab-agency-name">NUPRC</span><span class="ab-agency-sub">Upstream Regulatory</span></span></span>
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/logos/nmdpra-official.png" alt="NMDPRA" style="border-radius: 6px;"><span><span class="ab-agency-name">NMDPRA</span><span class="ab-agency-sub">Midstream &amp; Downstream</span></span></span>
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/logos/nnpc-official.svg" alt="NNPC Ltd." style="border-radius: 6px;"><span><span class="ab-agency-name">NNPC Ltd.</span><span class="ab-agency-sub">National Petroleum Co.</span></span></span>
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/logos/nerc-official.png" alt="NERC" style="border-radius: 6px;"><span><span class="ab-agency-name">NERC</span><span class="ab-agency-sub">Electricity Regulator</span></span></span>
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/logos/energy-commission-nigeria.png" alt="ECN" style="border-radius: 6px;"><span><span class="ab-agency-name">ECN</span><span class="ab-agency-sub">Energy Commission</span></span></span>
-                            <span class="ab-agency"><img class="ab-agency-seal" src="assets/images/logos/firs-logo.png.webp" alt="FIRS" style="border-radius: 6px;"><span><span class="ab-agency-name">FIRS</span><span class="ab-agency-sub">Inland Revenue Service</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/Coat_of_arms_of_Nigeria.svg"
+                                    alt="Federal Ministry of Petroleum Resources"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of
+                                        Petroleum</span><span class="ab-agency-sub">Resources</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/logos/federal-ministry-power.png" alt="Federal Ministry of Power"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of
+                                        Power</span><span class="ab-agency-sub">Federal Republic of
+                                        Nigeria</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nuprc-official.png" alt="NUPRC"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NUPRC</span><span
+                                        class="ab-agency-sub">Upstream Regulatory</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nmdpra-official.png" alt="NMDPRA"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NMDPRA</span><span
+                                        class="ab-agency-sub">Midstream &amp; Downstream</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nnpc-official.svg" alt="NNPC Ltd."
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NNPC Ltd.</span><span
+                                        class="ab-agency-sub">National Petroleum Co.</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nerc-official.png" alt="NERC"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NERC</span><span
+                                        class="ab-agency-sub">Electricity Regulator</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/logos/energy-commission-nigeria.png" alt="ECN"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">ECN</span><span
+                                        class="ab-agency-sub">Energy Commission</span></span></span>
+                            <span class="ab-agency"><img class="ab-agency-seal"
+                                    src="assets/images/logos/firs-logo.png.webp" alt="FIRS"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">FIRS</span><span
+                                        class="ab-agency-sub">Inland Revenue Service</span></span></span>
 
                             <!-- Agency set 2 (duplicate for seamless loop) -->
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/Coat_of_arms_of_Nigeria.svg" alt="Federal Ministry of Petroleum Resources" style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of Petroleum</span><span class="ab-agency-sub">Resources</span></span></span>
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/logos/federal-ministry-power.png" alt="Federal Ministry of Power" style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of Power</span><span class="ab-agency-sub">Federal Republic of Nigeria</span></span></span>
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/logos/nuprc-official.png" alt="NUPRC" style="border-radius: 6px;"><span><span class="ab-agency-name">NUPRC</span><span class="ab-agency-sub">Upstream Regulatory</span></span></span>
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/logos/nmdpra-official.png" alt="NMDPRA" style="border-radius: 6px;"><span><span class="ab-agency-name">NMDPRA</span><span class="ab-agency-sub">Midstream &amp; Downstream</span></span></span>
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/logos/nnpc-official.svg" alt="NNPC Ltd." style="border-radius: 6px;"><span><span class="ab-agency-name">NNPC Ltd.</span><span class="ab-agency-sub">National Petroleum Co.</span></span></span>
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/logos/nerc-official.png" alt="NERC" style="border-radius: 6px;"><span><span class="ab-agency-name">NERC</span><span class="ab-agency-sub">Electricity Regulator</span></span></span>
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/logos/energy-commission-nigeria.png" alt="ECN" style="border-radius: 6px;"><span><span class="ab-agency-name">ECN</span><span class="ab-agency-sub">Energy Commission</span></span></span>
-                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal" src="assets/images/logos/firs-logo.png.webp" alt="FIRS" style="border-radius: 6px;"><span><span class="ab-agency-name">FIRS</span><span class="ab-agency-sub">Inland Revenue Service</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/Coat_of_arms_of_Nigeria.svg"
+                                    alt="Federal Ministry of Petroleum Resources"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of
+                                        Petroleum</span><span class="ab-agency-sub">Resources</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/logos/federal-ministry-power.png" alt="Federal Ministry of Power"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">Federal Ministry of
+                                        Power</span><span class="ab-agency-sub">Federal Republic of
+                                        Nigeria</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nuprc-official.png" alt="NUPRC"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NUPRC</span><span
+                                        class="ab-agency-sub">Upstream Regulatory</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nmdpra-official.png" alt="NMDPRA"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NMDPRA</span><span
+                                        class="ab-agency-sub">Midstream &amp; Downstream</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nnpc-official.svg" alt="NNPC Ltd."
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NNPC Ltd.</span><span
+                                        class="ab-agency-sub">National Petroleum Co.</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/logos/nerc-official.png" alt="NERC"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">NERC</span><span
+                                        class="ab-agency-sub">Electricity Regulator</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/logos/energy-commission-nigeria.png" alt="ECN"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">ECN</span><span
+                                        class="ab-agency-sub">Energy Commission</span></span></span>
+                            <span class="ab-agency" aria-hidden="true"><img class="ab-agency-seal"
+                                    src="assets/images/logos/firs-logo.png.webp" alt="FIRS"
+                                    style="border-radius: 6px;"><span><span class="ab-agency-name">FIRS</span><span
+                                        class="ab-agency-sub">Inland Revenue Service</span></span></span>
                         </div>
                     </div>
                 </div>
@@ -615,7 +1114,9 @@
                 <div class="ab-mandate-label">The mandate</div>
                 <div>
                     <blockquote class="ab-mandate-quote">
-                        &ldquo;To establish a single <span class="pull">source of truth</span> for Nigeria's energy investment landscape &mdash; aggregating capital, projects, vehicles and assets &mdash; and to lower the friction between sovereign priorities and the private capital that funds them.&rdquo;
+                        &ldquo;To establish a single <span class="pull">source of truth</span> for Nigeria's energy
+                        investment landscape &mdash; aggregating capital, projects, vehicles and assets &mdash; and to
+                        lower the friction between sovereign priorities and the private capital that funds them.&rdquo;
                     </blockquote>
                     <div class="ab-mandate-attr">
                         <span class="ab-mandate-attr-sig">Nurudeen Yakubu</span>
@@ -640,28 +1141,30 @@
                             <span class="ab-stack-body">FMP &middot; Power</span>
                         </div>
                     </div>
-                        <div class="ab-grid-card">
-                            <span class="ab-icon"><i class="fas fa-chart-line"></i></span>
-                            <h3>LP Portal</h3>
-                            <p>The investor view. Track pacing, view portfolio company KPIs, and receive automated performance summaries.</p>
-                        </div>
-                        <div class="ab-grid-card">
-                            <span class="ab-icon"><i class="fas fa-city"></i></span>
-                            <h3>EVillage</h3>
-                            <p>Community energy ecosystem. Manage decentralized assets, smart meters, and local energy sharing initiatives.</p>
-                        </div>
+                    <div class="ab-grid-card">
+                        <span class="ab-icon"><i class="fas fa-chart-line"></i></span>
+                        <h3>LP Portal</h3>
+                        <p>The investor view. Track pacing, view portfolio company KPIs, and receive automated
+                            performance summaries.</p>
                     </div>
-                    <div class="ab-stack-row">
-                        <div class="ab-stack-tier">Sectoral regulators</div>
-                        <div class="ab-stack-bodies">
-                            <span class="ab-stack-body">NUPRC</span>
-                            <span class="ab-stack-body">NMDPRA</span>
-                            <span class="ab-stack-body">NERC</span>
-                            <span class="ab-stack-body">ECN</span>
-                            <span class="ab-stack-body">NNPC Ltd.</span>
-                        </div>
+                    <div class="ab-grid-card">
+                        <span class="ab-icon"><i class="fas fa-city"></i></span>
+                        <h3>EVillage</h3>
+                        <p>Community energy ecosystem. Manage decentralized assets, smart meters, and local energy
+                            sharing initiatives.</p>
                     </div>
                 </div>
+                <div class="ab-stack-row">
+                    <div class="ab-stack-tier">Sectoral regulators</div>
+                    <div class="ab-stack-bodies">
+                        <span class="ab-stack-body">NUPRC</span>
+                        <span class="ab-stack-body">NMDPRA</span>
+                        <span class="ab-stack-body">NERC</span>
+                        <span class="ab-stack-body">ECN</span>
+                        <span class="ab-stack-body">NNPC Ltd.</span>
+                    </div>
+                </div>
+            </div>
             </div>
         </section>
 
@@ -670,7 +1173,8 @@
             <div class="ab-shell ab-kpi-inner">
                 <div class="ab-kpi-cell">
                     <div class="ab-kpi-num">13.0<span class="ab-kpi-unit">GW</span></div>
-                    <div class="ab-kpi-label">Installed grid capacity tracked across federal &amp; private generation.</div>
+                    <div class="ab-kpi-label">Installed grid capacity tracked across federal &amp; private generation.
+                    </div>
                     <div class="ab-kpi-source">Source &middot; TCN / NERC</div>
                 </div>
                 <div class="ab-kpi-cell">
@@ -680,12 +1184,14 @@
                 </div>
                 <div class="ab-kpi-cell">
                     <div class="ab-kpi-num">62<span class="ab-kpi-unit">%</span></div>
-                    <div class="ab-kpi-label">National electricity access rate &mdash; indexed in the National Energy Data Bank.</div>
+                    <div class="ab-kpi-label">National electricity access rate &mdash; indexed in the National Energy
+                        Data Bank.</div>
                     <div class="ab-kpi-source">Source &middot; FMP / World Bank</div>
                 </div>
                 <div class="ab-kpi-cell">
                     <div class="ab-kpi-num">$3.2<span class="ab-kpi-unit">B</span></div>
-                    <div class="ab-kpi-label">Capital deployed in-platform via the Deal Room (cumulative, 2026 YTD).</div>
+                    <div class="ab-kpi-label">Capital deployed in-platform via the Deal Room (cumulative, 2026 YTD).
+                    </div>
                     <div class="ab-kpi-source">Source &middot; NEIIA</div>
                 </div>
             </div>
@@ -697,7 +1203,8 @@
                 <div class="ab-register-head">
                     <div class="ab-eyebrow"><span class="dot"></span><span>The register &middot; 8 modules</span></div>
                     <h2>Eight modules. <em>One mandate.</em></h2>
-                    <p>From the deal lifecycle to public energy data &mdash; the eight products that carry NEIIA's mandate. Click any entry to open the module directly.</p>
+                    <p>From the deal lifecycle to public energy data &mdash; the eight products that carry NEIIA's
+                        mandate. Click any entry to open the module directly.</p>
                 </div>
 
                 <ol class="ab-register-list">
@@ -706,7 +1213,9 @@
                         <div class="ab-register-num">01</div>
                         <div class="ab-register-body">
                             <h3>Deal Room</h3>
-                            <p>The end-to-end deal lifecycle. Source &rarr; Structure &rarr; Outreach &rarr; Diligence &rarr; Close &rarr; Administer. Six vehicle wrappers in one wizard, two lenses (GP raising, LP investing) on one record.</p>
+                            <p>The end-to-end deal lifecycle. Source &rarr; Structure &rarr; Outreach &rarr; Diligence
+                                &rarr; Close &rarr; Administer. Six vehicle wrappers in one wizard, two lenses (GP
+                                raising, LP investing) on one record.</p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
@@ -715,7 +1224,8 @@
                         <div class="ab-register-num">02</div>
                         <div class="ab-register-body">
                             <h3>NEFUND</h3>
-                            <p>The fund operating system. Compliance posture, multi-vehicle workspaces, and the platform underneath Deal Room. ISO 27001 &middot; SOC 2 Type II &middot; SEC Nigeria.</p>
+                            <p>The fund operating system. Compliance posture, multi-vehicle workspaces, and the platform
+                                underneath Deal Room. ISO 27001 &middot; SOC 2 Type II &middot; SEC Nigeria.</p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
@@ -724,7 +1234,8 @@
                         <div class="ab-register-num">03</div>
                         <div class="ab-register-body">
                             <h3>Apex AI <span class="beta-pill">BETA</span></h3>
-                            <p>Portfolio intelligence. Reads your real position data and writes analyst-grade notes &mdash; exposure, pacing, dispersion, vintage benchmarks, recommendation. On demand.</p>
+                            <p>Portfolio intelligence. Reads your real position data and writes analyst-grade notes
+                                &mdash; exposure, pacing, dispersion, vintage benchmarks, recommendation. On demand.</p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
@@ -733,35 +1244,40 @@
                         <div class="ab-register-num">04</div>
                         <div class="ab-register-body">
                             <h3>Reporting &amp; LP Portals</h3>
-                            <p>Investor reporting dashboards and LP portfolio management. Real-time performance tracking, fund documents, distributions and communications in one portal.</p>
+                            <p>Investor reporting dashboards and LP portfolio management. Real-time performance
+                                tracking, fund documents, distributions and communications in one portal.</p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
 
                     <a href="risk-esg/index.html" class="ab-register-item">
-                        <div class="ab-register-num">07</div>
+                        <div class="ab-register-num">05</div>
                         <div class="ab-register-body">
                             <h3>Risk &amp; ESG Intelligence</h3>
-                            <p>Environmental, social and governance analysis for energy investments. Benchmark ESG performance, manage climate risk, and track sustainability metrics across portfolios.</p>
+                            <p>Environmental, social and governance analysis for energy investments. Benchmark ESG
+                                performance, manage climate risk, and track sustainability metrics across portfolios.
+                            </p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
 
                     <a href="help-center/evillage.html" class="ab-register-item">
-                        <div class="ab-register-num">08</div>
+                        <div class="ab-register-num">06</div>
                         <div class="ab-register-body">
                             <h3>EVillage</h3>
-                            <p>Community energy ecosystem. Manage decentralized assets, smart meters, and local energy sharing initiatives.</p>
+                            <p>Community energy ecosystem. Manage decentralized assets, smart meters, and local energy
+                                sharing initiatives.</p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
 
 
                     <a href="edu-center/educenter.html" class="ab-register-item">
-                        <div class="ab-register-num">06</div>
+                        <div class="ab-register-num">07</div>
                         <div class="ab-register-body">
                             <h3>Edu Center</h3>
-                            <p>Guides, playbooks and best practices for fund managers, investors and operators. Running a fund, energy investing, taxes, economics &amp; reporting.</p>
+                            <p>Guides, playbooks and best practices for fund managers, investors and operators. Running
+                                a fund, energy investing, taxes, economics &amp; reporting.</p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
@@ -770,7 +1286,8 @@
                         <div class="ab-register-num">08</div>
                         <div class="ab-register-body">
                             <h3>National Energy Data Bank</h3>
-                            <p>Nigeria&rsquo;s open public data: petroleum, electricity, fuelwood, DPK and crude consumption. Source-of-truth datasets for policy and capital decisions.</p>
+                            <p>Nigeria&rsquo;s open public data: petroleum, electricity, fuelwood, DPK and crude
+                                consumption. Source-of-truth datasets for policy and capital decisions.</p>
                         </div>
                         <div class="ab-register-arrow">&rarr;</div>
                     </a>
@@ -788,11 +1305,13 @@
                 <div class="ab-tl-track">
                     <div class="ab-tl-item">
                         <div class="ab-tl-year">1977</div>
-                        <div class="ab-tl-event">NNPC established &mdash; consolidated petroleum operations under federal mandate.</div>
+                        <div class="ab-tl-event">NNPC established &mdash; consolidated petroleum operations under
+                            federal mandate.</div>
                     </div>
                     <div class="ab-tl-item">
                         <div class="ab-tl-year">1989</div>
-                        <div class="ab-tl-event">Energy Commission of Nigeria (ECN) chartered to coordinate national energy policy.</div>
+                        <div class="ab-tl-event">Energy Commission of Nigeria (ECN) chartered to coordinate national
+                            energy policy.</div>
                     </div>
                     <div class="ab-tl-item">
                         <div class="ab-tl-year">2005</div>
@@ -800,11 +1319,13 @@
                     </div>
                     <div class="ab-tl-item">
                         <div class="ab-tl-year">2021</div>
-                        <div class="ab-tl-event">Petroleum Industry Act passes &mdash; NUPRC and NMDPRA replace DPR; NNPC becomes commercial entity.</div>
+                        <div class="ab-tl-event">Petroleum Industry Act passes &mdash; NUPRC and NMDPRA replace DPR;
+                            NNPC becomes commercial entity.</div>
                     </div>
                     <div class="ab-tl-item is-now">
                         <div class="ab-tl-year">2026</div>
-                        <div class="ab-tl-event">NEIIA established. One platform for capital, vehicles, assets and intelligence across the entire stack.</div>
+                        <div class="ab-tl-event">NEIIA established. One platform for capital, vehicles, assets and
+                            intelligence across the entire stack.</div>
                     </div>
                 </div>
             </div>
@@ -815,7 +1336,8 @@
             <div class="ab-shell">
                 <div class="ab-seal-eyebrow">Issued under the Federal Republic of Nigeria</div>
                 <h2>One source of truth for the sector that powers everything else.</h2>
-                <p>Capital, vehicles, assets, intelligence. Across the entire federal energy stack &mdash; from policy to the last connected household.</p>
+                <p>Capital, vehicles, assets, intelligence. Across the entire federal energy stack &mdash; from policy
+                    to the last connected household.</p>
                 <div class="ab-seal-meta">NEIIA &middot; Abuja &middot; Lagos &middot; Port Harcourt</div>
             </div>
         </section>
@@ -824,49 +1346,171 @@
 
     <!-- Footer — institutional gazette -->
     <style>
-        .ab-foot { background: var(--ab-ink); color: #DDD7C7; padding: 72px 0 32px; position: relative; overflow: hidden; }
-        .ab-foot::before {
-            content: ''; position: absolute;
-            right: -80px; top: 50%; transform: translateY(-50%);
-            width: 360px; height: 360px;
-            background: url('assets/images/Coat_of_arms_of_Nigeria.svg') center / contain no-repeat;
-            opacity: 0.04; pointer-events: none;
+        .ab-foot {
+            background: var(--ab-ink);
+            color: #DDD7C7;
+            padding: 72px 0 32px;
+            position: relative;
+            overflow: hidden;
         }
-        .ab-foot-shell { max-width: 1280px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-        .ab-foot-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 56px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        @media (max-width: 900px) { .ab-foot-top { grid-template-columns: 1fr 1fr; gap: 40px; } }
-        @media (max-width: 600px) { .ab-foot-top { grid-template-columns: 1fr; gap: 32px; } }
 
-        .ab-foot-brand { display: flex; flex-direction: column; gap: 18px; max-width: 380px; }
-        .ab-foot-mark { display: flex; align-items: center; gap: 12px; }
-        .ab-foot-coat { width: 36px; height: 36px; }
-        .ab-foot-wordmark { font-family: "Instrument Serif", serif; font-size: 1.5rem; color: #fff; letter-spacing: -0.01em; line-height: 1; }
-        .ab-foot-tag { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #B5AC97; font-weight: 600; margin-top: 4px; line-height: 1.4; }
-        .ab-foot-blurb { font-size: 0.95rem; line-height: 1.6; color: #B5AC97; }
+        .ab-foot::before {
+            content: '';
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 360px;
+            height: 360px;
+            background: url('assets/images/Coat_of_arms_of_Nigeria.svg') center / contain no-repeat;
+            opacity: 0.04;
+            pointer-events: none;
+        }
+
+        .ab-foot-shell {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ab-foot-top {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr;
+            gap: 48px;
+            padding-bottom: 56px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 900px) {
+            .ab-foot-top {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .ab-foot-top {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        .ab-foot-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-width: 380px;
+        }
+
+        .ab-foot-mark {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ab-foot-coat {
+            width: 36px;
+            height: 36px;
+        }
+
+        .ab-foot-wordmark {
+            font-family: "Instrument Serif", serif;
+            font-size: 1.5rem;
+            color: #fff;
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+
+        .ab-foot-tag {
+            font-size: 11px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #B5AC97;
+            font-weight: 600;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .ab-foot-blurb {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #B5AC97;
+        }
 
         .ab-foot-col h5 {
-            font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-            color: #B5AC97; font-weight: 700; margin: 0 0 18px;
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #B5AC97;
+            font-weight: 700;
+            margin: 0 0 18px;
         }
-        .ab-foot-col ul { list-style: none; margin: 0; padding: 0; }
-        .ab-foot-col li { margin-bottom: 10px; font-size: 0.95rem; }
-        .ab-foot-col a { color: #DDD7C7; text-decoration: none; transition: color 150ms ease; }
-        .ab-foot-col a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+
+        .ab-foot-col ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ab-foot-col li {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .ab-foot-col a {
+            color: #DDD7C7;
+            text-decoration: none;
+            transition: color 150ms ease;
+        }
+
+        .ab-foot-col a:hover {
+            color: #fff;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
         .ab-foot-col .beta {
-            display: inline-block; font-size: 9px; letter-spacing: 0.08em;
-            background: rgba(255,255,255,0.1); color: #DDD7C7;
-            padding: 2px 6px; border-radius: 2px; margin-left: 6px; font-weight: 700;
+            display: inline-block;
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            background: rgba(255, 255, 255, 0.1);
+            color: #DDD7C7;
+            padding: 2px 6px;
+            border-radius: 2px;
+            margin-left: 6px;
+            font-weight: 700;
         }
 
         .ab-foot-bottom {
-            padding-top: 28px; display: flex; align-items: center;
-            justify-content: space-between; gap: 24px; flex-wrap: wrap;
-            font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
-            color: #87806E; font-weight: 600;
+            padding-top: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #87806E;
+            font-weight: 600;
         }
-        .ab-foot-bottom a { color: #B5AC97; text-decoration: none; }
-        .ab-foot-bottom a:hover { color: #fff; }
-        .ab-foot-bottom .ab-foot-legal { display: flex; gap: 22px; flex-wrap: wrap; }
+
+        .ab-foot-bottom a {
+            color: #B5AC97;
+            text-decoration: none;
+        }
+
+        .ab-foot-bottom a:hover {
+            color: #fff;
+        }
+
+        .ab-foot-bottom .ab-foot-legal {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
     </style>
     <footer class="ab-foot">
         <div class="ab-foot-shell">
@@ -882,11 +1526,15 @@
                             <div class="ab-foot-tag">Federal Republic of Nigeria</div>
                         </div>
                     </div>
-                    <p class="ab-foot-blurb">National Energy Investment &amp; Intelligence Administration &mdash; the operating system for Nigeria's energy capital, vehicles, assets and intelligence.</p>
+                    <p class="ab-foot-blurb">National Energy Investment &amp; Intelligence Administration &mdash; the
+                        operating system for Nigeria's energy capital, vehicles, assets and intelligence.</p>
                     <div style="display: flex; gap: 18px; margin-top: 4px;">
-                        <a href="https://twitter.com" aria-label="X / Twitter" style="color:#B5AC97"><i class="fab fa-x-twitter"></i></a>
-                        <a href="https://linkedin.com" aria-label="LinkedIn" style="color:#B5AC97"><i class="fab fa-linkedin"></i></a>
-                        <a href="mailto:info@neiia.gov.ng" aria-label="Email" style="color:#B5AC97"><i class="fas fa-envelope"></i></a>
+                        <a href="https://twitter.com" aria-label="X / Twitter" style="color:#B5AC97"><i
+                                class="fab fa-x-twitter"></i></a>
+                        <a href="https://linkedin.com" aria-label="LinkedIn" style="color:#B5AC97"><i
+                                class="fab fa-linkedin"></i></a>
+                        <a href="mailto:info@neiia.gov.ng" aria-label="Email" style="color:#B5AC97"><i
+                                class="fas fa-envelope"></i></a>
                     </div>
                 </div>
 
@@ -936,8 +1584,11 @@
                 <span>Abuja &middot; Lagos &middot; Port Harcourt</span>
             </div>
 
-            <div style="text-align: center; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 28px;">
-                <p style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #87806E; margin: 0;">Powered by <strong style="color: #B5AC97;">Norgroup</strong></p>
+            <div
+                style="text-align: center; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 28px;">
+                <p
+                    style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #87806E; margin: 0;">
+                    Powered by <strong style="color: #B5AC97;">Norgroup</strong></p>
             </div>
 
         </div>
@@ -954,7 +1605,7 @@
                     const rect = heroSection.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
-                    
+
                     container.style.transform = `translate(${x}px, ${y}px)`;
                 });
             }
@@ -981,4 +1632,5 @@
         });
     </script>
 </body>
+
 </html>
