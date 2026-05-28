@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investors · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Investor browser</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">Find LPs that match your fund mandate. Filter by type, sector, ticket size, and geo.</p>
+          </div>
+          <a href="deal-terms.html" class="btn btn-primary" id="new-deal-btn"></a>
+        </div>
+
+        <!-- Filter chips -->
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:18px;">
+          <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;font-weight:600;">LP type</div>
+          <div id="type-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
+          <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;font-weight:600;">Sector interest</div>
+          <div id="sector-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
+          <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;font-weight:600;">Geo focus</div>
+          <div id="geo-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+            <div style="font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:600;">Min ticket (USD)</div>
+            <input id="min-ticket" type="number" placeholder="10000" style="padding:8px;border:1px solid var(--border);border-radius:8px;width:140px;">
+            <button class="btn btn-secondary btn-sm" id="apply-min">Apply</button>
+            <button class="btn btn-ghost btn-sm" id="reset-btn">Reset filters</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:10px;color:var(--muted);font-size:13px;" id="count"></div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;" class="row-3" id="lp-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'investor-browser' });
+
+    document.getElementById('new-deal-btn').innerHTML = Portal.icon('plus', 16) + ' New deal';
+
+    function fmtCompact(n) {
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+      return '$' + (n || 0).toLocaleString();
+    }
+
+    const TYPES = ['Angel', 'HNI', 'Family Office', 'Institutional'];
+    const SECTORS = ['Fintech', 'Energy', 'Healthcare', 'Agri', 'Consumer', 'ICT', 'Manufacturing', 'Real Estate'];
+    const GEOS = ['Nigeria', 'Kenya', 'Ghana', 'South Africa', 'Pan-African'];
+
+    let fType = 'all', fSector = 'all', fGeo = 'all', minTicket = 0;
+
+    function renderChipBar(values, sel, mountId, onClick) {
+      const all = ['<button class="chip type-c' + (sel === 'all' ? ' active" style="background:var(--brand-50);color:var(--brand);"' : '"') + ' data-v="all">All</button>'];
+      const items = values.map(function (v) {
+        const active = sel === v ? ' active" style="background:var(--brand-50);color:var(--brand);"' : '"';
+        return '<button class="chip type-c' + active + ' data-v="' + v + '">' + v + '</button>';
+      });
+      document.getElementById(mountId).innerHTML = all.concat(items).join('');
+      document.querySelectorAll('#' + mountId + ' .chip').forEach(function (b) {
+        b.addEventListener('click', function () { onClick(b.dataset.v); });
+      });
+    }
+
+    function render() {
+      renderChipBar(TYPES, fType, 'type-chips', function (v) { fType = v; render(); });
+      renderChipBar(SECTORS, fSector, 'sector-chips', function (v) { fSector = v; render(); });
+      renderChipBar(GEOS, fGeo, 'geo-chips', function (v) { fGeo = v; render(); });
+
+      const list = NEIIA_DATA.personas.lp.filter(function (lp) {
+        if (fType !== 'all' && lp.type !== fType) return false;
+        if (fSector !== 'all' && lp.sector !== fSector) return false;
+        if (fGeo !== 'all') {
+          const geos = (lp.mandate && lp.mandate.geos) || [lp.country];
+          if (!geos.includes(fGeo)) return false;
+        }
+        if (minTicket && lp.mandate && lp.mandate.ticketSizeMax < minTicket) return false;
+        return true;
+      });
+
+      document.getElementById('count').textContent = list.length + ' investors match';
+
+      const tints = ['', 'avatar-blue', 'avatar-amber', 'avatar-purple', 'avatar-teal', 'avatar-rose'];
+      document.getElementById('lp-grid').innerHTML = list.map(function (lp, i) {
+        const sectors = (lp.mandate && lp.mandate.sectors || []).slice(0, 3).map(function (s) { return '<span class="chip">' + s + '</span>'; }).join(' ');
+        const tint = tints[i % tints.length];
+        return '<div class="lp-card" data-id="' + lp.id + '">' +
+          '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;">' +
+            '<span class="avatar avatar-md ' + tint + '">' + lp.initials + '</span>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-weight:700;color:var(--ink);">' + lp.name + '</div>' +
+              '<div style="font-size:12px;color:var(--muted);">' + lp.city + ', ' + lp.country + '</div>' +
+              '<div style="margin-top:6px;"><span class="badge badge-green">' + lp.type + '</span></div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap;">' + sectors + '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;border-top:1px solid #F1F5F9;padding-top:10px;">' +
+            '<div><div style="color:var(--muted);">Ticket size</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(lp.mandate.ticketSizeMin) + '–' + fmtCompact(lp.mandate.ticketSizeMax) + '</div></div>' +
+            '<div><div style="color:var(--muted);">AUM</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(lp.nav) + '</div></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.lp-card').forEach(function (card) {
+        card.addEventListener('click', function () { openInvestorDrawer(card.dataset.id); });
+      });
+    }
+
+    function svgBars(arr, color) {
+      const max = Math.max.apply(null, arr);
+      const w = 220, h = 56, gap = 2;
+      const bw = (w - (arr.length - 1) * gap) / arr.length;
+      const bars = arr.map(function (v, i) {
+        const bh = Math.max(2, (v / max) * (h - 4));
+        return '<rect x="' + (i * (bw + gap)) + '" y="' + (h - bh) + '" width="' + bw + '" height="' + bh + '" fill="' + color + '" rx="1"/>';
+      }).join('');
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' + bars + '</svg>';
+    }
+
+    function openInvestorDrawer(id) {
+      const lp = NEIIA_DATA.personas.lp.find(function (l) { return l.id === id; });
+      if (!lp) return;
+      const cf = lp.corporateFinancials;
+      const sectorMix = cf.sectorMix.map(function (s) {
+        return '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;"><span>' + s.sector + '</span><span style="font-weight:600;color:var(--ink);">' + s.pct + '%</span></div>';
+      }).join('');
+
+      const body =
+        '<div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;">' +
+          '<span class="avatar avatar-lg">' + lp.initials + '</span>' +
+          '<div><h2 style="margin:0;font-size:20px;">' + lp.name + '</h2>' +
+          '<div style="font-size:13px;color:var(--muted);">' + lp.type + ' · ' + lp.city + ', ' + lp.country + '</div>' +
+          '<div style="margin-top:6px;"><span class="badge badge-green">KYC: ' + lp.kyc + '</span> <span class="chip">' + lp.sector + '</span></div></div>' +
+        '</div>' +
+
+        '<h3 style="margin:0 0 10px;font-size:15px;">Investment mandate</h3>' +
+        '<div class="card card-p" style="padding:14px;">' +
+          '<div class="term-row"><span class="term-label">Sectors</span><span class="term-val">' + lp.mandate.sectors.join(', ') + '</span></div>' +
+          '<div class="term-row"><span class="term-label">Ticket size</span><span class="term-val">' + fmtCompact(lp.mandate.ticketSizeMin) + '–' + fmtCompact(lp.mandate.ticketSizeMax) + '</span></div>' +
+          '<div class="term-row"><span class="term-label">Geo focus</span><span class="term-val">' + lp.mandate.geos.join(', ') + '</span></div>' +
+          '<div class="term-row"><span class="term-label">Stage preference</span><span class="term-val">' + lp.mandate.stages.join(', ') + '</span></div>' +
+          '<div class="term-row" style="border-bottom:none;"><span class="term-label">Vintage</span><span class="term-val">' + lp.mandate.vintage + '</span></div>' +
+        '</div>' +
+
+        '<h3 style="margin:18px 0 10px;font-size:15px;">Corporate financials</h3>' +
+        '<div class="card card-p" style="padding:14px;">' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">' +
+            '<div><div class="kpi-label">Year founded</div><div class="kpi-value" style="font-size:18px;">' + lp.yearFounded + '</div></div>' +
+            '<div><div class="kpi-label">Staff</div><div class="kpi-value" style="font-size:18px;">' + lp.staffCount + '</div></div>' +
+            '<div><div class="kpi-label">Monthly rev (NGN)</div><div class="kpi-value" style="font-size:16px;">' + lp.monthlyRevenueNGN + '</div></div>' +
+            '<div><div class="kpi-label">Annual rev (NGN)</div><div class="kpi-value" style="font-size:16px;">' + lp.annualRevenueNGN + '</div></div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:6px;">Monthly revenue — 12 months (NGN)</div>' +
+          svgBars(cf.monthlyRevenueNGN, '#0E7A3C') +
+          '<div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;margin:14px 0 6px;">Staff growth — 12 months</div>' +
+          svgBars(cf.staff, '#93C5A4') +
+          '<div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;margin:14px 0 6px;">Sector exposure</div>' +
+          sectorMix +
+        '</div>' +
+
+        '<div style="margin-top:18px;display:flex;gap:8px;">' +
+          '<a href="deal-terms.html?lpId=' + lp.id + '" class="btn btn-primary" style="flex:1;justify-content:center;">Send a deal →</a>' +
+          '<a href="lps.html" class="btn btn-secondary">View in LPs</a>' +
+        '</div>';
+
+      Portal.drawer({ title: 'Investor profile', body: body, width: '540px' });
+    }
+
+    document.getElementById('apply-min').addEventListener('click', function () {
+      minTicket = parseInt(document.getElementById('min-ticket').value, 10) || 0;
+      render();
+    });
+    document.getElementById('reset-btn').addEventListener('click', function () {
+      fType = 'all'; fSector = 'all'; fGeo = 'all'; minTicket = 0;
+      document.getElementById('min-ticket').value = '';
+      render();
+    });
+
+    render();
+  </script>
+  <style>
+    @media (max-width: 980px) { .row-3 { grid-template-columns: 1fr !important; } }
+    @media (min-width: 981px) and (max-width: 1200px) { .row-3 { grid-template-columns: repeat(2, 1fr) !important; } }
+  </style>
+</body>
+</html>

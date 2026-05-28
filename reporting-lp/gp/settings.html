@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:18px;">
+          <h1 style="margin:0;font-size:24px;">Settings</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">Workspace, team, and account preferences.</p>
+        </div>
+
+        <div class="tabs" style="margin-bottom:20px;flex-wrap:wrap;">
+          <div class="tab" data-tab="profile">Profile</div>
+          <div class="tab active" data-tab="team">Team</div>
+          <div class="tab" data-tab="funds">Funds</div>
+          <div class="tab" data-tab="bank">Bank accounts</div>
+          <div class="tab" data-tab="branding">Branding</div>
+          <div class="tab" data-tab="notifications">Notifications</div>
+          <div class="tab" data-tab="security">Security</div>
+          <div class="tab" data-tab="region">Region & Language</div>
+        </div>
+
+        <div class="tab-pane" data-pane="profile" style="display:none;">
+          <div class="card card-p" style="max-width:640px;">
+            <h3 style="margin:0 0 14px;font-size:16px;">Profile</h3>
+            <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;">
+              <span class="avatar avatar-lg">AO</span>
+              <div><button class="btn btn-secondary btn-sm">Change photo</button></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div><label style="font-size:13px;font-weight:600;">Full name</label><input value="Adaobi Okonkwo" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"></div>
+              <div><label style="font-size:13px;font-weight:600;">Role</label><input value="Managing Partner" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"></div>
+              <div><label style="font-size:13px;font-weight:600;">Email</label><input value="adaobi@sahelcapital.ng" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"></div>
+              <div><label style="font-size:13px;font-weight:600;">Phone</label><input value="+234 802 555 0101" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"></div>
+            </div>
+            <div style="margin-top:18px;"><button class="btn btn-primary">Save changes</button></div>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="team">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="margin:0;font-size:16px;">Team members</h3>
+            <button class="btn btn-primary" id="inv-btn"></button>
+          </div>
+          <div class="card" style="overflow:hidden;">
+            <table class="tbl">
+              <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Status</th></tr></thead>
+              <tbody id="team-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="funds" style="display:none;">
+          <div class="card card-p"><h3 style="margin:0 0 14px;font-size:16px;">Fund configuration</h3>
+            <p style="color:var(--muted);font-size:13px;">Manage fund-level settings, fee schedules, and reporting cadence.</p>
+            <ul style="font-size:14px;line-height:2;">
+              <li>Default management fee: 2.0%</li>
+              <li>Default carry: 20%</li>
+              <li>Reporting cadence: Quarterly</li>
+              <li>Distribution waterfall: European</li>
+            </ul>
+            <button class="btn btn-secondary">Edit defaults</button>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="bank" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <h3 style="margin:0;font-size:16px;">Bank accounts</h3>
+              <p style="color:var(--muted);font-size:13px;margin:4px 0 0;">Configure where capital-call receipts route and where distributions originate. Settlement is off-platform.</p>
+            </div>
+            <button class="btn btn-primary" id="add-bank-btn">Add bank account</button>
+          </div>
+          <div id="bank-accounts" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" class="row-2"></div>
+        </div>
+
+        <div class="tab-pane" data-pane="branding" style="display:none;">
+          <div class="card card-p" style="max-width:640px;">
+            <h3 style="margin:0 0 14px;font-size:16px;">Brand</h3>
+            <div style="margin-bottom:14px;"><label style="font-size:13px;font-weight:600;">Logo</label>
+              <div style="margin-top:6px;padding:24px;border:2px dashed var(--border);border-radius:8px;text-align:center;color:var(--muted);">Drag logo or click to upload (PNG, SVG · 512×512)</div>
+            </div>
+            <div style="margin-bottom:14px;"><label style="font-size:13px;font-weight:600;">Primary color</label>
+              <div style="display:flex;gap:10px;align-items:center;margin-top:6px;"><input type="color" value="#0E7A3C" style="width:60px;height:40px;border:1px solid var(--border);border-radius:8px;"><input value="#0E7A3C" style="padding:9px;border:1px solid var(--border);border-radius:8px;width:140px;"></div>
+            </div>
+            <div><label style="font-size:13px;font-weight:600;">Custom subdomain</label>
+              <div style="display:flex;align-items:center;margin-top:6px;"><input value="sahel" style="padding:9px;border:1px solid var(--border);border-radius:8px 0 0 8px;"><span style="padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-left:0;border-radius:0 8px 8px 0;color:var(--muted);">.neiia.app</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="notifications" style="display:none;">
+          <div class="card card-p" style="max-width:640px;">
+            <h3 style="margin:0 0 14px;font-size:16px;">Notifications</h3>
+            <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F1F5F9;"><span>Email me when an LP acknowledges a capital call</span><input type="checkbox" checked></div>
+            <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F1F5F9;"><span>Email me when an LP sends a message</span><input type="checkbox" checked></div>
+            <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F1F5F9;"><span>Weekly LP engagement digest</span><input type="checkbox" checked></div>
+            <div style="display:flex;justify-content:space-between;padding:12px 0;"><span>Monthly fund performance summary</span><input type="checkbox"></div>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="security" style="display:none;">
+          <div class="card card-p" style="max-width:640px;">
+            <h3 style="margin:0 0 14px;font-size:16px;">Security</h3>
+            <div style="margin-bottom:14px;"><label style="font-size:13px;font-weight:600;">Two-factor authentication</label>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:12px;border:1px solid var(--border);border-radius:8px;"><span>Enabled · Authenticator app</span><button class="btn btn-secondary btn-sm">Manage</button></div>
+            </div>
+            <div style="margin-bottom:14px;"><label style="font-size:13px;font-weight:600;">SSO</label>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:12px;border:1px solid var(--border);border-radius:8px;color:var(--muted);"><span>SAML / OIDC — contact sales to enable</span><button class="btn btn-secondary btn-sm">Contact sales</button></div>
+            </div>
+            <div><label style="font-size:13px;font-weight:600;">Active sessions</label>
+              <div style="margin-top:6px;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--body);">MacBook Pro · Lagos · 2h ago<br>iPhone 14 · Lagos · 1d ago</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="region" style="display:none;">
+          <div class="card card-p" style="max-width:640px;">
+            <h3 style="margin:0 0 14px;font-size:16px;">Region & Language</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div><label style="font-size:13px;font-weight:600;">Default currency</label>
+                <select style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"><option>NGN (₦)</option><option selected>USD ($)</option><option>KES (KSh)</option><option>GHS (₵)</option><option>ZAR (R)</option></select>
+              </div>
+              <div><label style="font-size:13px;font-weight:600;">Language</label>
+                <select style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"><option selected>English</option><option>Français</option><option>Português</option><option>Kiswahili</option></select>
+              </div>
+              <div><label style="font-size:13px;font-weight:600;">Timezone</label>
+                <select style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"><option>Africa/Lagos (WAT)</option><option>Africa/Nairobi (EAT)</option><option>Africa/Accra (GMT)</option></select>
+              </div>
+              <div><label style="font-size:13px;font-weight:600;">Date format</label>
+                <select style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;margin-top:4px;"><option>DD MMM YYYY</option><option>YYYY-MM-DD</option><option>MM/DD/YYYY</option></select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'settings' });
+
+    // Bank accounts
+    const banks = [
+      { name: 'Stanbic IBTC', currency: 'NGN', label: 'NEIIA Growth Fund I — Capital Account', mask: '****6789', swift: 'SBICNGLX', primary: true },
+      { name: 'GTBank', currency: 'NGN', label: 'NEIIA Tech Ventures — Capital Account', mask: '****1432', swift: 'GTBINGLA', primary: false },
+      { name: 'Standard Chartered', currency: 'USD', label: 'NEIIA Offshore — USD', mask: '****0091', swift: 'SCBLNGLA', primary: false }
+    ];
+    function renderBanks() {
+      const m = document.getElementById('bank-accounts');
+      if (!m) return;
+      m.innerHTML = banks.map(function (b, i) {
+        return '<div class="card card-p" style="display:flex;flex-direction:column;gap:10px;">' +
+          '<div style="display:flex;gap:12px;align-items:center;">' +
+            '<span style="width:40px;height:40px;border-radius:8px;background:var(--brand-50);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;">' +
+              '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M12 3 2 8h20Z"/></svg>' +
+            '</span>' +
+            '<div style="flex:1;"><div style="font-weight:700;color:var(--ink);">' + b.name + ' · ' + b.currency + '</div>' +
+            '<div style="font-size:12px;color:var(--muted);">' + b.label + '</div></div>' +
+            (b.primary ? '<span class="badge badge-green">Primary</span>' : '') +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--body);">' + b.mask + ' · SWIFT ' + b.swift + '</div>' +
+          '<div style="display:flex;gap:6px;"><button class="btn btn-ghost btn-sm" data-bi="' + i + '">Edit</button>' + (!b.primary ? '<button class="btn btn-ghost btn-sm" data-mp="' + i + '">Make primary</button>' : '') + '</div>' +
+        '</div>';
+      }).join('');
+      m.querySelectorAll('[data-bi]').forEach(function (b) { b.addEventListener('click', function () { Portal.toast('Editor opened (visual only).', 'success'); }); });
+      m.querySelectorAll('[data-mp]').forEach(function (b) { b.addEventListener('click', function () {
+        banks.forEach(function (x) { x.primary = false; }); banks[+b.dataset.mp].primary = true; renderBanks(); Portal.toast('Primary bank updated.', 'success');
+      }); });
+    }
+    renderBanks();
+    const addBank = document.getElementById('add-bank-btn');
+    if (addBank) addBank.addEventListener('click', function () {
+      const body = document.createElement('div');
+      body.innerHTML =
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+          '<div><label style="font-size:12px;font-weight:600;">Bank name</label><input id="b-name" placeholder="e.g. Stanbic IBTC" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div><label style="font-size:12px;font-weight:600;">Currency</label><select id="b-cur" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"><option>NGN</option><option>USD</option><option>KES</option><option>GHS</option></select></div>' +
+          '<div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:600;">Account name</label><input id="b-acct" placeholder="Account holder" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div><label style="font-size:12px;font-weight:600;">Account number</label><input id="b-num" placeholder="0123456789" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+          '<div><label style="font-size:12px;font-weight:600;">SWIFT</label><input id="b-swift" placeholder="SBICNGLX" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;"></div>' +
+        '</div>';
+      Portal.modal({
+        title: 'Add bank account',
+        body: body,
+        primary: { label: 'Add', onClick: function (close) {
+          banks.push({ name: body.querySelector('#b-name').value || 'New bank', currency: body.querySelector('#b-cur').value, label: body.querySelector('#b-acct').value || 'New account', mask: '****' + (Math.floor(Math.random() * 9000) + 1000), swift: body.querySelector('#b-swift').value || 'XXXXXX', primary: false });
+          renderBanks();
+          close();
+          Portal.toast('Bank account added.', 'success');
+        } },
+        secondary: { label: 'Cancel' }
+      });
+    });
+    document.getElementById('inv-btn').innerHTML = Portal.icon('plus', 16) + ' Invite member';
+
+    // Team
+    const team = NEIIA_DATA.personas.gp.map(function (g, i) {
+      const role = i === 0 ? 'Owner' : g.role;
+      const rolePill = i === 0 ? 'background:var(--brand-50);color:var(--brand);' : 'background:#F1F5F9;color:#475569;';
+      return '<tr><td><div style="display:flex;align-items:center;gap:10px;"><span class="avatar avatar-sm">' + g.initials + '</span><div><b style="color:var(--ink);">' + g.name + '</b><div style="font-size:12px;color:var(--muted);">' + g.role + '</div></div></div></td>' +
+        '<td><span class="chip" style="' + rolePill + '">' + role + '</span></td>' +
+        '<td>' + g.email + '</td>' +
+        '<td><span class="badge badge-green">Active</span></td></tr>';
+    }).join('');
+    document.getElementById('team-body').innerHTML = team;
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(function (t) {
+      t.addEventListener('click', function () {
+        document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('active'); });
+        t.classList.add('active');
+        const name = t.dataset.tab;
+        document.querySelectorAll('.tab-pane').forEach(function (p) { p.style.display = p.dataset.pane === name ? 'block' : 'none'; });
+      });
+    });
+  </script>
+</body>
+</html>

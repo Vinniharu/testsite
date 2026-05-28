@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal terms · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:18px;">
+          <h1 style="margin:0;font-size:24px;">Set deal terms</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">Build a term sheet, pick which LPs receive it, and track every response.</p>
+        </div>
+
+        <div id="apex-inline-mount"></div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;" class="row-2">
+          <div>
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 14px;font-size:16px;">Deal overview</h3>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="form-grid">
+                <div style="grid-column:1/-1;"><label class="dt-lbl">Deal title</label><input id="d-title" value="Solara Energy — Series A+ extension" class="dt-in"></div>
+                <div>
+                  <label class="dt-lbl">Portfolio company</label>
+                  <select id="d-company" class="dt-in"></select>
+                </div>
+                <div>
+                  <label class="dt-lbl">Instrument</label>
+                  <select id="d-instrument" class="dt-in"><option>Equity</option><option>CSAFE</option><option>Debt</option><option>Convertible note</option></select>
+                </div>
+                <div><label class="dt-lbl">Target raise (USD)</label><input id="d-target" type="number" value="2500000" class="dt-in"></div>
+                <div><label class="dt-lbl">Pre-money valuation (USD)</label><input id="d-valuation" type="number" value="22000000" class="dt-in"></div>
+                <div><label class="dt-lbl">Allocation per LP (USD)</label><input id="d-allocation" type="number" value="25000" class="dt-in"></div>
+                <div>
+                  <label class="dt-lbl">Issued</label>
+                  <input id="d-issued" type="date" class="dt-in">
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 14px;font-size:16px;">Milestones</h3>
+              <div id="ms-list"></div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <input id="ms-new" placeholder="Add a milestone (e.g. Reach 80MW deployed)" class="dt-in" style="flex:1;">
+                <button class="btn btn-secondary" id="add-ms">Add</button>
+              </div>
+            </div>
+
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 14px;font-size:16px;">Governance rights</h3>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" class="form-grid">
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;"><input type="checkbox" id="g-board"> Board seat</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;"><input type="checkbox" id="g-info" checked> Info rights</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;"><input type="checkbox" id="g-drag" checked> Drag-along</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;"><input type="checkbox" id="g-rofr" checked> ROFR</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;"><input type="checkbox" id="g-prorata" checked> Pro-rata rights</label>
+                <div style="grid-column:1/-1;">
+                  <label class="dt-lbl">Anti-dilution protection</label>
+                  <select id="g-anti" class="dt-in">
+                    <option>Broad-based weighted average</option>
+                    <option>Narrow-based weighted average</option>
+                    <option>Full ratchet</option>
+                    <option>None</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-p" style="margin-bottom:14px;">
+              <h3 style="margin:0 0 14px;font-size:16px;">Investor shortlist</h3>
+              <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Select which LPs receive this deal.</p>
+              <div id="lp-picker" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:280px;overflow-y:auto;" class="form-grid"></div>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-primary" id="send-btn"></button>
+              <button class="btn btn-secondary" id="save-draft-btn">Save as draft</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="card card-p" style="position:sticky;top:90px;">
+              <h3 style="margin:0 0 12px;font-size:15px;">Preview</h3>
+              <div id="preview-body" style="font-size:13px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'deal-terms' });
+    document.getElementById('send-btn').innerHTML = Portal.icon('send', 16) + ' Send to selected LPs';
+
+    document.getElementById('apex-inline-mount').innerHTML = Portal.apexPanel({
+      title: 'Term sheet review',
+      bullets: [
+        'Allocation of $25K at $22M pre-money is within market for Series A+ extension rounds.',
+        'Broad-based weighted average anti-dilution is investor-friendly and typical for African PE.',
+        'Consider waiving ROFR if your LP base is small — it can slow secondary liquidity.',
+        'Pro-rata rights help retain ownership in follow-on rounds; recommend keeping enabled.'
+      ]
+    });
+
+    // Populate company select
+    const companies = NEIIA_DATA.portfolio;
+    document.getElementById('d-company').innerHTML = companies.map(function (c) {
+      return '<option value="' + c.id + '"' + (c.name.indexOf('Solara') > -1 ? ' selected' : '') + '>' + c.name + '</option>';
+    }).join('');
+
+    document.getElementById('d-issued').value = new Date().toISOString().slice(0, 10);
+
+    // Milestones
+    let milestones = ['Reach 80 MW deployed by Q4 2026', 'Achieve 38% gross margin', 'Onboard 3 new C&I customers'];
+    function renderMs() {
+      document.getElementById('ms-list').innerHTML = milestones.map(function (m, i) {
+        return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #F1F5F9;">' +
+          '<span style="color:var(--brand);">' + Portal.icon('check', 16) + '</span>' +
+          '<span style="flex:1;font-size:14px;color:var(--ink);">' + m + '</span>' +
+          '<button class="btn btn-ghost btn-sm" data-mi="' + i + '" style="color:var(--red);">Remove</button>' +
+        '</div>';
+      }).join('');
+      document.querySelectorAll('[data-mi]').forEach(function (b) {
+        b.addEventListener('click', function () { milestones.splice(parseInt(b.dataset.mi, 10), 1); renderMs(); renderPreview(); });
+      });
+    }
+    document.getElementById('add-ms').addEventListener('click', function () {
+      const v = document.getElementById('ms-new').value.trim();
+      if (!v) return;
+      milestones.push(v);
+      document.getElementById('ms-new').value = '';
+      renderMs(); renderPreview();
+    });
+    renderMs();
+
+    // LP picker
+    const lps = NEIIA_DATA.personas.lp.slice(0, 12);
+    const params = new URLSearchParams(window.location.search);
+    const preLpId = params.get('lpId');
+    let selectedLps = preLpId ? [preLpId] : ['lp-1'];
+    function renderLpPicker() {
+      document.getElementById('lp-picker').innerHTML = lps.map(function (lp) {
+        const sel = selectedLps.includes(lp.id);
+        return '<label style="display:flex;gap:10px;align-items:center;padding:8px;border:1px solid ' + (sel ? 'var(--brand)' : 'var(--border)') + ';border-radius:8px;cursor:pointer;background:' + (sel ? 'var(--brand-50)' : 'white') + ';">' +
+          '<input type="checkbox" data-lpid="' + lp.id + '" ' + (sel ? 'checked' : '') + '>' +
+          '<div style="flex:1;min-width:0;"><div style="font-weight:600;color:var(--ink);font-size:13px;">' + lp.name + '</div>' +
+          '<div style="font-size:11px;color:var(--muted);">' + lp.type + ' · ' + lp.city + '</div></div>' +
+        '</label>';
+      }).join('');
+      document.querySelectorAll('[data-lpid]').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          if (cb.checked) selectedLps.push(cb.dataset.lpid);
+          else selectedLps = selectedLps.filter(function (x) { return x !== cb.dataset.lpid; });
+          renderLpPicker(); renderPreview();
+        });
+      });
+    }
+    renderLpPicker();
+
+    function renderPreview() {
+      const t = document.getElementById('d-title').value;
+      const inst = document.getElementById('d-instrument').value;
+      const val = parseInt(document.getElementById('d-valuation').value, 10) || 0;
+      const alloc = parseInt(document.getElementById('d-allocation').value, 10) || 0;
+      const target = parseInt(document.getElementById('d-target').value, 10) || 0;
+      const ms = milestones.map(function (m) { return '<li style="margin-bottom:2px;">' + m + '</li>'; }).join('');
+      document.getElementById('preview-body').innerHTML =
+        '<div style="font-weight:700;color:var(--ink);margin-bottom:8px;">' + t + '</div>' +
+        '<div style="color:var(--muted);font-size:12px;margin-bottom:10px;">Sahel Capital Partners · ' + selectedLps.length + ' LPs selected</div>' +
+        '<div class="term-row"><span class="term-label">Target raise</span><span class="term-val">$' + target.toLocaleString() + '</span></div>' +
+        '<div class="term-row"><span class="term-label">Valuation</span><span class="term-val">$' + val.toLocaleString() + '</span></div>' +
+        '<div class="term-row"><span class="term-label">Allocation / LP</span><span class="term-val">$' + alloc.toLocaleString() + '</span></div>' +
+        '<div class="term-row"><span class="term-label">Instrument</span><span class="term-val">' + inst + '</span></div>' +
+        '<div style="margin-top:10px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;">Milestones</div>' +
+        '<ul style="font-size:13px;color:var(--body);margin:6px 0 0;padding-left:18px;">' + ms + '</ul>';
+    }
+    ['d-title', 'd-instrument', 'd-valuation', 'd-allocation', 'd-target'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', renderPreview);
+      document.getElementById(id).addEventListener('change', renderPreview);
+    });
+    renderPreview();
+
+    document.getElementById('send-btn').addEventListener('click', function () {
+      if (selectedLps.length === 0) { Portal.toast('Pick at least one LP', 'error'); return; }
+      Portal.toast('Deal sent to ' + selectedLps.length + ' LP' + (selectedLps.length > 1 ? 's' : '') + '. Watch for responses on the dashboard.', 'success');
+      setTimeout(function () { window.location.href = 'dashboard.html'; }, 1200);
+    });
+    document.getElementById('save-draft-btn').addEventListener('click', function () {
+      Portal.toast('Draft saved.', 'success');
+    });
+  </script>
+  <style>
+    .dt-lbl { font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:6px; }
+    .dt-in { width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-height:44px;background:white; }
+    @media (max-width: 980px) {
+      .row-2 { grid-template-columns: 1fr !important; }
+      .form-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</body>
+</html>

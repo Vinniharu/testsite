@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LPs · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Limited partners</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">28 LPs · $45M committed</p>
+          </div>
+          <button class="btn btn-primary" id="invite-btn"></button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          <button class="chip type-chip active" data-type="all" style="background:var(--brand-50);color:var(--brand);">All types</button>
+          <button class="chip type-chip" data-type="HNI">HNI</button>
+          <button class="chip type-chip" data-type="Family Office">Family Office</button>
+          <button class="chip type-chip" data-type="Institutional">Institutional</button>
+          <button class="chip type-chip" data-type="Angel">Angel</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <button class="chip kyc-chip active" data-kyc="all" style="background:var(--brand-50);color:var(--brand);">All KYC</button>
+          <button class="chip kyc-chip" data-kyc="Verified">Verified</button>
+          <button class="chip kyc-chip" data-kyc="Pending">Pending</button>
+        </div>
+
+        <div class="card" style="overflow:hidden;">
+          <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th>Name</th><th>Type</th><th>Commitment</th><th>Called</th><th>Distributed</th><th>NAV</th><th>Engagement</th><th>Last login</th>
+            </tr></thead>
+            <tbody id="lps-tbody"></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'lps' });
+
+    function fmtCompact(n) {
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+      return '$' + (n || 0).toLocaleString();
+    }
+
+    document.getElementById('invite-btn').innerHTML = Portal.icon('plus', 16) + ' Invite LP';
+
+    const tints = ['', 'avatar-blue', 'avatar-amber', 'avatar-purple', 'avatar-teal', 'avatar-rose', 'avatar-slate'];
+    let filterType = 'all';
+    let filterKyc = 'all';
+
+    function render() {
+      const rows = NEIIA_DATA.personas.lp.filter(function (lp) {
+        if (filterType !== 'all' && lp.type !== filterType) return false;
+        if (filterKyc !== 'all' && lp.kyc !== filterKyc) return false;
+        return true;
+      });
+      document.getElementById('lps-tbody').innerHTML = rows.map(function (lp, i) {
+        const engClass = lp.engagement >= 80 ? 'eng-high' : (lp.engagement >= 60 ? 'eng-med' : 'eng-low');
+        const tint = tints[i % tints.length];
+        return '<tr data-id="' + lp.id + '">' +
+          '<td><div style="display:flex;align-items:center;gap:10px;"><span class="avatar avatar-sm ' + tint + '">' + lp.initials + '</span>' +
+          '<div><div style="font-weight:600;color:var(--ink);">' + lp.name + '</div>' +
+          '<div style="font-size:12px;color:var(--muted);">' + lp.city + ', ' + lp.country + '</div></div></div></td>' +
+          '<td><span class="chip">' + lp.type + '</span></td>' +
+          '<td>' + fmtCompact(lp.commitment) + '</td>' +
+          '<td>' + fmtCompact(lp.called) + '</td>' +
+          '<td>' + fmtCompact(lp.distributed) + '</td>' +
+          '<td>' + fmtCompact(lp.nav) + '</td>' +
+          '<td><span class="eng-chip ' + engClass + '">' + lp.engagement + '</span></td>' +
+          '<td style="color:var(--muted);">' + lp.lastLogin + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+    render();
+
+    document.querySelectorAll('.type-chip').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('.type-chip').forEach(function (x) { x.classList.remove('active'); x.style.cssText = ''; });
+        b.classList.add('active');
+        b.style.cssText = 'background:var(--brand-50);color:var(--brand);';
+        filterType = b.dataset.type;
+        render();
+      });
+    });
+    document.querySelectorAll('.kyc-chip').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('.kyc-chip').forEach(function (x) { x.classList.remove('active'); x.style.cssText = ''; });
+        b.classList.add('active');
+        b.style.cssText = 'background:var(--brand-50);color:var(--brand);';
+        filterKyc = b.dataset.kyc;
+        render();
+      });
+    });
+
+    document.getElementById('lps-tbody').addEventListener('click', function (e) {
+      const tr = e.target.closest('tr');
+      if (!tr) return;
+      const lp = NEIIA_DATA.personas.lp.find(function (l) { return l.id === tr.dataset.id; });
+      openLpDrawer(lp);
+    });
+
+    function openLpDrawer(lp) {
+      const kycBadge = lp.kyc === 'Verified' ? 'badge-green' : 'badge-amber';
+      const fundList = NEIIA_DATA.funds.map(function (f) {
+        return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F1F5F9;">' +
+          '<span style="font-weight:600;color:var(--ink);">' + f.name + '</span>' +
+          '<span style="color:var(--muted);font-size:13px;">' + f.strategy + '</span>' +
+        '</div>';
+      }).join('');
+
+      const events = [
+        { what: 'Logged into portal', when: lp.lastLogin },
+        { what: 'Downloaded Q1 2026 report', when: '3d ago' },
+        { what: 'Acknowledged Capital Call #6', when: '2w ago' },
+        { what: 'Updated bank details', when: '1mo ago' },
+        { what: 'KYC document refresh submitted', when: '3mo ago' }
+      ];
+      const activity = events.map(function (e) {
+        return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:13px;">' +
+          '<span style="color:var(--ink);">' + e.what + '</span>' +
+          '<span style="color:var(--muted);">' + e.when + '</span>' +
+        '</div>';
+      }).join('');
+
+      // Corporate financials (added by extension)
+      let corpBlock = '';
+      if (lp.corporateFinancials) {
+        const cf = lp.corporateFinancials;
+        const sectorMix = cf.sectorMix.map(function (s) {
+          return '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:13px;"><span>' + s.sector + '</span><span style="font-weight:600;color:var(--ink);">' + s.pct + '%</span></div>';
+        }).join('');
+        corpBlock = '<h3 style="margin:18px 0 8px;font-size:15px;">Corporate financials</h3>' +
+          '<div class="card card-p" style="padding:14px;">' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">' +
+              '<div><div class="kpi-label">Year founded</div><div class="kpi-value" style="font-size:18px;">' + lp.yearFounded + '</div></div>' +
+              '<div><div class="kpi-label">Staff</div><div class="kpi-value" style="font-size:18px;">' + lp.staffCount + '</div></div>' +
+              '<div><div class="kpi-label">Monthly rev</div><div class="kpi-value" style="font-size:14px;">' + lp.monthlyRevenueNGN + '</div></div>' +
+              '<div><div class="kpi-label">Annual rev</div><div class="kpi-value" style="font-size:14px;">' + lp.annualRevenueNGN + '</div></div>' +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:6px;">Monthly revenue — 12mo</div>' +
+            svgBars(cf.monthlyRevenueNGN, '#0E7A3C') +
+            '<div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;margin:12px 0 6px;">Staff growth — 12mo</div>' +
+            svgBars(cf.staff, '#93C5A4') +
+            '<div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;margin:12px 0 6px;">Sector mix</div>' +
+            sectorMix +
+          '</div>';
+      }
+
+      const body = '<div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;">' +
+        '<span class="avatar avatar-lg">' + lp.initials + '</span>' +
+        '<div style="flex:1;"><h2 style="margin:0;font-size:20px;">' + lp.name + '</h2>' +
+        '<div style="font-size:13px;color:var(--muted);margin-top:2px;">' + lp.type + ' · ' + lp.city + ', ' + lp.country + '</div>' +
+        '<div style="margin-top:6px;"><span class="badge ' + kycBadge + '">KYC: ' + lp.kyc + '</span></div></div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:18px;">' +
+        '<div class="kpi-card"><div class="kpi-label">Commitment</div><div class="kpi-value">' + fmtCompact(lp.commitment) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-label">Called</div><div class="kpi-value">' + fmtCompact(lp.called) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-label">Distributed</div><div class="kpi-value">' + fmtCompact(lp.distributed) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-label">NAV</div><div class="kpi-value">' + fmtCompact(lp.nav) + '</div></div>' +
+      '</div>' +
+      '<h3 style="margin:0 0 8px;font-size:15px;">Funds</h3>' + fundList +
+      corpBlock +
+      '<h3 style="margin:18px 0 8px;font-size:15px;">Activity log</h3>' + activity +
+      '<div style="margin-top:18px;"><a href="deal-terms.html?lpId=' + lp.id + '" class="btn btn-primary" style="width:100%;justify-content:center;">Send a deal to ' + lp.name.split(' ')[0] + ' →</a></div>';
+
+      Portal.drawer({ title: 'LP profile', body: body, width: '540px' });
+    }
+
+    function svgBars(arr, color) {
+      const max = Math.max.apply(null, arr);
+      const w = 240, h = 50, gap = 2;
+      const bw = (w - (arr.length - 1) * gap) / arr.length;
+      const bars = arr.map(function (v, i) {
+        const bh = Math.max(2, (v / max) * (h - 4));
+        return '<rect x="' + (i * (bw + gap)) + '" y="' + (h - bh) + '" width="' + bw + '" height="' + bh + '" fill="' + color + '" rx="1"/>';
+      }).join('');
+      return '<svg width="100%" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' + bars + '</svg>';
+    }
+  </script>
+</body>
+</html>

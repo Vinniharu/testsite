@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal feed · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:18px;">
+          <h1 style="margin:0;font-size:24px;">Deal feed</h1>
+          <p style="margin:4px 0 0;color:var(--muted);">Incoming opportunities from verified GPs. Filter by sector or status; click a deal to review terms.</p>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="filter-chips"></div>
+
+        <div id="deal-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'lp', activeNav: 'deal-feed' });
+
+    function fmtCompact(n) {
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+      return '$' + (n || 0).toLocaleString();
+    }
+
+    // Only show deals targeted at current LP (default Tunde = lp-1)
+    const user = NEIIA_STATE.currentUser;
+    const lpId = (user && user.id) || 'lp-1';
+
+    let filter = 'all';
+    function render() {
+      const all = NEIIA_DATA.dealTerms.filter(function (d) { return d.lpId === lpId; });
+      // For LPs other than Tunde, fall back to showing some deals so the demo isn't empty
+      const list = all.length ? all : NEIIA_DATA.dealTerms;
+      const final = filter === 'all' ? list : list.filter(function (d) { return d.instrument === filter; });
+
+      const chips = ['<button class="chip type-c' + (filter === 'all' ? '" style="background:var(--brand-50);color:var(--brand);"' : '"') + ' data-v="all">All</button>',
+        '<button class="chip type-c' + (filter === 'Equity' ? '" style="background:var(--brand-50);color:var(--brand);"' : '"') + ' data-v="Equity">Equity</button>',
+        '<button class="chip type-c' + (filter === 'CSAFE' ? '" style="background:var(--brand-50);color:var(--brand);"' : '"') + ' data-v="CSAFE">CSAFE</button>',
+        '<button class="chip type-c' + (filter === 'Debt' ? '" style="background:var(--brand-50);color:var(--brand);"' : '"') + ' data-v="Debt">Debt</button>'].join('');
+      document.getElementById('filter-chips').innerHTML = chips;
+      document.querySelectorAll('#filter-chips .chip').forEach(function (b) {
+        b.addEventListener('click', function () { filter = b.dataset.v; render(); });
+      });
+
+      if (final.length === 0) {
+        document.getElementById('deal-list').innerHTML = '<div class="card card-p" style="text-align:center;padding:48px;color:var(--muted);">No deals match this filter. Try clearing your filter or check back later.</div>';
+        return;
+      }
+
+      document.getElementById('deal-list').innerHTML = final.map(function (d) {
+        const pc = NEIIA_DATA.portfolio.find(function (p) { return p.name === d.portfolioCompany; });
+        return '<a href="deal-review.html?dealId=' + d.id + '" class="card card-p" style="display:block;margin-bottom:12px;text-decoration:none;color:inherit;cursor:pointer;transition:transform .15s, box-shadow .15s;" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 14px 28px rgba(15,23,42,0.08)\';" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'\';">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">' +
+            '<div style="flex:1;min-width:200px;">' +
+              '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">' +
+                '<div style="font-weight:700;color:var(--ink);font-size:16px;">' + d.title + '</div>' +
+                '<span class="deal-status deal-status-new">' + d.status + '</span>' +
+                '<span class="chip">' + d.instrument + '</span>' +
+              '</div>' +
+              '<div style="font-size:13px;color:var(--muted);margin-bottom:8px;">From ' + d.gpFirm + ' · issued ' + d.issued + '</div>' +
+              '<div style="font-size:14px;color:var(--body);margin-bottom:10px;">' + (d.memo || '') + '</div>' +
+              '<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;">' +
+                '<span><span style="color:var(--muted);">Allocation: </span><b style="color:var(--ink);">' + fmtCompact(d.allocation) + '</b></span>' +
+                '<span><span style="color:var(--muted);">Valuation: </span><b style="color:var(--ink);">' + fmtCompact(d.valuation) + '</b></span>' +
+              '</div>' +
+            '</div>' +
+            '<div style="text-align:right;">' +
+              (pc ? '<div style="font-weight:700;color:var(--ink);">' + pc.sector + '</div><div style="font-size:12px;color:var(--muted);">' + pc.stage + ' · ' + pc.hq + '</div>' : '') +
+              '<span class="btn btn-primary btn-sm" style="margin-top:10px;">Review →</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+    render();
+  </script>
+</body>
+</html>

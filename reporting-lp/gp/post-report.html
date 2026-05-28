@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a report · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Post a report</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">Publish to LPs invested in a deal. They receive a notification immediately.</p>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-secondary" id="save-draft">Save draft</button>
+            <button class="btn btn-primary" id="publish-btn"></button>
+          </div>
+        </div>
+
+        <div class="card card-p" style="max-width:880px;">
+          <form id="report-form" onsubmit="return false;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="form-grid">
+              <div>
+                <label class="kyb-lbl">Select deal</label>
+                <select id="r-deal" class="kyb-in"></select>
+              </div>
+              <div>
+                <label class="kyb-lbl">Cadence</label>
+                <div id="r-cadence" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+                  <label class="cadence-opt"><input type="radio" name="cadence" value="Daily"> Daily</label>
+                  <label class="cadence-opt"><input type="radio" name="cadence" value="Weekly"> Weekly</label>
+                  <label class="cadence-opt"><input type="radio" name="cadence" value="Monthly"> Monthly</label>
+                  <label class="cadence-opt"><input type="radio" name="cadence" value="Quarterly" checked> Quarterly</label>
+                  <label class="cadence-opt"><input type="radio" name="cadence" value="Yearly"> Yearly</label>
+                </div>
+              </div>
+              <div style="grid-column:1/-1;">
+                <label class="kyb-lbl">Report title</label>
+                <input id="r-title" class="kyb-in" placeholder="e.g. Solara Energy Q1 2026 update">
+              </div>
+              <div>
+                <label class="kyb-lbl">Period start</label>
+                <input id="r-start" type="date" class="kyb-in">
+              </div>
+              <div>
+                <label class="kyb-lbl">Period end</label>
+                <input id="r-end" type="date" class="kyb-in">
+              </div>
+              <div style="grid-column:1/-1;">
+                <label class="kyb-lbl">Executive summary</label>
+                <textarea id="r-summary" class="kyb-in" rows="5" placeholder="2-3 paragraph headline summary of the period."></textarea>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--border);margin-top:18px;padding-top:18px;">
+              <div style="font-weight:700;color:var(--ink);margin-bottom:10px;">Key performance indicators</div>
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" class="kpi-grid">
+                <div><label class="kyb-lbl">Revenue</label><input id="kpi-rev" class="kyb-in" placeholder="$2.1M/mo"></div>
+                <div><label class="kyb-lbl">Burn</label><input id="kpi-burn" class="kyb-in" placeholder="$310K/mo"></div>
+                <div><label class="kyb-lbl">Runway (months)</label><input id="kpi-runway" type="number" class="kyb-in" placeholder="22"></div>
+                <div><label class="kyb-lbl">ARR</label><input id="kpi-arr" class="kyb-in" placeholder="$25M"></div>
+                <div><label class="kyb-lbl">Active customers</label><input id="kpi-cust" class="kyb-in" placeholder="14 C&I sites"></div>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--border);margin-top:18px;padding-top:18px;">
+              <label class="kyb-lbl">Commentary</label>
+              <textarea id="r-commentary" class="kyb-in" rows="6" placeholder="Drivers of performance, key wins, risks, what changed since last period."></textarea>
+            </div>
+
+            <div style="border-top:1px solid var(--border);margin-top:18px;padding-top:18px;">
+              <label class="kyb-lbl">Outlook for next period</label>
+              <textarea id="r-outlook" class="kyb-in" rows="4" placeholder="What you expect to ship / hit / deliver next period."></textarea>
+            </div>
+
+            <div style="border-top:1px solid var(--border);margin-top:18px;padding-top:18px;">
+              <label class="kyb-lbl">Attach report PDF (optional)</label>
+              <div id="drop-zone" style="border:2px dashed var(--border);border-radius:10px;padding:30px;text-align:center;color:var(--muted);cursor:pointer;background:var(--surface);">
+                <div id="drop-text">
+                  <div style="display:inline-flex;width:48px;height:48px;border-radius:12px;background:var(--brand-50);color:var(--brand);align-items:center;justify-content:center;margin-bottom:10px;" id="drop-icon"></div>
+                  <div style="font-weight:700;color:var(--ink);">Drag file here or click to browse</div>
+                  <div style="font-size:13px;margin-top:4px;">PDF · max 25MB</div>
+                </div>
+              </div>
+              <input id="file-input" type="file" accept="application/pdf" style="display:none;">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'post-report' });
+    document.getElementById('publish-btn').innerHTML = Portal.icon('send', 16) + ' Publish';
+    document.getElementById('drop-icon').innerHTML = Portal.icon('upload', 22);
+
+    // Populate the deal selector from dealMemos (deals already executed) + dealTerms (pending)
+    const deals = [];
+    (NEIIA_DATA.dealMemos || []).forEach(function (m) {
+      deals.push({ id: m.id, name: m.deal.title, lpId: m.lp.id });
+    });
+    (NEIIA_DATA.dealTerms || []).forEach(function (d) {
+      deals.push({ id: d.id, name: d.title, lpId: d.lpId });
+    });
+    const seen = {};
+    const dedup = deals.filter(function (d) { if (seen[d.id]) return false; seen[d.id] = 1; return true; });
+
+    document.getElementById('r-deal').innerHTML = dedup.map(function (d) {
+      return '<option value="' + d.id + '">' + d.name + '</option>';
+    }).join('') || '<option>No deals yet</option>';
+
+    // Drag-drop visual
+    let attachedFile = null;
+    const drop = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    drop.addEventListener('click', function () { fileInput.click(); });
+    drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.style.background = 'var(--brand-50)'; });
+    drop.addEventListener('dragleave', function () { drop.style.background = 'var(--surface)'; });
+    drop.addEventListener('drop', function (e) {
+      e.preventDefault(); drop.style.background = 'var(--surface)';
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
+    fileInput.addEventListener('change', function (e) {
+      const f = e.target.files && e.target.files[0];
+      if (f) handleFile(f);
+    });
+    function handleFile(f) {
+      attachedFile = { name: f.name, size: f.size };
+      const kb = Math.round(f.size / 1024);
+      document.getElementById('drop-text').innerHTML =
+        '<div style="display:inline-flex;width:48px;height:48px;border-radius:12px;background:var(--brand-50);color:var(--brand);align-items:center;justify-content:center;margin-bottom:10px;">' + Portal.icon('file', 22) + '</div>' +
+        '<div style="font-weight:700;color:var(--ink);">' + f.name + '</div>' +
+        '<div style="font-size:13px;margin-top:4px;color:var(--brand);">' + (kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : kb + ' KB') + ' · ready to upload</div>';
+    }
+
+    function readForm() {
+      const dealId = document.getElementById('r-deal').value;
+      const dealOpt = document.getElementById('r-deal').selectedOptions[0];
+      const dealName = dealOpt ? dealOpt.textContent : '';
+      const cadenceEl = document.querySelector('input[name="cadence"]:checked');
+      return {
+        dealId: dealId, dealName: dealName,
+        cadence: cadenceEl ? cadenceEl.value : 'Quarterly',
+        title: document.getElementById('r-title').value || '',
+        period: (document.getElementById('r-start').value || '') + ' → ' + (document.getElementById('r-end').value || ''),
+        summary: document.getElementById('r-summary').value || '',
+        kpis: {
+          revenue: document.getElementById('kpi-rev').value || '',
+          burn: document.getElementById('kpi-burn').value || '',
+          runway: document.getElementById('kpi-runway').value || '',
+          arr: document.getElementById('kpi-arr').value || '',
+          customers: document.getElementById('kpi-cust').value || ''
+        },
+        commentary: document.getElementById('r-commentary').value || '',
+        outlook: document.getElementById('r-outlook').value || '',
+        fileName: attachedFile ? attachedFile.name : null
+      };
+    }
+
+    document.getElementById('save-draft').addEventListener('click', function () {
+      Portal.toast('Draft saved.', 'success');
+    });
+
+    document.getElementById('publish-btn').addEventListener('click', function () {
+      const f = readForm();
+      if (!f.title) { Portal.toast('Add a report title before publishing.', 'error'); return; }
+      Portal.modal({
+        title: 'Publish this report?',
+        body: '<p style="margin:0 0 6px;">It will be sent to every LP with an executed agreement on <b>' + f.dealName + '</b>.</p><p style="margin:0;color:var(--muted);font-size:13px;">They\'ll get an in-app notification and an email.</p>',
+        primary: { label: 'Yes, publish', onClick: function (close) { close(); doPublish(f); } },
+        secondary: { label: 'Cancel' }
+      });
+    });
+
+    function doPublish(f) {
+      const id = 'gpr-' + Date.now();
+      const record = {
+        id: id, dealId: f.dealId, dealName: f.dealName,
+        cadence: f.cadence, period: f.period,
+        title: f.title, summary: f.summary,
+        kpis: f.kpis, commentary: f.commentary, outlook: f.outlook,
+        fileName: f.fileName,
+        publishedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
+        publishedBy: 'u-gp-1'
+      };
+      // Push into NEIIA_DATA.reports (in-memory extend)
+      NEIIA_DATA.reports = NEIIA_DATA.reports || [];
+      NEIIA_DATA.reports.push(record);
+      // And the GP-published reports list in state
+      NEIIA_STATE.addGpReport(record);
+
+      // Notify each LP invested in this deal
+      const matchingLpIds = [];
+      (NEIIA_DATA.dealMemos || []).forEach(function (m) { if (m.dealId === f.dealId || m.id === f.dealId) { if (m.lp && m.lp.id) matchingLpIds.push(m.lp.id); } });
+      (NEIIA_DATA.dealTerms || []).forEach(function (d) { if (d.id === f.dealId && d.lpId) matchingLpIds.push(d.lpId); });
+      const uniq = matchingLpIds.filter(function (v, i) { return matchingLpIds.indexOf(v) === i; });
+      NEIIA_DATA.notifications = NEIIA_DATA.notifications || { gp: [], lp: [] };
+      NEIIA_DATA.notifications.lp = NEIIA_DATA.notifications.lp || [];
+      uniq.forEach(function (lpId) {
+        NEIIA_DATA.notifications.lp.unshift({ id: 'n-l-' + Date.now() + '-' + lpId, title: 'New report: ' + f.title, when: 'Just now', kind: 'info', lpId: lpId });
+      });
+
+      Portal.toast('Report published. ' + (uniq.length || 1) + ' LPs notified.', 'success');
+      setTimeout(function () { window.location.href = 'documents.html'; }, 1200);
+    }
+  </script>
+
+  <style>
+    .kyb-lbl { font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:6px; }
+    .kyb-in { width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-height:44px;background:white; }
+    textarea.kyb-in { min-height:60px;resize:vertical; }
+    .cadence-opt { display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;font-size:13px;color:var(--body);cursor:pointer;background:white; }
+    .cadence-opt input { margin:0; }
+    @media (max-width: 900px) {
+      .form-grid { grid-template-columns: 1fr !important; }
+      .kpi-grid { grid-template-columns: repeat(2,1fr) !important; }
+    }
+  </style>
+</body>
+</html>

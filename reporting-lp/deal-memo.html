@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal memo · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/portal.css">
+</head>
+<body style="background:#F1F5F9;">
+
+<div class="no-print" style="background:white;border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+  <a href="index.html" class="wordmark"><span class="wordmark-mark">N</span>NEIIA</a>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a id="back-link" href="#" class="btn btn-ghost btn-sm">← Back to portal</a>
+    <button class="btn btn-secondary btn-sm" id="book-btn"></button>
+    <button class="btn btn-secondary btn-sm" id="print-btn"></button>
+    <button class="btn btn-primary btn-sm" id="download-btn"></button>
+  </div>
+</div>
+
+<div class="memo-sheet" style="position:relative;">
+  <div class="memo-watermark">NEIIA</div>
+  <div style="position:relative;z-index:2;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--brand);padding-bottom:18px;margin-bottom:24px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div class="wordmark" style="font-size:22px;"><span class="wordmark-mark">N</span>NEIIA</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">Authoritative deal memo · LP & GP Reporting</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);">Memo ID</div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink);font-family:monospace;" id="memo-id"></div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-top:6px;">Generated</div>
+        <div style="font-size:13px;color:var(--ink);" id="memo-when"></div>
+        <div style="margin-top:8px;"><span class="badge badge-green" id="memo-status">Approved</span></div>
+      </div>
+    </div>
+
+    <h1 style="margin:0 0 8px;font-size:28px;" id="memo-title">Deal memo</h1>
+    <p style="color:var(--muted);margin:0;" id="memo-blurb">This memo constitutes the authoritative record of agreed terms between both parties.</p>
+
+    <!-- Section 1: GP -->
+    <div class="memo-section">
+      <h3>1 · General Partner (issuer)</h3>
+      <div id="gp-section"></div>
+    </div>
+
+    <!-- Section 2: LP -->
+    <div class="memo-section">
+      <h3>2 · Limited Partner (recipient)</h3>
+      <div id="lp-section"></div>
+    </div>
+
+    <!-- Section 3: Terms -->
+    <div class="memo-section">
+      <h3>3 · Deal terms</h3>
+      <div id="terms-section"></div>
+    </div>
+
+    <!-- Section 4: Negotiation log -->
+    <div class="memo-section">
+      <h3>4 · Negotiation log</h3>
+      <div id="log-section"></div>
+    </div>
+
+    <!-- Section 5: Next steps + GP bank -->
+    <div class="memo-section">
+      <h3>5 · Settlement</h3>
+      <div id="gp-bank-block" style="margin-bottom:14px;"></div>
+      <div class="card card-p" style="background:#FEF3C7;border-color:#FCD34D;margin-bottom:14px;">
+        <div style="font-weight:700;color:var(--ink);font-size:13px;">Settlement happens off-platform</div>
+        <div style="font-size:13px;color:var(--body);margin-top:4px;">Wire to the account above. NEIIA does not process this transfer.</div>
+      </div>
+      <p style="margin:0 0 8px;">Book a meeting between both parties to arrange financial settlement <b>off-platform</b>.</p>
+      <div id="meeting-block" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="memo-section" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" id="sig-grid">
+      <div>
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">For the GP</div>
+        <div style="border-top:1.5px solid var(--ink);padding-top:6px;font-weight:700;color:var(--ink);" id="sig-gp"></div>
+        <div style="font-size:12px;color:var(--muted);">Signed electronically via NEIIA</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">For the LP</div>
+        <div style="border-top:1.5px solid var(--ink);padding-top:6px;font-weight:700;color:var(--ink);" id="sig-lp"></div>
+        <div style="font-size:12px;color:var(--muted);">Signed electronically via NEIIA</div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border);margin-top:32px;padding-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:6px;">
+      <span>Generated by NEIIA · This document is the authoritative record.</span>
+      <span>© NEIIA 2026 · LP & GP Reporting</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/portal.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const memoId = params.get('id');
+  const role = params.get('role') || 'lp';
+  document.getElementById('back-link').href = role === 'gp' ? 'gp/dashboard.html' : 'lp/dashboard.html';
+
+  document.getElementById('book-btn').innerHTML = Portal.icon('calendar', 16) + ' Book meeting';
+  document.getElementById('print-btn').innerHTML = Portal.icon('printer', 16) + ' Print';
+  document.getElementById('download-btn').innerHTML = Portal.icon('download', 16) + ' Download PDF';
+
+  // Look up memo: first from localStorage, then from seeded
+  let memo = NEIIA_STATE.getDealMemo(memoId);
+  if (!memo) {
+    memo = (NEIIA_DATA.dealMemos || []).find(function (m) { return m.id === memoId; }) || (NEIIA_DATA.dealMemos || [])[0];
+  }
+  if (!memo) {
+    document.querySelector('.memo-sheet').innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted);">Memo not found. <a href="lp/deal-feed.html" style="color:var(--brand);">Return to deal feed →</a></div>';
+  } else {
+    fmtMemo(memo);
+  }
+
+  function fmtCompact(n) {
+    if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+    return '$' + (n || 0).toLocaleString();
+  }
+
+  function fmtMemo(m) {
+    document.getElementById('memo-id').textContent = m.id.toUpperCase();
+    document.getElementById('memo-when').textContent = m.generatedAt;
+    document.getElementById('memo-status').textContent = m.status;
+    document.getElementById('memo-title').textContent = m.deal && m.deal.title ? m.deal.title : 'Deal memo';
+    const gpRows = [
+      ['Firm', m.gp.firm], ['CAC RC', m.gp.cac], ['TIN', m.gp.tin],
+      ['Registered address', m.gp.address], ['Fund vehicle', m.gp.vehicle],
+      ['Authorized signatory', m.gp.signatory]
+    ];
+    document.getElementById('gp-section').innerHTML = gpRows.map(function (r) {
+      return '<div class="term-row"><span class="term-label">' + r[0] + '</span><span class="term-val">' + (r[1] || '—') + '</span></div>';
+    }).join('');
+
+    const lpRows = [
+      ['Investor', m.lp.name], ['Firm', m.lp.firm], ['LP type', m.lp.lpType],
+      ['Sector focus', m.lp.sector], ['Mandate', m.lp.mandate],
+      ['CAC RC', m.lp.cac], ['TIN', m.lp.tin], ['Registered address', m.lp.address]
+    ];
+    document.getElementById('lp-section').innerHTML = lpRows.map(function (r) {
+      return '<div class="term-row"><span class="term-label">' + r[0] + '</span><span class="term-val">' + (r[1] || '—') + '</span></div>';
+    }).join('');
+
+    const d = m.deal;
+    const g = d.governance || {};
+    const termRows = [
+      ['Portfolio company', d.portfolioCompany],
+      ['Allocation', fmtCompact(d.allocation)],
+      ['Instrument', d.instrument],
+      ['Pre-money valuation', fmtCompact(d.valuation)],
+      ['Board seat', g.boardSeat ? 'Yes' : 'No'],
+      ['Info rights', g.infoRights ? 'Yes (quarterly + audited annual)' : 'No'],
+      ['Pro-rata', g.proRata ? 'Yes' : 'No'],
+      ['ROFR', g.rofr ? 'Yes' : 'No'],
+      ['Drag-along', g.dragAlong ? 'Yes' : 'No'],
+      ['Anti-dilution', g.antiDilution || '—']
+    ];
+    const milestones = (d.milestones || []).map(function (x) { return '<li>' + x + '</li>'; }).join('');
+    document.getElementById('terms-section').innerHTML =
+      termRows.map(function (r) { return '<div class="term-row"><span class="term-label">' + r[0] + '</span><span class="term-val">' + (r[1] || '—') + '</span></div>'; }).join('') +
+      '<div style="margin-top:14px;"><div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Milestones</div>' +
+      '<ul style="margin:0;padding-left:18px;">' + milestones + '</ul></div>';
+
+    const turns = m.turns || [];
+    document.getElementById('log-section').innerHTML = turns.length ? turns.map(function (t) {
+      return '<div style="border-left:3px solid ' + (t.from === 'gp' ? '#475569' : 'var(--brand)') + ';padding:8px 12px;margin-bottom:8px;background:' + (t.from === 'gp' ? '#F8FAFC' : 'var(--brand-50)') + ';border-radius:4px;">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px;">' + (t.from === 'gp' ? 'GP' : 'LP') + ' · ' + t.who + ' · ' + t.action + ' · ' + t.when + '</div>' +
+        '<div style="font-size:13px;color:var(--body);">' + t.text + '</div>' +
+      '</div>';
+    }).join('') : '<div style="color:var(--muted);font-size:13px;">No prior turns. Initial offer accepted.</div>';
+
+    document.getElementById('sig-gp').textContent = m.gp.signatory.split('·')[0].trim();
+    document.getElementById('sig-lp').textContent = m.lp.name;
+
+    // GP bank account
+    const bank = (m.gp && m.gp.bank) || (NEIIA_STATE.getPrimaryGpBank && NEIIA_STATE.getPrimaryGpBank()) || null;
+    if (bank) {
+      const bankRows = [
+        ['Bank', bank.name || bank.bankName],
+        ['Account name', bank.accountName],
+        ['Account number', bank.accountNumber],
+        ['SWIFT', bank.swift],
+        ['Currency', bank.currency || 'NGN']
+      ];
+      document.getElementById('gp-bank-block').innerHTML =
+        '<div style="font-weight:700;color:var(--ink);margin-bottom:8px;font-size:14px;">GP fund account</div>' +
+        bankRows.map(function (r) { return '<div class="term-row"><span class="term-label">' + r[0] + '</span><span class="term-val">' + (r[1] || '—') + '</span></div>'; }).join('');
+    }
+
+    if (m.meeting) {
+      document.getElementById('meeting-block').innerHTML = renderMeeting(m.meeting);
+    }
+  }
+
+  function renderMeeting(mt) {
+    return '<div class="card card-p" style="background:var(--brand-50);border-color:#B7E0C5;">' +
+      '<div style="font-weight:700;color:var(--ink);margin-bottom:6px;">Settlement meeting scheduled</div>' +
+      '<div style="font-size:13px;color:var(--body);">' + mt.date + ' · Meeting ID: <code style="font-family:monospace;">' + mt.id + '</code></div>' +
+      '<div style="font-size:13px;color:var(--body);margin-top:4px;">Link: <a href="' + mt.link + '" style="color:var(--brand);font-weight:600;">' + mt.link + '</a></div>' +
+    '</div>';
+  }
+
+  document.getElementById('book-btn').addEventListener('click', function () {
+    if (!memo) return;
+    const dealName = (memo.deal && memo.deal.title) || 'Settlement';
+    const gpSig = memo.gp && memo.gp.signatory ? memo.gp.signatory.split('·')[0].trim() : 'GP';
+    const lpName = (memo.lp && memo.lp.name) || 'LP';
+    Portal.calendar({
+      title: 'Settlement meeting · ' + dealName,
+      attendees: [gpSig, lpName],
+      dealMemoId: memo.id,
+      onBook: function (mt) {
+        // Persist into memo
+        const meeting = { date: mt.datetime, link: mt.link, id: mt.id };
+        if (memo && memo.id && memo.id.indexOf('dm-') === 0) {
+          memo.meeting = meeting;
+          const s = JSON.parse(localStorage.getItem('neiia_state_v1') || '{}');
+          s.dealMemos = (s.dealMemos || []).map(function (m) { return m.id === memo.id ? memo : m; });
+          localStorage.setItem('neiia_state_v1', JSON.stringify(s));
+        }
+        // Refresh the page block to confirm
+        document.getElementById('meeting-block').innerHTML =
+          '<div class="card card-p" style="background:var(--brand-50);border-color:#B7E0C5;">' +
+            '<div style="font-weight:700;color:var(--ink);margin-bottom:6px;">Meeting scheduled for ' + meeting.date + '</div>' +
+            '<div style="font-size:13px;color:var(--body);">Meeting ID: <code style="font-family:monospace;">' + meeting.id + '</code></div>' +
+            '<div style="font-size:13px;color:var(--body);margin-top:4px;">Link: <a href="' + meeting.link + '" style="color:var(--brand);font-weight:600;" target="_blank" rel="noopener">' + meeting.link + '</a></div>' +
+          '</div>';
+      }
+    });
+  });
+
+  document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
+  document.getElementById('download-btn').addEventListener('click', function () { Portal.toast('PDF download (visual only).', 'success'); });
+
+  // Init Apex button without sidebar/header (no portal-shell on this page)
+  Portal.apexButton({ pageContext: { memoId: memoId } });
+</script>
+
+<style>
+  @media (max-width: 720px) {
+    .memo-sheet { padding: 24px; }
+    #sig-grid { grid-template-columns: 1fr !important; }
+    .memo-watermark { font-size: 80px !important; }
+  }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capital Activity · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Capital activity</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">Calls, distributions, fees, and carry across your active deals.</p>
+          </div>
+          <button class="btn btn-secondary" id="export-btn"></button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;" class="kpi-row" id="kpi-strip"></div>
+
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+          <button class="chip chip-filter active" data-f="all">All</button>
+          <button class="chip chip-filter" data-f="Call">Calls</button>
+          <button class="chip chip-filter" data-f="Distribution">Distributions</button>
+          <button class="chip chip-filter" data-f="Fee">Fees</button>
+          <button class="chip chip-filter" data-f="recent">Last 30 days</button>
+        </div>
+
+        <div class="card card-p">
+          <div id="timeline" class="ca-timeline"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'lp', activeNav: 'capital-activity' });
+    document.getElementById('export-btn').innerHTML = Portal.icon('download', 16) + ' Export CSV';
+
+    function fmtFull(n) { const sign = n < 0 ? '-' : ''; return sign + '$' + Math.abs(Math.round(n || 0)).toLocaleString(); }
+    function fmtCompact(n) {
+      const v = Math.abs(n);
+      if (v >= 1e6) return '$' + (v / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (v >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K';
+      return '$' + Math.round(v).toLocaleString();
+    }
+
+    const me = NEIIA_STATE.currentUser || NEIIA_DATA.personas.lp[0];
+    const myMemos = (NEIIA_DATA.dealMemos || []).filter(function (m) { return m.lp && m.lp.id === me.id; });
+    const myMemoNames = myMemos.map(function (m) { return m.deal && m.deal.portfolioCompany; });
+
+    // Tunde holdings: % share in each fund
+    const tundeShares = { 'f-1': 200000 / 30000000, 'f-2': 50000 / 10000000 };
+
+    const events = [];
+    // Capital calls
+    (NEIIA_DATA.capitalCalls || []).forEach(function (cc) {
+      if (cc.fundId !== 'f-1' && cc.fundId !== 'f-2') return;
+      const share = cc.tundeShare != null ? cc.tundeShare : cc.amount * (tundeShares[cc.fundId] || 0);
+      const fund = (NEIIA_DATA.funds || []).find(function (f) { return f.id === cc.fundId; });
+      events.push({
+        date: cc.issued, type: 'Call', dealName: fund ? fund.name : 'Fund', amount: -share, status: cc.status === 'Open' ? 'Due' : 'Paid', docId: 'doc-2', docName: 'Capital-Call-' + cc.number + '-Notice.pdf'
+      });
+    });
+    // Distributions
+    (NEIIA_DATA.distributions || []).forEach(function (d) {
+      if (d.fundId !== 'f-1' && d.fundId !== 'f-2') return;
+      const share = d.amount * (tundeShares[d.fundId] || 0);
+      const fund = (NEIIA_DATA.funds || []).find(function (f) { return f.id === d.fundId; });
+      events.push({
+        date: d.paid, type: 'Distribution', dealName: fund ? fund.name : 'Fund', amount: share, status: 'Received', docId: 'doc-6', docName: 'Distribution-Notice.pdf'
+      });
+    });
+    // Mock fee events
+    [
+      { date: '2026-04-01', amount: -1250, dealName: 'NEIIA Growth Fund I', label: 'Annual management fee (2%)' },
+      { date: '2025-12-15', amount: -480, dealName: 'NEIIA Tech Ventures', label: 'Admin fee' },
+      { date: '2025-04-01', amount: -1100, dealName: 'NEIIA Growth Fund I', label: 'Annual management fee (2%)' }
+    ].forEach(function (f) {
+      events.push({ date: f.date, type: 'Fee', dealName: f.dealName, amount: f.amount, status: 'Paid', docId: 'doc-1', docName: f.label });
+    });
+
+    // Sort newest first
+    events.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+
+    // KPIs from holdings
+    const holdings = NEIIA_DATA.lpHoldings && NEIIA_DATA.lpHoldings[me.id] || [];
+    const totalCommit = holdings.reduce(function (s, h) { return s + (h.commitment || 0); }, 0);
+    const totalCalled = holdings.reduce(function (s, h) { return s + (h.called || 0); }, 0);
+    const totalDist = holdings.reduce(function (s, h) { return s + (h.distributed || 0); }, 0);
+    const calledPct = totalCommit > 0 ? Math.round((totalCalled / totalCommit) * 100) : 0;
+
+    document.getElementById('kpi-strip').innerHTML =
+      '<div class="kpi-card"><div class="kpi-label">Total committed</div><div class="kpi-value">' + fmtCompact(totalCommit) + '</div><div class="kpi-delta">' + holdings.length + ' funds</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Total called</div><div class="kpi-value">' + fmtCompact(totalCalled) + '</div><div class="kpi-delta">' + calledPct + '% of commitment</div></div>' +
+      '<div class="kpi-card"><div class="kpi-label">Total distributed</div><div class="kpi-value" style="color:var(--brand);">' + fmtCompact(totalDist) + '</div><div class="kpi-delta">Realized</div></div>';
+
+    let filter = 'all';
+
+    function render() {
+      let list = events.slice();
+      if (filter === 'recent') {
+        const cutoff = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+        list = list.filter(function (e) { return (e.date || '') >= cutoff; });
+      } else if (filter !== 'all') {
+        list = list.filter(function (e) { return e.type === filter; });
+      }
+      if (!list.length) {
+        document.getElementById('timeline').innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted);">No events match this filter.</div>';
+        return;
+      }
+      const colorMap = { 'Call': '#F59E0B', 'Distribution': '#0E7A3C', 'Fee': '#475569', 'Carry': '#2563EB' };
+      const badgeMap = { 'Due': 'badge-amber', 'Paid': 'badge-slate', 'Received': 'badge-green', 'Pending': 'badge-amber' };
+      document.getElementById('timeline').innerHTML = list.map(function (e) {
+        const color = colorMap[e.type] || '#475569';
+        const badge = badgeMap[e.status] || 'badge-slate';
+        const amountColor = e.amount >= 0 ? 'var(--brand)' : 'var(--ink)';
+        const sign = e.amount >= 0 ? '+' : '';
+        return '<div class="ca-row">' +
+          '<div class="ca-dot" style="background:' + color + ';"></div>' +
+          '<div class="ca-date">' + (e.date || '—') + '</div>' +
+          '<div class="ca-chip" style="background:' + color + '20;color:' + color + ';border:1px solid ' + color + '40;">' + e.type + '</div>' +
+          '<div class="ca-deal">' + e.dealName + '</div>' +
+          '<div class="ca-amt" style="color:' + amountColor + ';">' + sign + fmtFull(e.amount) + '</div>' +
+          '<span class="badge ' + badge + '">' + e.status + '</span>' +
+          '<a href="documents.html" class="ca-link">' + Portal.icon('file-text', 14) + ' View doc</a>' +
+        '</div>';
+      }).join('');
+    }
+    render();
+
+    document.querySelectorAll('.chip-filter').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('.chip-filter').forEach(function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        filter = b.dataset.f;
+        render();
+      });
+    });
+
+    document.getElementById('export-btn').addEventListener('click', function () {
+      Portal.toast('CSV export queued (visual demo).', 'success');
+    });
+  </script>
+
+  <style>
+    .chip-filter { cursor:pointer;border:1px solid var(--border);background:white;color:var(--body);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:500; }
+    .chip-filter.active { background:var(--brand-50);color:var(--brand);border-color:#B7E0C5; }
+    .ca-timeline { position:relative; }
+    .ca-timeline::before { content:'';position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--border); }
+    .ca-row { position:relative;display:grid;grid-template-columns:14px 100px auto 1fr auto auto auto;gap:14px;align-items:center;padding:12px 0;padding-left:28px;border-bottom:1px solid #F1F5F9; }
+    .ca-row:last-child { border-bottom:none; }
+    .ca-dot { position:absolute;left:0;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:999px;border:2px solid white;box-shadow:0 0 0 2px var(--border); }
+    .ca-date { color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap; }
+    .ca-chip { padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap; }
+    .ca-deal { font-weight:600;color:var(--ink);font-size:14px;min-width:0; }
+    .ca-amt { font-weight:800;font-size:15px;white-space:nowrap; }
+    .ca-link { color:var(--brand);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:4px;text-decoration:none;white-space:nowrap; }
+    .badge-slate { background:#F1F5F9;color:#475569; }
+    @media (max-width: 900px) {
+      .kpi-row { grid-template-columns: 1fr !important; }
+      .ca-row { grid-template-columns: 14px 1fr auto;gap:8px;padding-left:24px; }
+      .ca-chip, .ca-link { display:none; }
+    }
+  </style>
+</body>
+</html>

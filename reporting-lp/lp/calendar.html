@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Calendar</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">Your meetings with GPs across active deals.</p>
+          </div>
+          <button class="btn btn-primary" id="new-meeting-btn"></button>
+        </div>
+
+        <div class="card card-p" style="margin-bottom:18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <button class="btn btn-ghost btn-sm" id="prev-month"></button>
+            <div style="font-weight:700;color:var(--ink);font-size:18px;" id="month-label"></div>
+            <button class="btn btn-ghost btn-sm" id="next-month"></button>
+          </div>
+          <div class="cal-dow">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+
+        <h3 style="margin:0 0 12px;font-size:16px;">Upcoming meetings</h3>
+        <div class="card" style="overflow:hidden;">
+          <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr><th>Title</th><th>Attendees</th><th>Date · Time</th><th>Platform</th><th>Actions</th></tr></thead>
+            <tbody id="upcoming-body"></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'lp', activeNav: 'calendar' });
+    document.getElementById('new-meeting-btn').innerHTML = Portal.icon('plus', 16) + ' Schedule new meeting';
+    document.getElementById('prev-month').innerHTML = Portal.icon('chevron-left', 16);
+    document.getElementById('next-month').innerHTML = Portal.icon('chevron-right', 16);
+
+    // Seed 3 mock upcoming meetings on first load
+    (function seed() {
+      const seeded = NEIIA_STATE.meetings.map(function (m) { return m.id; });
+      const have = (NEIIA_STATE.meetings || []).filter(function (m) { return (m.attendees || []).some(function (a) { return a === 'Tunde Adeyemi'; }); });
+      if (have.length >= 5) return;
+      const today = new Date();
+      function isoFor(d) { return d.toISOString().slice(0, 10); }
+      function fwd(days, h, m) {
+        const d = new Date(today.getTime() + days * 86400000);
+        return isoFor(d) + ' ' + (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ' WAT';
+      }
+      const mocks = [
+        { id: 'NEIIA-MTG-' + (9000 + Math.floor(Math.random() * 800)), title: 'Capital Call #7 walkthrough', attendees: ['Tunde Adeyemi', 'Chinedu Bello'], datetime: fwd(3, 11, 0), platform: 'Google Meet', link: 'https://meet.google.com/cc7-abcd-efg' },
+        { id: 'NEIIA-MTG-' + (9000 + Math.floor(Math.random() * 800)), title: 'Solara Series A+ deal review', attendees: ['Tunde Adeyemi', 'Adaobi Okonkwo'], datetime: fwd(7, 14, 0), platform: 'Zoom', link: 'https://zoom.us/j/' + Math.floor(Math.random() * 9e9 + 1e9) },
+        { id: 'NEIIA-MTG-' + (9000 + Math.floor(Math.random() * 800)), title: 'Q1 quarterly LP report Q&A', attendees: ['Tunde Adeyemi', 'Adaobi Okonkwo', 'Chinedu Bello'], datetime: fwd(12, 10, 30), platform: 'Google Meet', link: 'https://meet.google.com/qly-abcd-efg' }
+      ];
+      mocks.forEach(function (m) { if (seeded.indexOf(m.id) === -1) NEIIA_STATE.addMeeting(m); });
+    })();
+
+    let cur = new Date();
+    cur.setDate(1);
+
+    function isoFor(d) { return d.toISOString().slice(0, 10); }
+    function meetingsForIso(iso) {
+      return (NEIIA_STATE.meetings || []).filter(function (m) {
+        return (m.datetime || '').slice(0, 10) === iso;
+      });
+    }
+
+    function renderMonth() {
+      const y = cur.getFullYear(), m = cur.getMonth();
+      const firstDow = new Date(y, m, 1).getDay();
+      const dim = new Date(y, m + 1, 0).getDate();
+      const cells = [];
+      for (let i = 0; i < firstDow; i++) cells.push('<div class="cal-cell cal-empty"></div>');
+      const todayIso = new Date().toISOString().slice(0, 10);
+      for (let d = 1; d <= dim; d++) {
+        const dateObj = new Date(y, m, d);
+        const iso = isoFor(dateObj);
+        const mts = meetingsForIso(iso).slice(0, 3);
+        const isToday = iso === todayIso;
+        const chips = mts.map(function (mt) {
+          return '<div class="cal-chip" title="' + (mt.title || '') + '">' + (mt.title || '').slice(0, 18) + '</div>';
+        }).join('');
+        cells.push('<div class="cal-cell' + (isToday ? ' cal-today' : '') + '">' +
+          '<div class="cal-day-num">' + d + '</div>' + chips + '</div>');
+      }
+      document.getElementById('cal-grid').innerHTML = cells.join('');
+      document.getElementById('month-label').textContent = cur.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    }
+
+    function renderUpcoming() {
+      const now = Date.now();
+      const all = (NEIIA_STATE.meetings || []).slice();
+      const upcoming = all.filter(function (m) {
+        const t = Date.parse((m.datetime || '').slice(0, 16).replace(' ', 'T'));
+        return !isNaN(t) && t >= now - 86400000;
+      }).sort(function (a, b) { return (a.datetime || '').localeCompare(b.datetime || ''); }).slice(0, 10);
+
+      if (!upcoming.length) {
+        document.getElementById('upcoming-body').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--muted);">No upcoming meetings scheduled.</td></tr>';
+        return;
+      }
+      document.getElementById('upcoming-body').innerHTML = upcoming.map(function (m) {
+        const att = (m.attendees || []).join(', ');
+        return '<tr>' +
+          '<td><div style="font-weight:600;color:var(--ink);">' + (m.title || 'Meeting') + '</div><div style="font-size:12px;color:var(--muted);font-family:monospace;">' + m.id + '</div></td>' +
+          '<td>' + att + '</td>' +
+          '<td>' + (m.datetime || '—') + '</td>' +
+          '<td>' + (m.platform || '—') + '</td>' +
+          '<td><div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+            '<a href="' + (m.link || '#') + '" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Join</a>' +
+            '<button class="btn btn-secondary btn-sm" data-act="reschedule" data-id="' + m.id + '">Reschedule</button>' +
+            '<button class="btn btn-ghost btn-sm" data-act="cancel" data-id="' + m.id + '" style="color:var(--red);">Cancel</button>' +
+          '</div></td>' +
+        '</tr>';
+      }).join('');
+      document.querySelectorAll('[data-act="reschedule"]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          Portal.calendar({
+            title: 'Reschedule meeting',
+            onBook: function () { renderMonth(); renderUpcoming(); }
+          });
+        });
+      });
+      document.querySelectorAll('[data-act="cancel"]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          Portal.modal({
+            title: 'Cancel this meeting?',
+            body: '<p style="margin:0;">A cancellation notice will be sent to all attendees.</p>',
+            primary: { label: 'Confirm cancel', onClick: function (close) { Portal.toast('Meeting cancelled. Attendees notified.', 'success'); close(); } },
+            secondary: { label: 'Keep meeting' }
+          });
+        });
+      });
+    }
+
+    document.getElementById('prev-month').addEventListener('click', function () { cur = new Date(cur.getFullYear(), cur.getMonth() - 1, 1); renderMonth(); });
+    document.getElementById('next-month').addEventListener('click', function () { cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1); renderMonth(); });
+    document.getElementById('new-meeting-btn').addEventListener('click', function () {
+      Portal.calendar({
+        title: 'New meeting',
+        attendees: ['Tunde Adeyemi'],
+        onBook: function () { renderMonth(); renderUpcoming(); }
+      });
+    });
+
+    renderMonth();
+    renderUpcoming();
+  </script>
+
+  <style>
+    .cal-dow { display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px; }
+    .cal-dow > div { padding:6px;text-align:center; }
+    .cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:4px; }
+    .cal-cell { min-height:88px;border:1px solid var(--border);border-radius:6px;padding:6px;background:white;display:flex;flex-direction:column;gap:3px; }
+    .cal-empty { border:none;background:transparent; }
+    .cal-today { border-color:var(--brand);background:var(--brand-50); }
+    .cal-day-num { font-weight:700;color:var(--ink);font-size:13px;margin-bottom:2px; }
+    .cal-chip { background:var(--brand);color:white;font-size:11px;padding:2px 6px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    @media (max-width: 760px) {
+      .cal-cell { min-height:60px; }
+      .cal-chip { display:none; }
+    }
+  </style>
+</body>
+</html>

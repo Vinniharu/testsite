@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="margin-bottom:20px;">
+          <h1 style="margin:0;font-size:24px;">Good morning, Tunde.</h1>
+          <p style="margin:4px 0 0;color:var(--muted);" id="date-sub"></p>
+        </div>
+
+        <div class="action-banner" style="margin-bottom:20px;">
+          <span style="color:#B45309;flex-shrink:0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+          <div style="flex:1;">
+            <div style="font-weight:700;color:#78350F;">Capital Call #7 due June 15 — $25,000</div>
+            <div style="font-size:13px;color:#92400E;margin-top:2px;">Follow-on into Solara Energy Series A+ extension. Acknowledgment due in 23 days.</div>
+          </div>
+          <a href="capital-call-detail.html?id=cc-7" class="btn btn-primary btn-sm">Acknowledge now →</a>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;" class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Commitment</div><div class="kpi-value">$250K</div><div class="kpi-delta" style="color:var(--muted);">Across 2 funds</div></div>
+          <div class="kpi-card"><div class="kpi-label">Called</div><div class="kpi-value">$175K</div><div class="kpi-delta" style="color:var(--muted);">70% of commitment</div></div>
+          <div class="kpi-card"><div class="kpi-label">Distributions</div><div class="kpi-value">$45K</div><div class="kpi-delta up">DPI 0.26x</div></div>
+          <div class="kpi-card"><div class="kpi-label">NAV</div><div class="kpi-value">$210K</div><div class="kpi-delta up">TVPI 1.46x</div></div>
+          <div class="kpi-card"><div class="kpi-label">IRR</div><div class="kpi-value">18.3%</div><div class="kpi-delta up">+2.1% YoY ↑</div></div>
+        </div>
+
+        <div class="card card-p" style="margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;color:var(--ink);">Capital called vs uncalled</div>
+            <div style="font-size:13px;color:var(--muted);">$175K of $250K called</div>
+          </div>
+          <div style="display:flex;height:14px;border-radius:999px;overflow:hidden;background:#E2E8F0;">
+            <div style="background:var(--brand);width:70%;"></div>
+            <div style="background:#CBD5E1;width:30%;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px;">
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--brand);margin-right:4px;"></span>Called 70%</span>
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#CBD5E1;margin-right:4px;"></span>Uncalled 30%</span>
+          </div>
+        </div>
+
+        <div class="card card-p" style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <h3 style="margin:0;font-size:16px;">Incoming deals</h3>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px;">3 new deals from your verified GPs</div>
+            </div>
+            <a href="deal-feed.html" class="btn btn-secondary btn-sm">View all →</a>
+          </div>
+          <div id="incoming-deals"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;" class="row-2">
+          <div class="card card-p">
+            <h3 style="margin:0 0 14px;font-size:16px;">Recent activity</h3>
+            <div id="activity-feed"></div>
+          </div>
+
+          <div>
+            <h3 style="margin:0 0 12px;font-size:16px;">Your funds</h3>
+            <div id="fund-cards"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'lp', activeNav: 'dashboard' });
+
+    function fmtFull(n) { return '$' + (n || 0).toLocaleString(); }
+    function fmtCompact(n) {
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+      return '$' + (n || 0).toLocaleString();
+    }
+
+    document.getElementById('date-sub').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Activity feed
+    const kindColors = { amber: 'var(--amber)', info: '#2563EB', positive: 'var(--brand)' };
+    document.getElementById('activity-feed').innerHTML = NEIIA_DATA.lpActivity.map(function (a) {
+      return '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #F1F5F9;align-items:flex-start;">' +
+        '<span style="width:8px;height:8px;border-radius:999px;background:' + kindColors[a.kind] + ';margin-top:6px;flex-shrink:0;"></span>' +
+        '<div style="flex:1;">' +
+          '<div style="font-size:14px;color:var(--ink);font-weight:600;">' + a.what + '</div>' +
+          '<div style="font-size:13px;color:var(--body);margin-top:2px;">' + a.detail + '</div>' +
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + a.when + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // Incoming deals
+    const deals = (NEIIA_DATA.dealTerms || []).filter(function (d) { return d.lpId === 'lp-1'; });
+    document.getElementById('incoming-deals').innerHTML = (deals.length ? deals : (NEIIA_DATA.dealTerms || [])).slice(0, 3).map(function (d) {
+      return '<a href="deal-review.html?dealId=' + d.id + '" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;text-decoration:none;color:inherit;flex-wrap:wrap;">' +
+        '<div style="flex:1;min-width:180px;"><div style="font-weight:700;color:var(--ink);">' + d.title + '</div>' +
+        '<div style="font-size:12px;color:var(--muted);">' + d.gpFirm + ' · ' + d.instrument + ' · ' + fmtCompact(d.allocation) + '</div></div>' +
+        '<span class="deal-status deal-status-new">' + d.status + '</span>' +
+        '<span class="btn btn-primary btn-sm">Review →</span>' +
+      '</a>';
+    }).join('');
+
+    // Fund cards
+    const holdings = NEIIA_DATA.lpHoldings['lp-1'];
+    document.getElementById('fund-cards').innerHTML = holdings.map(function (h) {
+      const fund = NEIIA_DATA.funds.find(function (f) { return f.id === h.fundId; });
+      const calledPct = Math.round(h.called / h.commitment * 100);
+      return '<div class="card card-p" style="margin-bottom:10px;">' +
+        '<div style="font-weight:700;color:var(--ink);font-size:14px;">' + fund.name + '</div>' +
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Vintage ' + fund.vintage + '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;">' +
+          '<div><div style="color:var(--muted);">Commitment</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(h.commitment) + '</div></div>' +
+          '<div><div style="color:var(--muted);">Called</div><div style="font-weight:700;color:var(--ink);">' + calledPct + '%</div></div>' +
+          '<div><div style="color:var(--muted);">Distributed</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(h.distributed) + '</div></div>' +
+          '<div><div style="color:var(--muted);">NAV</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(h.nav) + '</div></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  </script>
+  <style>
+    @media (max-width: 980px) {
+      .kpi-row { grid-template-columns: repeat(2,1fr) !important; }
+      .row-2 { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</body>
+</html>

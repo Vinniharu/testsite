@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Documents</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">10 files · shared securely with LPs</p>
+          </div>
+          <button class="btn btn-primary" id="up-btn"></button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;" id="folder-chips">
+          <button class="chip f-chip" data-folder="All" style="background:var(--brand-50);color:var(--brand);">All</button>
+          <button class="chip f-chip" data-folder="Fund Documents">Fund Documents</button>
+          <button class="chip f-chip" data-folder="Legal Agreements">LP Subscription Docs</button>
+          <button class="chip f-chip" data-folder="Capital Calls">Capital Calls</button>
+          <button class="chip f-chip" data-folder="Distributions">Distributions</button>
+          <button class="chip f-chip" data-folder="Quarterly Reports">Reports</button>
+          <button class="chip f-chip" data-folder="Tax Documents">Tax</button>
+        </div>
+
+        <div style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:18px;background:var(--surface);">
+          <div style="color:var(--muted);font-size:14px;">Drag files here or <span style="color:var(--brand);font-weight:600;cursor:pointer;">browse</span> to upload</div>
+        </div>
+
+        <div class="card" style="overflow:hidden;">
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Folder</th><th>Size</th><th>Modified</th><th>Shared with</th><th>Actions</th></tr></thead>
+            <tbody id="docs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'documents' });
+    document.getElementById('up-btn').innerHTML = Portal.icon('upload', 16) + ' Upload';
+    let filterFolder = 'All';
+
+    function render() {
+      const list = NEIIA_DATA.documents.filter(function (d) { return filterFolder === 'All' || d.folder === filterFolder; });
+      document.getElementById('docs-tbody').innerHTML = list.map(function (d) {
+        return '<tr data-id="' + d.id + '">' +
+          '<td><div style="display:flex;align-items:center;gap:10px;">' + Portal.icon('file', 18) + '<b style="color:var(--ink);">' + d.name + '</b></div></td>' +
+          '<td><span class="chip">' + d.folder + '</span></td>' +
+          '<td>' + d.size + '</td>' +
+          '<td>' + d.modified + '</td>' +
+          '<td>' + d.sharedWith + ' LPs</td>' +
+          '<td><button class="btn btn-ghost btn-sm preview-btn" data-id="' + d.id + '">' + Portal.icon('eye', 14) + ' Preview</button>' +
+          '<button class="btn btn-ghost btn-sm">' + Portal.icon('download', 14) + ' Download</button></td>' +
+        '</tr>';
+      }).join('');
+      document.querySelectorAll('.preview-btn').forEach(function (b) {
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const d = NEIIA_DATA.documents.find(function (x) { return x.id === b.dataset.id; });
+          openPreview(d);
+        });
+      });
+    }
+    render();
+
+    document.querySelectorAll('.f-chip').forEach(function (c) {
+      c.addEventListener('click', function () {
+        document.querySelectorAll('.f-chip').forEach(function (x) { x.style.cssText = ''; });
+        c.style.cssText = 'background:var(--brand-50);color:var(--brand);';
+        filterFolder = c.dataset.folder;
+        render();
+      });
+    });
+
+    function openPreview(d) {
+      const body = '<div style="background:var(--surface);border-radius:8px;padding:60px;text-align:center;color:var(--muted);margin-bottom:14px;">' +
+        Portal.icon('file', 48) + '<div style="margin-top:10px;font-weight:600;color:var(--ink);">' + d.name + '</div>' +
+        '<div style="font-size:13px;margin-top:4px;">' + d.pages + ' pages · ' + d.size + '</div>' +
+        '<div style="font-size:12px;margin-top:14px;">PDF preview unavailable in demo</div></div>';
+      Portal.modal({
+        title: 'Document preview',
+        body: body,
+        primary: { label: 'Download' }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capital Activity · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Capital activity</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">7 capital calls · 4 distributions to date</p>
+          </div>
+          <a href="capital-call-new.html" class="btn btn-primary" id="new-btn"></a>
+        </div>
+
+        <h3 style="margin:8px 0 10px;font-size:15px;">Capital calls</h3>
+        <div class="card" style="overflow:hidden;margin-bottom:20px;">
+          <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th>#</th><th>Fund</th><th>Amount</th><th>Issued</th><th>Due</th><th>LPs sent</th><th>Acknowledged</th><th>Status</th>
+            </tr></thead>
+            <tbody id="cc-tbody"></tbody>
+          </table>
+          </div>
+        </div>
+
+        <h3 style="margin:24px 0 10px;font-size:15px;">Distributions</h3>
+        <div class="card" style="overflow:hidden;">
+          <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th>Fund</th><th>Amount</th><th>Paid</th><th>Source</th><th>Type</th>
+            </tr></thead>
+            <tbody id="dist-tbody"></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'capital-calls' });
+
+    function fmtCompact(n) {
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+      return '$' + (n || 0).toLocaleString();
+    }
+    function fmtFull(n) { return '$' + (n || 0).toLocaleString(); }
+
+    document.getElementById('new-btn').innerHTML = Portal.icon('plus', 16) + ' New capital call';
+
+    const ccBody = document.getElementById('cc-tbody');
+    ccBody.innerHTML = NEIIA_DATA.capitalCalls.map(function (cc) {
+      const f = NEIIA_DATA.funds.find(function (ff) { return ff.id === cc.fundId; });
+      const badge = cc.status === 'Open' ? 'badge-amber' : 'badge-green';
+      return '<tr data-id="' + cc.id + '">' +
+        '<td><b>#' + cc.number + '</b></td>' +
+        '<td>' + f.name + '</td>' +
+        '<td>' + fmtCompact(cc.amount) + '</td>' +
+        '<td>' + cc.issued + '</td>' +
+        '<td>' + cc.due + '</td>' +
+        '<td>' + cc.lpsSent + '</td>' +
+        '<td>' + cc.acknowledged + ' of ' + cc.lpsSent + '</td>' +
+        '<td><span class="badge ' + badge + '">' + cc.status + '</span></td>' +
+      '</tr>';
+    }).join('');
+
+    ccBody.addEventListener('click', function (e) {
+      const tr = e.target.closest('tr');
+      if (!tr) return;
+      const cc = NEIIA_DATA.capitalCalls.find(function (c) { return c.id === tr.dataset.id; });
+      openCallDrawer(cc);
+    });
+
+    function openCallDrawer(cc) {
+      const f = NEIIA_DATA.funds.find(function (ff) { return ff.id === cc.fundId; });
+      const pct = Math.round(cc.acknowledged / cc.lpsSent * 100);
+      const badge = cc.status === 'Open' ? 'badge-amber' : 'badge-green';
+      const body = '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">' +
+        '<div><h2 style="margin:0;font-size:20px;">Capital Call #' + cc.number + '</h2>' +
+        '<div style="font-size:13px;color:var(--muted);margin-top:2px;">' + f.name + ' · Due ' + cc.due + '</div></div>' +
+        '<span class="badge ' + badge + '">' + cc.status + '</span></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:18px;">' +
+        '<div class="kpi-card"><div class="kpi-label">Amount</div><div class="kpi-value">' + fmtCompact(cc.amount) + '</div></div>' +
+        '<div class="kpi-card"><div class="kpi-label">Issued</div><div class="kpi-value" style="font-size:16px;">' + cc.issued + '</div></div>' +
+      '</div>' +
+      '<div style="margin-bottom:14px;">' +
+        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="font-weight:600;color:var(--ink);">Acknowledgment progress</span><span style="color:var(--muted);">' + cc.acknowledged + ' of ' + cc.lpsSent + ' (' + pct + '%)</span></div>' +
+        '<div class="progress"><div class="progress-bar" style="width:' + pct + '%;"></div></div>' +
+      '</div>' +
+      '<div style="background:var(--surface);border-radius:8px;padding:12px;margin-bottom:14px;">' +
+        '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:4px;">Purpose</div>' +
+        '<div style="font-size:14px;color:var(--ink);">' + cc.purpose + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<button class="btn btn-secondary">Download PDF</button>' +
+        '<button class="btn btn-primary">Send reminder</button>' +
+      '</div>';
+      Portal.drawer({ title: 'Capital call details', body: body });
+    }
+
+    const dBody = document.getElementById('dist-tbody');
+    dBody.innerHTML = NEIIA_DATA.distributions.map(function (d) {
+      const f = NEIIA_DATA.funds.find(function (ff) { return ff.id === d.fundId; });
+      return '<tr>' +
+        '<td>' + f.name + '</td>' +
+        '<td style="color:var(--brand);font-weight:600;">' + fmtCompact(d.amount) + '</td>' +
+        '<td>' + d.paid + '</td>' +
+        '<td>' + d.source + '</td>' +
+        '<td><span class="chip">' + d.type + '</span></td>' +
+      '</tr>';
+    }).join('');
+  </script>
+</body>
+</html>

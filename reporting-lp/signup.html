@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up · NEIIA LP & GP Reporting</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/portal.css">
+</head>
+<body>
+
+<nav class="mkt-nav">
+  <div class="mkt-container" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;">
+    <a href="index.html" class="wordmark"><span class="wordmark-mark">N</span>NEIIA</a>
+    <a href="signin.html" style="font-weight:500;color:var(--body);">Already have an account? Sign in →</a>
+  </div>
+</nav>
+
+<section style="padding:36px 20px;">
+  <div class="mkt-container" style="max-width:1100px;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <h1 style="font-size:28px;margin:0 0 6px;" id="page-title">Create your NEIIA workspace</h1>
+      <p style="color:var(--muted);margin:0;" id="page-sub">KYB-first sign-up. Live demo workspace (demo data only) available without KYB.</p>
+    </div>
+
+    <div class="stepper" id="stepper" style="max-width:760px;margin:0 auto 28px;"></div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;" id="content-grid">
+      <div>
+        <!-- Step 0: Role chooser -->
+        <div class="step-pane" id="step-0">
+          <h2 style="margin:0 0 6px;font-size:20px;">I am a…</h2>
+          <p style="color:var(--muted);margin:0 0 18px;font-size:14px;">Pick the role that best describes you. You can run both later — but the sign-up flow tailors itself to your starting role.</p>
+          <div class="role-chooser">
+            <button type="button" class="role-card" data-role="gp">
+              <div class="role-ic" id="ic-gp-mount"></div>
+              <div style="font-weight:700;font-size:18px;color:var(--ink);margin-bottom:6px;">General Partner</div>
+              <div style="color:var(--muted);font-size:14px;">Fund manager. Issue capital calls. Distribute returns. Send deal-flow to LPs.</div>
+            </button>
+            <button type="button" class="role-card" data-role="lp">
+              <div class="role-ic" id="ic-lp-mount"></div>
+              <div style="font-weight:700;font-size:18px;color:var(--ink);margin-bottom:6px;">Limited Partner</div>
+              <div style="color:var(--muted);font-size:14px;">Investor. Receive deals from verified GPs. Negotiate, accept, or decline.</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 1 (LP only): pick LP type -->
+        <div class="step-pane" id="step-1" style="display:none;">
+          <h2 style="margin:0 0 6px;font-size:20px;">What kind of LP are you?</h2>
+          <p style="color:var(--muted);margin:0 0 18px;font-size:14px;">Pick the closest match. Your mandate filters which deals you receive.</p>
+          <div class="lp-type-grid" id="lp-type-grid"></div>
+        </div>
+
+        <!-- Step 2: KYB form -->
+        <div class="step-pane" id="step-2" style="display:none;">
+          <h2 style="margin:0 0 6px;font-size:20px;">Company KYB</h2>
+          <p style="color:var(--muted);margin:0 0 18px;font-size:14px;">Required for both GPs and LPs. Verification typically completes in 24h.</p>
+          <div class="card card-p form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div style="grid-column:1/-1;"><label class="kyb-lbl">Company legal name</label><input id="kyb-name" placeholder="e.g. Sahel Capital Partners Ltd" class="kyb-in"></div>
+            <div>
+              <label class="kyb-lbl">CAC RC number</label>
+              <div style="display:flex;gap:0;">
+                <span style="display:inline-flex;align-items:center;padding:0 10px;border:1px solid var(--border);border-right:none;border-radius:8px 0 0 8px;background:#F1F5F9;color:var(--muted);font-weight:600;">RC-</span>
+                <input id="kyb-rc" placeholder="1234567" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:0 8px 8px 0;min-height:44px;">
+              </div>
+            </div>
+            <div><label class="kyb-lbl">TIN</label><input id="kyb-tin" placeholder="NG-12345678-0001" class="kyb-in"></div>
+            <div style="grid-column:1/-1;"><label class="kyb-lbl">Registered street address</label><input id="kyb-street" placeholder="14 Adeola Odeku Street" class="kyb-in"></div>
+            <div><label class="kyb-lbl">City</label><input id="kyb-city" placeholder="Lagos" class="kyb-in"></div>
+            <div><label class="kyb-lbl">State / Region</label><input id="kyb-state" placeholder="Lagos" class="kyb-in"></div>
+            <div style="grid-column:1/-1;">
+              <label class="kyb-lbl">Country</label>
+              <select id="kyb-country" class="kyb-in">
+                <option>Nigeria</option><option>Kenya</option><option>Ghana</option><option>South Africa</option><option>Rwanda</option><option>Senegal</option><option>Other</option>
+              </select>
+            </div>
+
+            <div style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:14px;margin-top:6px;">
+              <div style="font-weight:700;color:var(--ink);margin-bottom:10px;font-size:14px;">Authorized signatory</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="form-grid">
+                <div><label class="kyb-lbl">Full name</label><input id="sig-name" class="kyb-in"></div>
+                <div><label class="kyb-lbl">Role / title</label><input id="sig-role" placeholder="Managing Partner" class="kyb-in"></div>
+                <div><label class="kyb-lbl">Email</label><input id="sig-email" type="email" class="kyb-in"></div>
+                <div><label class="kyb-lbl">Phone</label><input id="sig-phone" placeholder="+234 803 555 0142" class="kyb-in"></div>
+              </div>
+            </div>
+
+            <div style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:14px;">
+              <div style="font-weight:700;color:var(--ink);margin-bottom:10px;font-size:14px;">Documents</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="form-grid">
+                <div>
+                  <label class="kyb-lbl">6-month bank statement (PDF)</label>
+                  <input type="file" accept="application/pdf" class="kyb-in" style="padding:8px;">
+                </div>
+                <div>
+                  <label class="kyb-lbl">Company logo (PNG/JPG/SVG)</label>
+                  <input type="file" id="kyb-logo" accept="image/*" class="kyb-in" style="padding:8px;">
+                  <div id="logo-preview" style="margin-top:8px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Financials & profile -->
+        <div class="step-pane" id="step-3" style="display:none;">
+          <h2 style="margin:0 0 6px;font-size:20px;">Company financials & profile</h2>
+          <p style="color:var(--muted);margin:0 0 18px;font-size:14px;">Used to build your corporate graph and match you to the right deal-flow.</p>
+          <div class="card card-p form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div>
+              <label class="kyb-lbl">Industry / sector</label>
+              <select id="fin-sector" class="kyb-in">
+                <option>Energy</option><option>Fintech</option><option>Agri</option><option>Manufacturing</option><option>Real Estate</option><option>Healthcare</option><option>ICT</option><option>Consumer</option><option>Other</option>
+              </select>
+            </div>
+            <div><label class="kyb-lbl">Year founded</label><input id="fin-year" type="number" placeholder="2018" class="kyb-in"></div>
+            <div>
+              <label class="kyb-lbl">Staff count</label>
+              <select id="fin-staff" class="kyb-in">
+                <option>1-10</option><option>11-50</option><option>51-200</option><option>201-1000</option><option>1000+</option>
+              </select>
+            </div>
+            <div>
+              <label class="kyb-lbl">Monthly revenue (NGN range)</label>
+              <select id="fin-monthly" class="kyb-in">
+                <option>Under ₦1M</option><option>₦1M–₦10M</option><option>₦10M–₦100M</option><option>₦100M–₦1B</option><option>₦1B–₦10B</option><option>₦10B+</option>
+              </select>
+            </div>
+            <div style="grid-column:1/-1;">
+              <label class="kyb-lbl">Annual revenue (NGN range)</label>
+              <select id="fin-annual" class="kyb-in">
+                <option>Under ₦12M</option><option>₦12M–₦120M</option><option>₦120M–₦1.2B</option><option>₦1.2B–₦12B</option><option>₦12B+</option>
+              </select>
+            </div>
+
+            <!-- LP-only: Deal Preferences -->
+            <div class="lp-only" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:14px;">
+              <div style="font-weight:700;color:var(--ink);margin-bottom:6px;font-size:14px;">Deal Preferences</div>
+              <p style="color:var(--muted);font-size:12px;margin:0 0 12px;">These filters determine which GP deals you see first. You can edit later in Profile.</p>
+
+              <label class="kyb-lbl">Fund wrapper interest</label>
+              <div id="mandate-wrappers" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;"></div>
+
+              <label class="kyb-lbl">Sectors of interest</label>
+              <div id="mandate-sectors" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;"></div>
+
+              <label class="kyb-lbl">Stage preference (multi-select)</label>
+              <div id="mandate-stages" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;"></div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="form-grid">
+                <div>
+                  <label class="kyb-lbl">Ticket size — min (NGN)</label>
+                  <select id="ticket-min" class="kyb-in">
+                    <option value="1000000">₦1M</option>
+                    <option value="5000000">₦5M</option>
+                    <option value="10000000" selected>₦10M</option>
+                    <option value="25000000">₦25M</option>
+                    <option value="50000000">₦50M</option>
+                    <option value="100000000">₦100M</option>
+                    <option value="500000000">₦500M</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="kyb-lbl">Ticket size — max (NGN)</label>
+                  <select id="ticket-max" class="kyb-in">
+                    <option value="10000000">₦10M</option>
+                    <option value="50000000">₦50M</option>
+                    <option value="100000000" selected>₦100M</option>
+                    <option value="500000000">₦500M</option>
+                    <option value="1000000000">₦1B</option>
+                    <option value="5000000000">₦5B</option>
+                    <option value="999999999999">No cap</option>
+                  </select>
+                </div>
+              </div>
+
+              <label class="kyb-lbl" style="margin-top:14px;display:block;">Geo focus</label>
+              <div id="mandate-geos" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;"></div>
+
+              <label class="kyb-lbl">Hold horizon</label>
+              <div id="mandate-hold" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 4px;"></div>
+            </div>
+
+            <!-- GP-only -->
+            <div class="gp-only" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:14px;display:none;">
+              <div style="font-weight:700;color:var(--ink);margin-bottom:10px;font-size:14px;">Fund management</div>
+              <label class="kyb-lbl">Fund vehicles managed (multi-select)</label>
+              <div id="gp-vehicles" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;"></div>
+              <div><label class="kyb-lbl">Strategy summary</label><textarea id="gp-strategy" placeholder="e.g. African early-stage tech and growth equity" class="kyb-in" style="min-height:80px;"></textarea></div>
+              <div style="margin-top:14px;"><label class="kyb-lbl">Total AUM (NGN)</label><input id="gp-aum" type="number" placeholder="45000000000" class="kyb-in"></div>
+              <div style="margin-top:14px;"><label class="kyb-lbl">Current active LP count</label>
+                <input id="gp-lp-count" type="number" placeholder="28" class="kyb-in">
+                <p style="font-size:12px;color:var(--muted);margin-top:6px;">Used to suggest the right pricing tier.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Plan -->
+        <div class="step-pane" id="step-4" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+            <h2 style="margin:0;font-size:20px;" id="plan-pane-title">Pick your plan</h2>
+            <div class="pill-toggle" id="cycle-toggle" style="flex-wrap:wrap;">
+              <button class="active" data-cycle="monthly">Monthly</button>
+              <button data-cycle="quarterly">Quarterly <span style="font-size:11px;color:var(--brand);margin-left:4px;">5% off</span></button>
+              <button data-cycle="yearly">Yearly <span style="font-size:11px;color:var(--brand);margin-left:4px;">17% off</span></button>
+            </div>
+          </div>
+
+          <div id="plan-pane-gp" style="display:none;">
+            <p style="color:var(--muted);font-size:13px;margin:0 0 14px;">Tier scales with your active LP count. You can upgrade or downgrade later.</p>
+            <div id="gp-tier-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;" class="form-grid"></div>
+          </div>
+
+          <div id="plan-pane-lp" style="display:none;">
+            <p style="color:var(--muted);font-size:13px;margin:0 0 14px;">Flat monthly subscription. Invest, accept, counter — all included.</p>
+            <div class="card card-p" style="border:2px solid var(--brand);text-align:center;padding:26px;margin-bottom:18px;" id="lp-plan-card">
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--brand);">Limited Partner</div>
+              <div style="margin:10px 0 4px;"><span style="font-size:48px;font-weight:800;color:var(--ink);" id="lp-price">$100</span><span style="font-size:14px;color:var(--muted);margin-left:8px;">/mo</span></div>
+              <div id="lp-billed-line" style="font-size:13px;font-weight:600;color:var(--brand);min-height:18px;"></div>
+              <div style="font-size:13px;color:var(--body);margin-top:8px;">KYB-verified LP dashboard, deal feed, counter-propose, deal memo archive, capital activity log, reports, 10GB vault.</div>
+            </div>
+          </div>
+
+          <h3 style="margin:18px 0 8px;font-size:15px;color:var(--ink);">Activate add-ons (optional)</h3>
+          <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Toggle the ones you want. You can add or remove them later from Billing.</p>
+          <div id="addon-checklist" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" class="form-grid"></div>
+        </div>
+
+        <!-- Step 5: Payment -->
+        <div class="step-pane" id="step-5" style="display:none;">
+          <h2 style="margin:0 0 18px;font-size:20px;">Payment method</h2>
+          <div id="payment-paid">
+            <div class="tabs" style="margin-bottom:18px;">
+              <div class="tab active" data-pm="card">Card</div>
+              <div class="tab" data-pm="bank">Bank transfer</div>
+              <div class="tab" data-pm="usdc">USDC</div>
+            </div>
+            <div class="card card-p pm-pane" data-pmpane="card">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="form-grid">
+                <div style="grid-column:1/-1;"><label class="kyb-lbl">Card number</label><input placeholder="4242 4242 4242 4242" class="kyb-in"></div>
+                <div><label class="kyb-lbl">Expiry</label><input placeholder="MM / YY" class="kyb-in"></div>
+                <div><label class="kyb-lbl">CVC</label><input placeholder="123" class="kyb-in"></div>
+              </div>
+            </div>
+            <div class="card card-p pm-pane" data-pmpane="bank" style="display:none;">
+              <p style="color:var(--body);margin:0 0 10px;">Wire to Stanbic IBTC, NEIIA Holdings · 0123456789 · SWIFT SBICNGLX</p>
+              <p style="color:var(--muted);font-size:13px;margin:0;">Use the reference shown on your first invoice (sent within 24 hours of signup).</p>
+            </div>
+            <div class="card card-p pm-pane" data-pmpane="usdc" style="display:none;">
+              <p style="color:var(--body);margin:0 0 10px;">USDC wallet (Polygon): <code style="font-family:monospace;color:var(--brand);">0x7a3c…b431</code></p>
+              <p style="color:var(--muted);font-size:13px;margin:0;">We confirm on-chain within 5 minutes.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success -->
+        <div class="step-pane" id="step-done" style="display:none;text-align:center;padding:50px 20px;">
+          <div style="width:80px;height:80px;border-radius:999px;background:var(--brand-50);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;margin-bottom:18px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+          </div>
+          <h2 style="margin:0 0 8px;font-size:28px;">KYB review in progress</h2>
+          <p style="color:var(--muted);margin:0 0 24px;max-width:480px;margin-left:auto;margin-right:auto;">You'll get a verification email within 24h. In the meantime, jump into your live demo workspace to explore the product.</p>
+          <a href="signin.html" class="btn btn-primary" style="padding:12px 22px;">Continue to live demo →</a>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:24px;gap:10px;" id="nav-row">
+          <button class="btn btn-secondary" id="back-btn" style="visibility:hidden;">← Back</button>
+          <button class="btn btn-primary" id="next-btn">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <aside id="summary-card" style="position:sticky;top:90px;align-self:flex-start;">
+        <div class="card card-p">
+          <h3 style="margin:0 0 14px;font-size:15px;">Order summary</h3>
+          <div id="sum-body" style="font-size:14px;color:var(--body);">Select a role to get started.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="toast-wrap"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/portal.js"></script>
+<script>
+  // === State ===
+  const params = new URLSearchParams(window.location.search);
+  let role = params.get('role') || null;
+  let lpType = null;
+  let step = 0;
+  let selectedGpTier = params.get('tier') || 'growth';
+
+  document.getElementById('ic-gp-mount').innerHTML = Portal.icon('briefcase', 22);
+  document.getElementById('ic-lp-mount').innerHTML = Portal.icon('users', 22);
+
+  const PRICING = (window.NEIIA_DATA && window.NEIIA_DATA.pricing) || {};
+  const GP_TIERS = (PRICING.tiers && PRICING.tiers.gp) || [];
+  const LP_BASE = (PRICING.lp && PRICING.lp.monthly) || 100;
+  const ADDONS = PRICING.addons || [];
+  let cycle = 'monthly';
+  let selectedAddons = [];
+
+  // Stepper
+  function buildStepper() {
+    const steps = role === 'lp'
+      ? [{ id: 0, label: 'Role' }, { id: 1, label: 'LP type' }, { id: 2, label: 'KYB' }, { id: 3, label: 'Financials' }, { id: 4, label: 'Plan' }, { id: 5, label: 'Payment' }]
+      : [{ id: 0, label: 'Role' }, { id: 2, label: 'KYB' }, { id: 3, label: 'Financials' }, { id: 4, label: 'Plan' }, { id: 5, label: 'Payment' }];
+    const html = steps.map(function (s, i) {
+      const done = step > s.id ? ' done' : '';
+      const active = step === s.id ? ' active' : '';
+      const bar = i < steps.length - 1 ? '<div class="step-bar' + (step > s.id ? ' done' : '') + '"></div>' : '';
+      return '<div style="display:flex;align-items:center;gap:6px;"><span class="step-num' + active + done + '">' + (i + 1) + '</span><span class="step-label' + active + '">' + s.label + '</span></div>' + bar;
+    }).join('');
+    document.getElementById('stepper').innerHTML = html;
+  }
+
+  // Render LP type cards
+  function renderLpTypes() {
+    const types = NEIIA_DATA.lpTypes || [];
+    document.getElementById('lp-type-grid').innerHTML = types.map(function (t) {
+      const sel = lpType === t.id ? ' selected' : '';
+      return '<button type="button" class="lp-type-card' + sel + '" data-tid="' + t.id + '">' +
+        '<div style="font-weight:700;color:var(--ink);font-size:15px;margin-bottom:4px;">' + t.label + '</div>' +
+        '<div style="font-size:12px;color:var(--muted);line-height:1.4;">' + t.desc + '</div>' +
+      '</button>';
+    }).join('');
+    document.querySelectorAll('[data-tid]').forEach(function (b) {
+      b.addEventListener('click', function () { lpType = b.dataset.tid; renderLpTypes(); renderSummary(); });
+    });
+  }
+
+  // Mandate chip lists
+  const SECTORS = ['Energy', 'Fintech', 'Agri', 'Manufacturing', 'Real Estate', 'Healthcare', 'ICT', 'Consumer', 'Climate'];
+  const WRAPPERS = ['SPV', 'Sub-Fund', 'Rolling', 'Venture', 'Co-Invest', 'Roll-Up'];
+  const STAGES = ['Seed', 'Series A', 'Series B', 'Growth', 'Late-stage'];
+  const GEOS = ['Nigeria', 'West Africa', 'Pan-Africa', 'Global'];
+  const HOLD = ['1-3y', '3-5y', '5-7y', '7+y'];
+  const GP_VEHICLES = ['Growth Fund', 'Venture Fund', 'Impact Fund', 'PE Buyout', 'Secondary', 'Real Asset'];
+  let selSectors = []; let selGeos = []; let selVehicles = [];
+  let selWrappers = []; let selStages = []; let selHold = '';
+  function renderChips(arr, sel, mountId, onChange, single) {
+    const el = document.getElementById(mountId);
+    if (!el) return;
+    el.innerHTML = arr.map(function (s) {
+      const isSel = single ? (sel === s) : sel.includes(s);
+      const cls = isSel ? ' selected' : '';
+      return '<span class="chip-select' + cls + '" data-v="' + s + '">' + s + '</span>';
+    }).join('');
+    el.querySelectorAll('.chip-select').forEach(function (c) {
+      c.addEventListener('click', function () {
+        const v = c.dataset.v;
+        if (single) {
+          onChange(v);
+          return;
+        }
+        if (sel.includes(v)) sel.splice(sel.indexOf(v), 1);
+        else sel.push(v);
+        onChange();
+      });
+    });
+  }
+  function refreshChips() {
+    renderChips(SECTORS, selSectors, 'mandate-sectors', refreshChips);
+    renderChips(GEOS, selGeos, 'mandate-geos', refreshChips);
+    renderChips(WRAPPERS, selWrappers, 'mandate-wrappers', refreshChips);
+    renderChips(STAGES, selStages, 'mandate-stages', refreshChips);
+    renderChips(HOLD, selHold, 'mandate-hold', function (v) { selHold = v; refreshChips(); }, true);
+    renderChips(GP_VEHICLES, selVehicles, 'gp-vehicles', refreshChips);
+  }
+
+  // Helpers
+  function tierObj() { return GP_TIERS.find(function (t) { return t.id === selectedGpTier; }) || GP_TIERS[1]; }
+  function perMonth(base) { return NEIIA_DATA.perMonthForCycle ? NEIIA_DATA.perMonthForCycle(base, cycle) : base; }
+  function periodTotal(base) { return NEIIA_DATA.computeCyclePrice ? NEIIA_DATA.computeCyclePrice(base, cycle) : base; }
+  function billedLine(base) {
+    if (cycle === 'monthly') return '';
+    var total = periodTotal(base);
+    var noun = cycle === 'quarterly' ? 'quarterly' : 'yearly';
+    if (cycle === 'yearly') {
+      var saves = (base * 12) - total;
+      if (saves > 0) return '$' + total + ' billed yearly (saves $' + saves + ')';
+    }
+    return '$' + total + ' billed ' + noun;
+  }
+  function gpBase() { return tierObj().monthly; }
+  function addonsTotal() {
+    return selectedAddons.reduce(function (sum, id) {
+      const a = ADDONS.find(function (x) { return x.id === id; });
+      return sum + (a ? a.price : 0);
+    }, 0);
+  }
+  function baseMonthly() {
+    if (role === 'gp') return gpBase();
+    if (role === 'lp') return LP_BASE;
+    return 0;
+  }
+  function dueToday() {
+    return periodTotal(baseMonthly()) + addonsTotal() * (PRICING.cycles[cycle] ? PRICING.cycles[cycle].months : 1);
+  }
+  function recurringPerMonth() {
+    return perMonth(baseMonthly()) + addonsTotal();
+  }
+
+  // GP tier cards in step 4
+  function renderGpTierCards() {
+    const wrap = document.getElementById('gp-tier-cards');
+    if (!wrap) return;
+    wrap.innerHTML = GP_TIERS.map(function (t) {
+      const pm = perMonth(t.monthly);
+      const billed = billedLine(t.monthly);
+      const sel = selectedGpTier === t.id;
+      const featured = !!t.popular;
+      const ribbon = featured ? '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--brand);color:white;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;">Most popular</div>' : '';
+      const border = sel ? 'var(--brand)' : 'var(--border)';
+      const shadow = sel ? 'box-shadow:0 12px 32px rgba(14,122,60,0.15);' : '';
+      return '<div class="card tier-card" data-tier="' + t.id + '" style="position:relative;cursor:pointer;border:2px solid ' + border + ';' + shadow + 'padding:20px;">' +
+        ribbon +
+        '<div style="font-weight:700;color:var(--ink);font-size:16px;">' + t.name + '</div>' +
+        '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + t.range + '</div>' +
+        '<div style="margin:12px 0 4px;"><span style="font-size:30px;font-weight:800;color:var(--ink);">$' + pm + '</span><span style="font-size:12px;color:var(--muted);margin-left:4px;">/mo</span></div>' +
+        (billed ? '<div style="font-size:12px;font-weight:600;color:var(--brand);margin-bottom:6px;">' + billed + '</div>' : '<div style="height:14px;"></div>') +
+        '<div style="font-size:12px;color:var(--body);line-height:1.4;margin-top:6px;">' + t.blurb + '</div>' +
+      '</div>';
+    }).join('');
+    wrap.querySelectorAll('.tier-card').forEach(function (c) {
+      c.addEventListener('click', function () { selectedGpTier = c.dataset.tier; renderGpTierCards(); renderSummary(); });
+    });
+  }
+
+  function renderLpPlanCard() {
+    var card = document.getElementById('lp-plan-card');
+    if (!card) return;
+    document.getElementById('lp-price').textContent = '$' + perMonth(LP_BASE);
+    document.getElementById('lp-billed-line').textContent = billedLine(LP_BASE);
+  }
+
+  function renderAddonChecklist() {
+    const wrap = document.getElementById('addon-checklist');
+    if (!wrap) return;
+    wrap.innerHTML = ADDONS.map(function (a) {
+      const checked = selectedAddons.includes(a.id);
+      return '<label class="card card-p" data-aid="' + a.id + '" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;border:2px solid ' + (checked ? 'var(--brand)' : 'var(--border)') + ';">' +
+        '<input type="checkbox" data-cbid="' + a.id + '" ' + (checked ? 'checked' : '') + ' style="margin-top:3px;">' +
+        '<div style="flex:1;">' +
+          '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-weight:700;color:var(--ink);font-size:14px;">' + a.name + '</span><span style="font-weight:700;color:var(--brand);font-size:14px;">$' + a.price + '/mo</span></div>' +
+          '<div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:4px;">' + a.desc + '</div>' +
+        '</div>' +
+      '</label>';
+    }).join('');
+    wrap.querySelectorAll('[data-cbid]').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        const id = cb.dataset.cbid;
+        if (cb.checked && !selectedAddons.includes(id)) selectedAddons.push(id);
+        else if (!cb.checked) selectedAddons = selectedAddons.filter(function (x) { return x !== id; });
+        renderAddonChecklist();
+        renderSummary();
+      });
+    });
+  }
+
+  // Summary
+  function renderSummary() {
+    if (!role) { document.getElementById('sum-body').innerHTML = 'Select a role to get started.'; return; }
+    const cycleMonths = (PRICING.cycles[cycle] && PRICING.cycles[cycle].months) || 1;
+    const cycleLabel = cycle === 'monthly' ? 'monthly' : (cycle === 'quarterly' ? 'quarterly' : 'yearly');
+    const baseTotal = periodTotal(baseMonthly());
+    const addonsPerMonth = addonsTotal();
+    const addonsPeriod = addonsPerMonth * cycleMonths;
+    const addonRows = selectedAddons.map(function (id) {
+      const a = ADDONS.find(function (x) { return x.id === id; });
+      if (!a) return '';
+      return '<div style="display:flex;justify-content:space-between;padding:4px 0;color:var(--body);font-size:13px;"><span>' + a.name + '</span><span>$' + a.price + '/mo</span></div>';
+    }).join('');
+
+    let planRow = '';
+    if (role === 'gp') {
+      const t = tierObj();
+      planRow = '<div style="display:flex;justify-content:space-between;font-weight:600;color:var(--ink);padding:6px 0;border-top:1px solid var(--border);margin-top:4px;">' +
+        '<span>GP · ' + t.name + '</span><span>$' + perMonth(t.monthly) + '/mo</span></div>';
+    } else {
+      planRow = '<div style="display:flex;justify-content:space-between;font-weight:600;color:var(--ink);padding:6px 0;border-top:1px solid var(--border);margin-top:4px;">' +
+        '<span>LP · base subscription</span><span>$' + perMonth(LP_BASE) + '/mo</span></div>';
+    }
+
+    const total = baseTotal + addonsPeriod;
+    const recurringMonthly = recurringPerMonth();
+    const dueTodayLabel = cycle === 'monthly' ? 'Due today' : 'Due today (' + cycleLabel + ' billing)';
+
+    document.getElementById('sum-body').innerHTML =
+      '<div style="display:flex;justify-content:space-between;font-weight:600;color:var(--ink);padding:6px 0;">' +
+        '<span>Role</span><span style="text-transform:uppercase;">' + role + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--body);font-size:13px;">' +
+        '<span>Billing cycle</span><span style="text-transform:capitalize;">' + cycleLabel + '</span></div>' +
+      (role === 'lp' && lpType ? '<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--body);"><span>LP type</span><span>' + lpType + '</span></div>' : '') +
+      planRow +
+      (addonRows ? '<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><div style="font-size:12px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px;">Add-ons</div>' + addonRows + '</div>' : '') +
+      '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;">' +
+        '<div style="display:flex;justify-content:space-between;font-weight:800;color:var(--ink);font-size:18px;"><span>' + dueTodayLabel + '</span><span style="color:var(--brand);">$' + total + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;"><span>Recurring</span><span>$' + recurringMonthly + '/mo equivalent</span></div>' +
+      '</div>' +
+      '<p style="font-size:12px;color:var(--muted);margin:14px 0 0;">Live demo workspace included. Production billing only after KYB approval + first payment.</p>';
+  }
+
+  function showStep(n) {
+    step = n;
+    document.querySelectorAll('.step-pane').forEach(function (p) { p.style.display = 'none'; });
+    if (n === 6) {
+      document.getElementById('step-done').style.display = 'block';
+      document.getElementById('nav-row').style.display = 'none';
+      document.getElementById('summary-card').style.display = 'none';
+    } else {
+      document.getElementById('step-' + n).style.display = 'block';
+    }
+    document.getElementById('back-btn').style.visibility = n === 0 ? 'hidden' : 'visible';
+    document.getElementById('next-btn').textContent = n === 5 ? 'Create account' : 'Continue →';
+    buildStepper();
+
+    if (n === 3) {
+      document.querySelectorAll('.lp-only').forEach(function (el) { el.style.display = role === 'lp' ? '' : 'none'; });
+      document.querySelectorAll('.gp-only').forEach(function (el) { el.style.display = role === 'gp' ? '' : 'none'; });
+      refreshChips();
+    }
+    if (n === 4) {
+      var titleEl = document.getElementById('plan-pane-title');
+      if (role === 'gp') {
+        if (titleEl) titleEl.textContent = 'Pick your GP tier';
+        document.getElementById('plan-pane-gp').style.display = 'block';
+        document.getElementById('plan-pane-lp').style.display = 'none';
+        // Pre-select tier from LP count entered in step 3
+        var lpCountField = document.getElementById('gp-lp-count');
+        var lpCount = lpCountField && lpCountField.value ? parseInt(lpCountField.value, 10) : null;
+        if (lpCount && NEIIA_DATA.tierForLpCount) {
+          var suggested = NEIIA_DATA.tierForLpCount(lpCount);
+          if (suggested) selectedGpTier = suggested.id;
+        }
+        renderGpTierCards();
+      } else {
+        if (titleEl) titleEl.textContent = 'Your LP plan';
+        document.getElementById('plan-pane-gp').style.display = 'none';
+        document.getElementById('plan-pane-lp').style.display = 'block';
+        renderLpPlanCard();
+      }
+      renderAddonChecklist();
+    }
+    if (n === 5) {
+      renderOrderSummaryPane();
+    }
+    renderSummary();
+  }
+
+  function renderOrderSummaryPane() {
+    var paneRoot = document.getElementById('step-5');
+    if (!paneRoot) return;
+    var existing = paneRoot.querySelector('#order-summary-pane');
+    if (existing) existing.remove();
+    var cycleMonths = (PRICING.cycles[cycle] && PRICING.cycles[cycle].months) || 1;
+    var cycleLabel = cycle === 'monthly' ? 'monthly' : (cycle === 'quarterly' ? 'quarterly' : 'yearly');
+    var base = baseMonthly();
+    var baseTotal = periodTotal(base);
+    var addonsPerMonth = addonsTotal();
+    var addonsPeriod = addonsPerMonth * cycleMonths;
+    var rows = '';
+    rows += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;"><span>Base subscription (' + cycleLabel + ')</span><span>$' + baseTotal + '</span></div>';
+    selectedAddons.forEach(function (id) {
+      var a = ADDONS.find(function (x) { return x.id === id; });
+      if (!a) return;
+      rows += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:var(--body);"><span>' + a.name + ' × ' + cycleMonths + ' mo</span><span>$' + (a.price * cycleMonths) + '</span></div>';
+    });
+    var total = baseTotal + addonsPeriod;
+    var recurring = perMonth(base) + addonsPerMonth;
+    var html =
+      '<div id="order-summary-pane" class="card card-p" style="margin-top:18px;background:var(--brand-50);border-color:var(--brand);">' +
+        '<div style="font-weight:700;color:var(--ink);font-size:15px;margin-bottom:10px;">Order summary</div>' +
+        rows +
+        '<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:800;color:var(--ink);font-size:18px;"><span>Total today</span><span style="color:var(--brand);">$' + total + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;"><span>Recurring</span><span>$' + recurring + '/mo equivalent</span></div>' +
+      '</div>';
+    paneRoot.insertAdjacentHTML('beforeend', html);
+  }
+
+  function nextStep() {
+    if (step === 0) {
+      if (!role) { Portal.toast('Choose a role first', 'error'); return; }
+      showStep(role === 'lp' ? 1 : 2);
+    } else if (step === 1) {
+      if (!lpType) { Portal.toast('Pick an LP type', 'error'); return; }
+      showStep(2);
+    } else if (step === 2) {
+      showStep(3);
+    } else if (step === 3) {
+      // Save Deal Preferences to localStorage on advance (LP only)
+      if (role === 'lp') {
+        NEIIA_STATE.updateSignupDraft({
+          mandate: {
+            sectors: selSectors.slice(),
+            wrappers: selWrappers.slice(),
+            stages: selStages.slice(),
+            geos: selGeos.slice(),
+            ticketMin: parseInt(document.getElementById('ticket-min').value, 10) || 0,
+            ticketMax: parseInt(document.getElementById('ticket-max').value, 10) || 0,
+            holdHorizon: selHold || ''
+          }
+        });
+      }
+      showStep(4);
+    } else if (step === 4) {
+      showStep(5);
+    } else if (step === 5) {
+      NEIIA_STATE.updateSignupDraft({
+        role: role, lpType: lpType,
+        gpTier: role === 'gp' ? selectedGpTier : null,
+        cycle: cycle, addons: selectedAddons.slice(),
+        company: document.getElementById('kyb-name') ? document.getElementById('kyb-name').value : ''
+      });
+      // Persist active add-ons for LP to localStorage so paywall flow respects them
+      if (role === 'lp' && selectedAddons.length) {
+        const cur = NEIIA_STATE.lpAddons.slice();
+        selectedAddons.forEach(function (id) { if (cur.indexOf(id) === -1) cur.push(id); });
+        NEIIA_STATE.setLpAddons(cur);
+      }
+      if (role === 'gp') NEIIA_STATE.gpTier = selectedGpTier;
+      showStep(6);
+    }
+  }
+  function backStep() {
+    if (step === 0) return;
+    if (step === 1) showStep(0);
+    else if (step === 2) showStep(role === 'lp' ? 1 : 0);
+    else if (step === 3) showStep(2);
+    else if (step === 4) showStep(3);
+    else if (step === 5) showStep(4);
+  }
+
+  document.querySelectorAll('[data-role]').forEach(function (c) {
+    c.addEventListener('click', function () {
+      role = c.dataset.role;
+      document.querySelectorAll('.role-card').forEach(function (x) { x.classList.remove('selected'); });
+      c.classList.add('selected');
+      selectedAddons = [];
+      cycle = 'monthly';
+      document.querySelectorAll('#cycle-toggle [data-cycle]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.cycle === 'monthly');
+      });
+      renderLpTypes();
+      renderSummary();
+    });
+  });
+
+  document.getElementById('next-btn').addEventListener('click', nextStep);
+  document.getElementById('back-btn').addEventListener('click', backStep);
+
+  document.querySelectorAll('#cycle-toggle [data-cycle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      cycle = btn.dataset.cycle;
+      document.querySelectorAll('#cycle-toggle [data-cycle]').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      if (role === 'gp') renderGpTierCards();
+      if (role === 'lp') renderLpPlanCard();
+      renderSummary();
+    });
+  });
+
+  document.querySelectorAll('.tab[data-pm]').forEach(function (t) {
+    t.addEventListener('click', function () {
+      document.querySelectorAll('.tab[data-pm]').forEach(function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      document.querySelectorAll('.pm-pane').forEach(function (p) { p.style.display = p.dataset.pmpane === t.dataset.pm ? 'block' : 'none'; });
+    });
+  });
+
+  // Logo upload preview
+  document.getElementById('kyb-logo').addEventListener('change', function (e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = function (ev) {
+      document.getElementById('logo-preview').innerHTML = '<img src="' + ev.target.result + '" style="max-width:100px;max-height:60px;border-radius:6px;border:1px solid var(--border);">';
+    };
+    r.readAsDataURL(f);
+  });
+
+  // CAC auto-prepend
+  document.getElementById('kyb-rc').addEventListener('input', function (e) {
+    const v = e.target.value.replace(/^RC-?/i, '').replace(/\D/g, '');
+    e.target.value = v;
+  });
+
+  // Initial render
+  renderLpTypes();
+  renderSummary();
+  buildStepper();
+  if (role === 'lp' || role === 'gp') {
+    const c = document.querySelector('[data-role="' + role + '"]');
+    if (c) c.classList.add('selected');
+  }
+  showStep(0);
+</script>
+
+<style>
+  .kyb-lbl { font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:6px; }
+  .kyb-in { width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-height:44px;background:white; }
+  textarea.kyb-in { min-height:80px; }
+  @media (max-width: 900px) {
+    #content-grid { grid-template-columns: 1fr !important; }
+    #summary-card { position: static !important; }
+    .form-grid { grid-template-columns: 1fr !important; }
+    .stepper { flex-wrap: wrap; gap: 4px; }
+    #gp-tier-cards { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+</body>
+</html>

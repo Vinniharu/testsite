@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/portal.css">
+</head>
+<body>
+
+<nav class="mkt-nav">
+  <div class="mkt-container" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
+    <a href="index.html" class="wordmark"><span class="wordmark-mark">N</span>NEIIA</a>
+    <div style="display:flex;align-items:center;gap:24px;" class="mkt-links">
+      <a href="index.html#product" style="font-weight:500;color:var(--body);">Product</a>
+      <a href="pricing.html" style="font-weight:600;color:var(--brand);">Pricing</a>
+      <a href="index.html#customers" style="font-weight:500;color:var(--body);">Customers</a>
+      <a href="signin.html" style="font-weight:500;color:var(--body);">Sign in</a>
+      <a href="signin.html" class="btn btn-primary btn-sm">Try the live demo</a>
+    </div>
+  </div>
+</nav>
+
+<section style="padding:64px 24px 30px;background:linear-gradient(180deg,#F0F7F2 0%,#FFFFFF 100%);">
+  <div class="mkt-container" style="text-align:center;">
+    <span class="mkt-eyebrow">Pricing</span>
+    <h1 style="font-size:42px;margin:14px 0 12px;letter-spacing:-0.02em;">Pricing built for African capital.</h1>
+    <p class="mkt-sub" style="max-width:680px;margin:0 auto 24px;">GP plans scale with your LP roster. LPs pay a flat monthly subscription. Add power-ups when you need them.</p>
+    <div class="pill-toggle" id="cycle-toggle" style="flex-wrap:wrap;">
+      <button class="active" data-cycle="monthly">Monthly</button>
+      <button data-cycle="quarterly">Quarterly <span style="font-size:11px;font-weight:500;color:var(--brand);margin-left:4px;">5% off</span></button>
+      <button data-cycle="yearly">Yearly <span style="font-size:11px;font-weight:500;color:var(--brand);margin-left:4px;">2 months free · 17% off</span></button>
+    </div>
+  </div>
+</section>
+
+<section style="padding:30px 24px 18px;">
+  <div class="mkt-container">
+    <div style="text-align:center;margin-bottom:24px;">
+      <span class="mkt-eyebrow">General Partners</span>
+      <h2 style="font-size:28px;margin:14px 0 6px;">Pick the tier that fits your LP roster</h2>
+      <p style="color:var(--muted);margin:0;">Tier scales with your active LP count. Upgrade or downgrade anytime.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;" class="row-3" id="gp-tier-cards"></div>
+  </div>
+</section>
+
+<section style="padding:50px 24px 30px;background:white;">
+  <div class="mkt-container">
+    <div style="text-align:center;margin-bottom:24px;">
+      <span class="mkt-eyebrow">Limited Partners</span>
+      <h2 style="font-size:28px;margin:14px 0 6px;">One flat subscription. Invest, accept, counter — all included.</h2>
+      <p style="color:var(--muted);margin:0;">No transaction gates on investing. KYB-verified. Add power-ups when you want them.</p>
+    </div>
+    <div id="lp-plan-card" style="max-width:780px;margin:0 auto;"></div>
+  </div>
+</section>
+
+<section style="padding:50px 24px 30px;background:var(--surface);">
+  <div class="mkt-container">
+    <div style="text-align:center;margin-bottom:18px;">
+      <span class="mkt-eyebrow">Power-ups</span>
+      <h2 style="font-size:24px;margin:10px 0 4px;">Add what you need. Cancel anytime.</h2>
+      <p style="color:var(--muted);margin:0;font-size:14px;">Available to both GPs and LPs. Billed monthly on top of your base subscription.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1000px;margin:0 auto;" class="row-4" id="addon-cards"></div>
+  </div>
+</section>
+
+<section style="padding:60px 24px;">
+  <div class="mkt-container">
+    <div style="text-align:center;margin-bottom:36px;"><h2 style="font-size:28px;margin:0;">GP plans vs LP</h2></div>
+    <div class="card" style="overflow:hidden;overflow-x:auto;">
+      <table class="tbl" id="compare-tbl"></table>
+    </div>
+  </div>
+</section>
+
+<section style="padding:60px 24px;background:white;">
+  <div class="mkt-container" style="max-width:780px;">
+    <div style="text-align:center;margin-bottom:30px;"><h2 style="font-size:28px;margin:0;">Pricing FAQ</h2></div>
+    <div id="faqs"></div>
+  </div>
+</section>
+
+<footer style="background:var(--ink);color:white;padding:40px 24px;">
+  <div class="mkt-container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
+    <a href="index.html" class="wordmark" style="color:white;"><span class="wordmark-mark" style="background:white;color:var(--brand);">N</span><span style="color:white;">NEIIA</span></a>
+    <div style="font-size:13px;color:rgba(255,255,255,0.6);">© NEIIA 2026 · Lagos · Nairobi · Accra</div>
+  </div>
+</footer>
+
+<div class="toast-wrap"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/portal.js"></script>
+<script>
+  const PRICING = (window.NEIIA_DATA && window.NEIIA_DATA.pricing) || {};
+  const GP_TIERS = (PRICING.tiers && PRICING.tiers.gp) || [];
+  const LP_BASE = (PRICING.lp && PRICING.lp.monthly) || 100;
+  const ADDONS = PRICING.addons || [];
+  const CYCLES = PRICING.cycles || {};
+
+  let cycle = 'monthly';
+
+  function perMonth(baseMonthly) {
+    return (NEIIA_DATA.perMonthForCycle || function (b) { return b; })(baseMonthly, cycle);
+  }
+  function periodTotal(baseMonthly) {
+    return (NEIIA_DATA.computeCyclePrice || function (b) { return b; })(baseMonthly, cycle);
+  }
+  function billedLabel(baseMonthly) {
+    if (cycle === 'monthly') return '';
+    var c = CYCLES[cycle];
+    var total = periodTotal(baseMonthly);
+    var noun = cycle === 'quarterly' ? 'quarterly' : 'yearly';
+    var savings = '';
+    if (cycle === 'yearly') {
+      var savesPerYear = (baseMonthly * 12) - total;
+      if (savesPerYear > 0) savings = ' (saves $' + savesPerYear + ')';
+    }
+    return '$' + total + ' billed ' + noun + savings;
+  }
+
+  function starterFeatures() {
+    return [
+      'KYB-verified GP dashboard',
+      'Up to 20 LPs',
+      'Unlimited funds + portfolios',
+      'Capital calls & distributions',
+      'Document vault (10GB)',
+      'Quarterly reporting cadence'
+    ];
+  }
+  function growthFeatures() {
+    return [
+      'Everything in Starter',
+      'Up to 60 LPs',
+      'Investor browser',
+      'Deal terms editor',
+      'Custom reporting cadence',
+      'Priority support',
+      'Audit log',
+      'Reports archive'
+    ];
+  }
+  function enterpriseFeatures() {
+    return [
+      'Everything in Growth',
+      'Unlimited LPs',
+      'Dedicated success manager',
+      'White-label option',
+      'API access included',
+      'SLA + uptime guarantee',
+      'Custom KYB workflow',
+      'Quarterly business review',
+      'Multi-entity ledger',
+      'SSO + SCIM provisioning'
+    ];
+  }
+  function featuresFor(tier) {
+    if (tier.id === 'starter') return starterFeatures();
+    if (tier.id === 'growth') return growthFeatures();
+    return enterpriseFeatures();
+  }
+
+  function renderGpTiers() {
+    document.getElementById('gp-tier-cards').innerHTML = GP_TIERS.map(function (t) {
+      var pm = perMonth(t.monthly);
+      var billed = billedLabel(t.monthly);
+      var featured = !!t.popular;
+      var ribbon = featured ? '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--brand);color:white;padding:4px 14px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.04em;">Most popular</div>' : '';
+      var borderColor = featured ? 'var(--brand)' : 'var(--border)';
+      var shadow = featured ? 'box-shadow:0 24px 50px rgba(14,122,60,0.18);' : '';
+      var features = featuresFor(t);
+      return '<div class="mkt-card" style="position:relative;border-color:' + borderColor + ';border-width:2px;' + shadow + 'padding:30px;">' +
+        ribbon +
+        '<div style="font-weight:700;font-size:20px;color:var(--ink);">' + t.name + '</div>' +
+        '<div style="font-size:13px;color:var(--muted);margin-top:4px;">' + t.range + '</div>' +
+        '<div style="font-size:13px;color:var(--body);margin-top:6px;">' + t.blurb + '</div>' +
+        '<div style="margin:18px 0 4px;"><span style="font-size:42px;font-weight:800;color:var(--ink);">$' + pm + '</span><span style="font-size:14px;color:var(--muted);margin-left:6px;">/mo</span></div>' +
+        (billed ? '<div style="font-size:13px;font-weight:600;color:var(--brand);margin-bottom:14px;">' + billed + '</div>' : '<div style="height:18px;"></div>') +
+        '<a href="signin.html" class="btn ' + (featured ? 'btn-primary' : 'btn-secondary') + '" style="width:100%;justify-content:center;padding:12px;margin-bottom:18px;">Try live demo →</a>' +
+        '<div style="border-top:1px solid var(--border);padding-top:16px;">' +
+          features.map(function (f) {
+            return '<div style="display:flex;gap:8px;font-size:14px;color:var(--body);padding:6px 0;">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E7A3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:3px;"><path d="m5 12 5 5L20 7"/></svg>' + f +
+            '</div>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderLpCard() {
+    var pm = perMonth(LP_BASE);
+    var billed = billedLabel(LP_BASE);
+    var features = [
+      'KYB-verified LP dashboard',
+      'Browse incoming deals',
+      'Submit Intent + counter-propose',
+      'Deal memo archive',
+      'Corporate financials profile',
+      'Capital activity log',
+      'Reports archive',
+      'Vault (10GB document storage)'
+    ];
+    document.getElementById('lp-plan-card').innerHTML =
+      '<div class="mkt-card" style="border:2px solid var(--brand);padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;" id="lp-card-grid">' +
+        '<div>' +
+          '<div style="font-weight:700;font-size:20px;color:var(--ink);">Limited Partner</div>' +
+          '<div style="font-size:13px;color:var(--muted);margin-top:4px;">Flat monthly subscription. Invest as part of base.</div>' +
+          '<div style="margin:18px 0 4px;"><span style="font-size:48px;font-weight:800;color:var(--ink);">$' + pm + '</span><span style="font-size:14px;color:var(--muted);margin-left:6px;">/mo</span></div>' +
+          (billed ? '<div style="font-size:13px;font-weight:600;color:var(--brand);margin-bottom:14px;">' + billed + '</div>' : '<div style="height:18px;"></div>') +
+          '<a href="signin.html" class="btn btn-primary" style="padding:12px 22px;">Try live demo →</a>' +
+        '</div>' +
+        '<div style="border-left:1px solid var(--border);padding-left:30px;" id="lp-features-col">' +
+          features.map(function (f) {
+            return '<div style="display:flex;gap:8px;font-size:14px;color:var(--body);padding:6px 0;">' +
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E7A3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:3px;"><path d="m5 12 5 5L20 7"/></svg>' + f +
+            '</div>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderAddons() {
+    document.getElementById('addon-cards').innerHTML = ADDONS.map(function (a) {
+      return '<div class="mkt-card" style="padding:22px;display:flex;flex-direction:column;">' +
+        '<div style="font-weight:700;color:var(--ink);font-size:15px;margin-bottom:6px;">' + a.name + '</div>' +
+        '<div style="font-size:24px;font-weight:800;color:var(--brand);margin-bottom:10px;">$' + a.price + '<span style="font-size:13px;font-weight:500;color:var(--muted);">/mo</span></div>' +
+        '<div style="font-size:13px;color:var(--body);line-height:1.5;flex:1;margin-bottom:14px;">' + a.desc + '</div>' +
+        '<button class="btn btn-secondary btn-sm addon-cta" data-aid="' + a.id + '" style="justify-content:center;">+ Add to plan</button>' +
+      '</div>';
+    }).join('');
+    document.querySelectorAll('.addon-cta').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var body = document.createElement('div');
+        body.innerHTML =
+          '<p style="margin:0 0 12px;">Add-ons are managed inside your authenticated workspace. Sign in to your demo account to toggle them live.</p>';
+        Portal.modal({
+          title: 'Sign in to manage add-ons',
+          body: body,
+          primary: { label: 'Go to sign in', onClick: function () { window.location.href = 'signin.html'; } },
+          secondary: { label: 'Close' }
+        });
+      });
+    });
+  }
+
+  function renderCompare() {
+    var check = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0E7A3C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>';
+    var dash = '<span style="color:var(--muted);">—</span>';
+    var rows = [
+      ['KYB verification', check, check, check, check],
+      ['Capital call issuance', check, check, check, dash],
+      ['Capital call acknowledgment', dash, dash, dash, check],
+      ['Deal terms editor', dash, check, check, dash],
+      ['Accept / counter-propose deals', dash, dash, dash, check],
+      ['Investor browser', dash, check, check, dash],
+      ['Deal memo archive', check, check, check, check],
+      ['Document vault', '10GB ' + check, '10GB ' + check, '10GB ' + check, '10GB ' + check],
+      ['Reporting cadence config', 'Quarterly', check, check, dash],
+      ['Reports archive', check, check, check, check],
+      ['Audit log', check, check, check, check],
+      ['Priority support', dash, check, check, dash],
+      ['Dedicated success manager', dash, dash, check, dash],
+      ['API access', dash, dash, check, dash]
+    ];
+    document.getElementById('compare-tbl').innerHTML =
+      '<thead><tr><th></th>' +
+        '<th style="color:var(--brand);">Starter</th>' +
+        '<th style="color:var(--brand);">Growth</th>' +
+        '<th style="color:var(--brand);">Enterprise</th>' +
+        '<th style="color:var(--brand);">Limited Partner</th>' +
+      '</tr></thead>' +
+      '<tbody>' + rows.map(function (r) {
+        return '<tr><td style="font-weight:600;color:var(--ink);">' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td></tr>';
+      }).join('') + '</tbody>';
+  }
+
+  function renderFaqs() {
+    var faqs = [
+      { q: 'How do GP tiers work?', a: 'Tier scales with your active LP count. Starter (5–20 LPs) is $70/mo, Growth (21–60 LPs) is $140/mo, Enterprise (61+ LPs) is $200/mo. We auto-suggest a tier change when your LP count crosses a threshold; you confirm.' },
+      { q: 'What does the LP plan include?', a: 'A flat $100/mo subscription covering KYB, the LP dashboard, deal feed, Submit Intent and counter-propose, deal memo archive, capital activity log, reports archive, and a 10GB document vault. No transaction gates on investing.' },
+      { q: 'Can I switch from monthly to yearly?', a: 'Yes, anytime. Switching to yearly mid-cycle pro-rates the unused portion. Yearly is 17% off — equivalent to 2 months free.' },
+      { q: 'What do add-ons cost?', a: 'Apex AI assistant $25/mo, Email integration $30/mo, +20GB storage $20/mo, Message verification $25/mo. Add or remove anytime — pro-rated to the next invoice.' },
+      { q: 'Is there a free tier?', a: 'No. Every account pays a flat monthly subscription after KYB. A free live demo workspace with seed data is available before you commit.' },
+      { q: "What's the emerging manager discount?", a: 'Starter is our emerging manager pricing — $70/mo flat for any GP with 5–20 active LPs. No application required.' },
+      { q: 'Local currency billing?', a: 'NGN, KES, ZAR, GHS, USD. Billed in your home currency at quote-locked FX.' },
+      { q: 'Cancellation?', a: 'Cancel anytime. No clawback. You retain access until the end of the current billing cycle and full data export.' }
+    ];
+    document.getElementById('faqs').innerHTML = faqs.map(function (f) {
+      return '<div class="acc-item">' +
+        '<div class="acc-trigger"><span>' + f.q + '</span>' +
+          '<svg class="acc-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
+        '</div>' +
+        '<div class="acc-body">' + f.a + '</div>' +
+      '</div>';
+    }).join('');
+    document.querySelectorAll('.acc-trigger').forEach(function (t) {
+      t.addEventListener('click', function () { t.parentElement.classList.toggle('open'); });
+    });
+  }
+
+  function rerenderAll() {
+    renderGpTiers();
+    renderLpCard();
+  }
+
+  document.querySelectorAll('#cycle-toggle [data-cycle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      cycle = btn.dataset.cycle;
+      document.querySelectorAll('#cycle-toggle [data-cycle]').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      rerenderAll();
+    });
+  });
+
+  rerenderAll();
+  renderAddons();
+  renderCompare();
+  renderFaqs();
+</script>
+
+<style>
+  @media (max-width: 1100px) {
+    .row-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+  @media (max-width: 900px) {
+    .row-2, .row-3, .row-4, .row-5 { grid-template-columns: 1fr !important; }
+    #lp-card-grid { grid-template-columns: 1fr !important; }
+    #lp-features-col { border-left: none !important; border-top: 1px solid var(--border); padding-left: 0 !important; padding-top: 18px; }
+    .mkt-links { display: none; }
+    .mkt-links .btn-primary { display: inline-flex; }
+    .pill-toggle button { font-size: 13px; }
+  }
+</style>
+
+</body>
+</html>

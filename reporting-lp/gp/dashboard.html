@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · NEIIA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <aside id="sb" class="portal-sidebar"></aside>
+    <div class="portal-main">
+      <header id="hdr" class="portal-header"></header>
+      <div class="portal-content">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;">
+          <div>
+            <h1 style="margin:0;font-size:24px;">Dashboard</h1>
+            <p style="margin:4px 0 0;color:var(--muted);">Sahel Capital Partners · Welcome back, Adaobi.</p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary" id="export-btn"></button>
+            <a href="capital-call-new.html" class="btn btn-primary" id="new-call-btn"></a>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;" class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Total AUM</div><div class="kpi-value">$45M</div><div class="kpi-delta up">+8% MoM ↑</div></div>
+          <div class="kpi-card"><div class="kpi-label">Active LPs</div><div class="kpi-value">28</div><div class="kpi-delta up">+2 this month</div></div>
+          <div class="kpi-card"><div class="kpi-label">Pending capital calls</div><div class="kpi-value">2</div><div class="kpi-delta" style="color:var(--amber);">$2.5M outstanding</div></div>
+          <div class="kpi-card"><div class="kpi-label">Upcoming distributions</div><div class="kpi-value">1</div><div class="kpi-delta">$1.8M scheduled</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:20px;" class="row-2">
+          <div class="card card-p">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="margin:0;font-size:16px;">LP activity feed</h3>
+              <a href="lps.html" style="color:var(--brand);font-weight:600;font-size:13px;">View all LPs →</a>
+            </div>
+            <div id="activity-feed"></div>
+          </div>
+
+          <div class="card card-p">
+            <h3 style="margin:0 0 14px;font-size:16px;">Tasks</h3>
+            <div id="tasks"></div>
+          </div>
+        </div>
+
+        <div id="apex-inline-mount" style="margin-top:8px;"></div>
+
+        <h3 style="margin:24px 0 12px;font-size:16px;">Your funds</h3>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;" class="row-3" id="fund-cards"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/portal.js"></script>
+  <script>
+    Portal.init({ role: 'gp', activeNav: 'dashboard' });
+    document.getElementById('apex-inline-mount').innerHTML = Portal.apexPanel({
+      title: 'Portfolio insight',
+      bullets: [
+        'Growth Fund I IRR (19.4%) is 6.6pts above the African PE benchmark.',
+        '3 LPs are pending KYC — clearing them unlocks $4.2M of additional commitment.',
+        'Solara Energy follow-on (Call #7) acknowledgment rate is 43% — typical for week 1.'
+      ]
+    });
+
+    function fmtFull(n) { return '$' + (n || 0).toLocaleString(); }
+    function fmtCompact(n) {
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+      return '$' + (n || 0).toLocaleString();
+    }
+
+    document.getElementById('new-call-btn').innerHTML = Portal.icon('plus', 16) + ' New capital call';
+    document.getElementById('export-btn').innerHTML = Portal.icon('download', 16) + ' Export';
+
+    // Activity feed
+    const feed = document.getElementById('activity-feed');
+    const tints = ['', 'avatar-blue', 'avatar-amber', 'avatar-purple', 'avatar-teal', 'avatar-rose'];
+    feed.innerHTML = NEIIA_DATA.gpActivity.map(function (a, i) {
+      return '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #F1F5F9;">' +
+        '<span class="avatar avatar-sm ' + tints[i % tints.length] + '">' + a.initials + '</span>' +
+        '<div style="flex:1;"><div style="font-size:14px;color:var(--ink);"><b>' + a.who + '</b> ' + a.what + '</div>' +
+        '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + a.when + '</div></div>' +
+      '</div>';
+    }).join('');
+
+    // Tasks
+    const tasks = [
+      { label: '3 LPs awaiting KYC', href: 'lps.html', btn: 'Review' },
+      { label: '2 capital calls awaiting signature', href: 'capital-calls.html', btn: 'Sign' },
+      { label: 'Q2 report draft ready for review', href: 'documents.html', btn: 'Open' }
+    ];
+    document.getElementById('tasks').innerHTML = tasks.map(function (t) {
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">' +
+        '<span style="font-size:13px;color:var(--ink);font-weight:500;">' + t.label + '</span>' +
+        '<a href="' + t.href + '" class="btn btn-secondary btn-sm">' + t.btn + '</a>' +
+      '</div>';
+    }).join('');
+
+    // Fund cards
+    document.getElementById('fund-cards').innerHTML = NEIIA_DATA.funds.map(function (f) {
+      const badge = f.status === 'Active' ? 'badge-green' : (f.status === 'Raising' ? 'badge-amber' : 'badge-slate');
+      const irr = f.irr == null ? '—' : f.irr.toFixed(1) + '%';
+      return '<div class="card card-p">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">' +
+          '<div><div style="font-weight:700;color:var(--ink);font-size:15px;">' + f.name + '</div>' +
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px;">Vintage ' + f.vintage + ' · ' + f.strategy + '</div></div>' +
+          '<span class="badge ' + badge + '">' + f.status + '</span>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Target</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(f.target) + '</div></div>' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Raised</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(f.raised) + '</div></div>' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Called</div><div style="font-weight:700;color:var(--ink);">' + fmtCompact(f.called) + '</div></div>' +
+          '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">IRR</div><div style="font-weight:700;color:' + (f.irr ? 'var(--brand)' : 'var(--muted)') + ';">' + irr + '</div></div>' +
+        '</div>' +
+        '<a href="funds.html" style="color:var(--brand);font-weight:600;font-size:13px;">View fund →</a>' +
+      '</div>';
+    }).join('');
+  </script>
+  <style>
+    @media (max-width: 980px) {
+      .kpi-row { grid-template-columns: repeat(2,1fr) !important; }
+      .row-2, .row-3 { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</body>
+</html>
